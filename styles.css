@@ -503,3 +503,260 @@ body {
   body { background: white; color: black; }
   .card { border: 1px solid #ccc; }
 }
+
+/* ── IASB Hub ────────────────────────────────────────── */
+.iasb-page-header { margin-bottom: 16px; }
+.iasb-page-header h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px; }
+.iasb-season { color: var(--dim); font-size: 0.875rem; }
+
+.iasb-banner {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.iasb-banner-deadline { font-size: 0.875rem; }
+.iasb-banner-stats { font-size: 0.8rem; color: var(--dim); display: flex; align-items: center; gap: 6px; }
+.iasb-stat-sep { color: var(--border); }
+
+.iasb-categories-section { margin-bottom: 20px; }
+.iasb-division-label {
+  font-size: 0.68rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--dim);
+  margin: 20px 0 10px;
+}
+.iasb-division-label:first-child { margin-top: 0; }
+
+.iasb-cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+}
+
+.iasb-cat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid transparent;
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.iasb-cat-card:hover { border-color: #444; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+.iasb-cat-card.at-limit { opacity: 0.65; }
+
+.iasb-cat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.iasb-code { font-size: 1rem; font-weight: 900; }
+.iasb-tag {
+  font-size: 0.62rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.04em;
+  padding: 2px 6px; border-radius: 4px;
+  background: var(--surface2); color: var(--dim);
+}
+.iasb-tag.live-tag { background: rgba(239,68,68,0.12); color: #ef4444; }
+
+.iasb-cat-name { font-weight: 700; font-size: 0.875rem; margin-bottom: 6px; }
+.iasb-cat-meta { display: flex; gap: 8px; font-size: 0.72rem; color: var(--dim); margin-bottom: 6px; }
+.iasb-entry-count { font-size: 0.72rem; color: var(--dim); }
+.iasb-entry-count.full { color: var(--success); font-weight: 600; }
+
+/* ── IASB Category Detail ────────────────────────────── */
+.iasb-cat-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 24px; }
+.iasb-code-lg { font-size: 2.8rem; font-weight: 900; line-height: 1; flex-shrink: 0; }
+.iasb-cat-header-info h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; }
+.iasb-cat-header-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.iasb-division-chip {
+  font-size: 0.7rem; font-weight: 700;
+  padding: 2px 8px; border-radius: 10px;
+  border: 1px solid;
+}
+
+.iasb-specs { margin-bottom: 14px; }
+.iasb-spec-row {
+  display: flex; gap: 16px; align-items: baseline;
+  padding: 7px 0; border-bottom: 1px solid var(--border);
+  font-size: 0.875rem;
+}
+.iasb-spec-row:last-child { border-bottom: none; }
+.spec-label { width: 90px; color: var(--dim); font-weight: 600; flex-shrink: 0; font-size: 0.8rem; }
+
+.iasb-cat-desc { font-size: 0.875rem; color: var(--dim); line-height: 1.6; margin-bottom: 16px; }
+.iasb-criteria-header { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--dim); margin-bottom: 8px; }
+.iasb-criteria-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.iasb-criterion-chip {
+  font-size: 0.75rem; padding: 3px 10px; border-radius: 10px;
+  border: 1px solid; background: rgba(255,255,255,0.02);
+}
+
+.iasb-entry-ratio { font-size: 0.85rem; font-weight: 400; color: var(--dim); margin-left: 6px; }
+
+/* ── IASB Entry Cards ────────────────────────────────── */
+.iasb-entries-list { display: flex; flex-direction: column; gap: 14px; }
+
+.iasb-entry-card {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px;
+}
+.iasb-entry-header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+.iasb-entry-names { font-weight: 700; font-size: 0.875rem; flex: 1; min-width: 100px; }
+.iasb-progress-wrap { display: flex; align-items: center; gap: 6px; }
+.iasb-entry-progress-bar { width: 72px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.iasb-progress-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
+.iasb-entry-progress-text { font-size: 0.7rem; color: var(--dim); white-space: nowrap; }
+.iasb-submitted-badge {
+  font-size: 0.68rem; font-weight: 700; color: var(--success);
+  background: rgba(34,197,94,0.1); padding: 2px 7px; border-radius: 6px;
+}
+.iasb-entry-title { font-size: 0.82rem; color: var(--dim); margin-bottom: 10px; }
+
+.iasb-entry-checklist { display: flex; flex-direction: column; gap: 7px; }
+.iasb-check-item {
+  display: flex; align-items: flex-start; gap: 7px;
+  font-size: 0.8rem; cursor: pointer; line-height: 1.45;
+}
+.iasb-check-item input[type="checkbox"] {
+  width: 15px; height: 15px; flex-shrink: 0; margin-top: 1px;
+  accent-color: var(--success); cursor: pointer;
+}
+.iasb-check-done { text-decoration: line-through; color: var(--dim); }
+.iasb-entry-notes {
+  font-size: 0.78rem; color: var(--dim); font-style: italic;
+  margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border);
+}
+.iasb-teacher-controls {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border);
+}
+
+/* ── IASB Side Checklist ─────────────────────────────── */
+.iasb-base-checklist { display: flex; flex-direction: column; gap: 10px; }
+.iasb-base-check-item { display: flex; align-items: flex-start; gap: 10px; font-size: 0.82rem; line-height: 1.5; }
+.check-num {
+  width: 20px; height: 20px; background: var(--surface2);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 0.68rem; font-weight: 700; color: var(--dim); flex-shrink: 0;
+}
+
+/* ── IASB Form Section ───────────────────────────────── */
+.iasb-form-card { margin-top: 4px; }
+.iasb-form-iframe { width: 100%; height: 680px; border: none; border-radius: 8px; background: var(--surface2); }
+.iasb-form-instructions { text-align: center; padding: 28px 16px; }
+.iasb-form-icon { font-size: 2.5rem; margin-bottom: 14px; }
+.iasb-form-instructions h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+.iasb-form-instructions p { font-size: 0.875rem; color: var(--dim); margin-bottom: 20px; line-height: 1.6; max-width: 480px; margin-left: auto; margin-right: auto; }
+.iasb-form-instructions code { background: var(--surface2); padding: 2px 6px; border-radius: 4px; font-size: 0.78rem; }
+.iasb-form-steps { display: flex; flex-direction: column; gap: 10px; text-align: left; max-width: 480px; margin: 0 auto; }
+.iasb-form-step { display: flex; align-items: flex-start; gap: 12px; font-size: 0.84rem; line-height: 1.5; color: var(--dim); }
+.iasb-form-step > span:first-child {
+  width: 22px; height: 22px; background: var(--radio); color: #000;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.7rem; flex-shrink: 0;
+}
+
+@media (max-width: 800px) {
+  .iasb-cat-grid { grid-template-columns: repeat(2, 1fr); }
+  .iasb-banner { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .iasb-cat-header { gap: 12px; }
+  .iasb-code-lg { font-size: 2rem; }
+}
+
+/* ── IASB read-only student checklist ───────────────────────── */
+.iasb-check-static {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 0.8rem; line-height: 1.45; color: var(--dim);
+  padding: 2px 0;
+}
+.iasb-check-static.done { color: var(--text); }
+.iasb-check-icon {
+  font-size: 0.8rem; font-weight: 700; flex-shrink: 0;
+  width: 16px; text-align: center; margin-top: 1px;
+  color: var(--dim);
+}
+.iasb-check-static.done .iasb-check-icon { color: var(--success); }
+
+/* ── Teacher Dashboard ───────────────────────────────────────── */
+.db-header {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; flex-wrap: wrap;
+  gap: 16px; margin-bottom: 24px;
+}
+.db-header h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; }
+.db-stats { display: flex; gap: 24px; flex-wrap: wrap; }
+.db-stat { display: flex; flex-direction: column; align-items: flex-end; }
+.db-stat-num { font-size: 1.5rem; font-weight: 900; line-height: 1; }
+.db-stat span:last-child { font-size: 0.72rem; color: var(--dim); text-transform: uppercase; letter-spacing: 0.06em; }
+
+.db-section { margin-bottom: 20px; }
+
+/* ── Dashboard IASB list ─────────────────────────────────────── */
+.db-iasb-list { display: flex; flex-direction: column; gap: 2px; }
+
+.db-cat-row.empty {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: 6px;
+  opacity: 0.45;
+}
+.db-cat-code { font-size: 0.85rem; font-weight: 900; width: 28px; flex-shrink: 0; }
+.db-cat-name { font-size: 0.82rem; }
+
+.db-cat-block { margin-bottom: 4px; }
+.db-cat-label {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px 4px;
+  font-size: 0.82rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+.db-cat-count { margin-left: auto; font-size: 0.75rem; color: var(--dim); }
+
+.db-entry-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; padding: 10px 10px;
+  border-radius: 8px; transition: background 0.1s;
+  flex-wrap: wrap;
+}
+.db-entry-row:hover { background: var(--surface2); }
+.db-entry-main { flex: 1; min-width: 160px; }
+.db-entry-student { font-weight: 600; font-size: 0.875rem; }
+.db-entry-title   { font-size: 0.8rem; color: var(--dim); margin-top: 1px; }
+.db-entry-notes   { font-size: 0.75rem; color: var(--dim); font-style: italic; margin-top: 2px; }
+
+.db-entry-meta {
+  display: flex; align-items: center; gap: 8px;
+  flex-shrink: 0; flex-wrap: wrap;
+}
+.db-progress-wrap { display: flex; align-items: center; gap: 6px; }
+.db-progress-bar  { width: 60px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.db-progress-fill { height: 100%; border-radius: 2px; }
+.db-progress-text { font-size: 0.7rem; color: var(--dim); white-space: nowrap; }
+.db-submitted-badge {
+  font-size: 0.68rem; font-weight: 700; color: var(--success);
+  background: rgba(34,197,94,0.1); padding: 2px 7px; border-radius: 6px;
+  white-space: nowrap;
+}
+.db-btn { padding: 4px 10px !important; }
+
+/* ── Dashboard Talk Show plans ───────────────────────────────── */
+.db-plans-list { display: flex; flex-direction: column; gap: 2px; }
+.db-plan-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; padding: 10px; border-radius: 8px; transition: background 0.1s;
+  flex-wrap: wrap;
+}
+.db-plan-row:hover { background: var(--surface2); }
+.db-plan-main { flex: 1; min-width: 160px; }
+
+@media (max-width: 800px) {
+  .db-header { flex-direction: column; }
+  .db-stats { gap: 16px; }
+  .db-stat { align-items: flex-start; }
+  .db-entry-row, .db-plan-row { flex-direction: column; align-items: flex-start; }
+  .db-entry-meta { width: 100%; justify-content: flex-start; }
+}

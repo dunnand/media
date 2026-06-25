@@ -31,6 +31,8 @@ const S = {
   plannerStep: 0,
   plannerData: null,
   submissions: [],
+  iasbEntries: [],
+  iasbCategory: null,
 };
 
 // ── Router ────────────────────────────────────────────────────
@@ -39,6 +41,7 @@ function go(view, extra) {
   if (extra) Object.assign(S, extra);
   render();
   window.scrollTo(0, 0);
+  if (view === 'dashboard') dashboardLoadPlans();
 }
 
 // ── Render ────────────────────────────────────────────────────
@@ -51,8 +54,11 @@ function render() {
     case 'planner':   app.innerHTML = renderPlanner();   break;
     case 'live':      app.innerHTML = renderLive();      break;
     case 'broadcast': app.innerHTML = renderBroadcast(); break;
-    case 'yearbook':  app.innerHTML = renderYearbook();  break;
-    default:          app.innerHTML = renderHome();
+    case 'yearbook':      app.innerHTML = renderYearbook();      break;
+    case 'iasb':          app.innerHTML = renderIASB();          break;
+    case 'iasb-category': app.innerHTML = renderIASBCategory();  break;
+    case 'dashboard':     app.innerHTML = renderDashboard();     break;
+    default:              app.innerHTML = renderHome();
   }
   attachListeners();
 }
@@ -65,7 +71,8 @@ function navBar(active) {
       <div class="nav-links">
         <a class="${active === 'radio'    ? 'active' : ''}" data-nav="radio">📻 Radio</a>
         <a class="${active === 'live'     ? 'active' : ''}" data-nav="live">🎬 Live</a>
-        <a class="${active === 'yearbook' ? 'active' : ''}" data-nav="yearbook">📖 Yearbook</a>
+        <a class="${active === 'yearbook'   ? 'active' : ''}" data-nav="yearbook">📖 Yearbook</a>
+        ${S.teacherMode ? `<a class="${active === 'dashboard' ? 'active' : ''}" data-nav="dashboard" style="color:var(--radio)">📊 Dashboard</a>` : ''}
         <button class="teacher-btn ${S.teacherMode ? 'active' : ''}" id="teacher-toggle">
           ${S.teacherMode ? '🔓 Teacher' : '🔑'}
         </button>
@@ -164,6 +171,12 @@ function renderRadio() {
             <h3>Talk Show Planner</h3>
             <p>Plan your show's theme and on-air breaks — step by step.</p>
             <button class="btn-primary" id="start-planner">Start Planning →</button>
+          </section>
+          <section class="card action-card radio-action">
+            <div class="action-icon">🏆</div>
+            <h3>IASB Competition</h3>
+            <p>Track entries, checklists, and file uploads for IASB.</p>
+            <button class="btn-primary" id="open-iasb">Open IASB Hub →</button>
           </section>
           ${S.teacherMode ? `
           <section class="card action-card">
@@ -841,7 +854,18 @@ function attachListeners() {
     el.addEventListener('click', () => go('broadcast', { broadcastId: el.dataset.broadcast })));
 
   const tt = document.getElementById('teacher-toggle');
-  if (tt) tt.addEventListener('click', () => { S.teacherMode = !S.teacherMode; render(); });
+  if (tt) tt.addEventListener('click', () => {
+    if (S.teacherMode) {
+      S.teacherMode = false;
+      if (S.view === 'dashboard') go('home');
+      else render();
+    } else {
+      const pin = prompt('Enter teacher PIN:');
+      if (pin === null) return;
+      if (pin === TEACHER_PIN) { S.teacherMode = true; render(); }
+      else showToast('Incorrect PIN.');
+    }
+  });
 
   const sp = document.getElementById('start-planner');
   if (sp) sp.addEventListener('click', () => { S.plannerData = S.plannerData || {}; S.plannerStep = 0; go('planner'); });
@@ -878,6 +902,52 @@ function attachListeners() {
 
   document.querySelectorAll('.check-item').forEach(cb =>
     cb.addEventListener('change', saveChecklist));
+
+  const oi = document.getElementById('open-iasb');
+  if (oi) oi.addEventListener('click', () => go('iasb'));
+
+  document.querySelectorAll('[data-iasb-cat]').forEach(el =>
+    el.addEventListener('click', () => {
+      S.iasbCategory = el.dataset.iasbCat;
+      go('iasb-category');
+    }));
+
+  const ri = document.getElementById('register-iasb-entry');
+  if (ri && !ri.disabled) ri.addEventListener('click', () => {
+    const cat = IASB_CATEGORIES.find(c => c.code === S.iasbCategory);
+    if (cat) showRegisterIASBModal(cat);
+  });
+
+  document.querySelectorAll('.iasb-entry-check').forEach(cb =>
+    cb.addEventListener('change', () =>
+      updateIASBCheckItem(cb.dataset.entryId, parseInt(cb.dataset.idx), cb.checked)));
+
+  document.querySelectorAll('.iasb-mark-submitted').forEach(btn =>
+    btn.addEventListener('click', () => markIASBSubmitted(btn.dataset.entryId, true)));
+
+  document.querySelectorAll('.iasb-unmark-submitted').forEach(btn =>
+    btn.addEventListener('click', () => markIASBSubmitted(btn.dataset.entryId, false)));
+
+  document.querySelectorAll('.iasb-delete-entry').forEach(btn =>
+    btn.addEventListener('click', () => {
+      if (confirm('Delete this entry? This cannot be undone.')) deleteIASBEntry(btn.dataset.entryId);
+    }));
+
+  const dbRefresh = document.getElementById('db-refresh-plans');
+  if (dbRefresh) dbRefresh.addEventListener('click', dashboardLoadPlans);
+
+  document.querySelectorAll('.db-view-btn').forEach(btn =>
+    btn.addEventListener('click', () => {
+      S.iasbCategory = btn.dataset.iasbCat;
+      go('iasb-category');
+    }));
+
+  document.querySelectorAll('.db-plan-detail').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const sub = (S.submissions || []).find(s => s.id === btn.dataset.subId);
+      if (sub) showSubmissionDetail(sub, null);
+    });
+  });
 }
 
 // ── Firebase Load ─────────────────────────────────────────────
@@ -885,14 +955,18 @@ async function loadFromFirebase() {
   const db = getDB();
   if (!db) return;
   try {
-    const [schedSnap, bcastSnap] = await Promise.all([
+    const [schedSnap, bcastSnap, iasbSnap] = await Promise.all([
       db.collection('hm_radio').doc('schedule').get(),
-      db.collection('hm_broadcasts').get()
+      db.collection('hm_broadcasts').get(),
+      db.collection('hm_iasb_entries').get()
     ]);
     if (schedSnap.exists) S.schedule = schedSnap.data() || { shows: [] };
     const broadcasts = [];
     bcastSnap.forEach(doc => broadcasts.push({ id: doc.id, ...doc.data() }));
     S.broadcasts = broadcasts;
+    const iasbEntries = [];
+    iasbSnap.forEach(doc => iasbEntries.push({ id: doc.id, ...doc.data() }));
+    S.iasbEntries = iasbEntries;
   } catch(e) {}
 }
 
@@ -903,3 +977,422 @@ async function init() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
+// ── IASB Hub ──────────────────────────────────────────────────
+function renderIASB() {
+  const entries = S.iasbEntries || [];
+  const submitted = entries.filter(e => e.submittedToPortal).length;
+  const days = iasbDeadlineDays();
+
+  const divisions = ['Radio', 'News', 'Emerging Media'];
+  const byDivision = {};
+  IASB_CATEGORIES.forEach(cat => {
+    if (!byDivision[cat.division]) byDivision[cat.division] = [];
+    byDivision[cat.division].push(cat);
+  });
+
+  const catGrids = divisions.filter(d => byDivision[d]).map(div => {
+    const cats = byDivision[div];
+    return `
+      <div class="iasb-division-label">${div} Division</div>
+      <div class="iasb-cat-grid">
+        ${cats.map(cat => {
+          const catCount = entries.filter(e => e.code === cat.code).length;
+          const full = catCount >= cat.perSchool;
+          return `
+            <div class="iasb-cat-card${full ? ' at-limit' : ''}" data-iasb-cat="${cat.code}" style="border-top-color:${cat.color}">
+              <div class="iasb-cat-top">
+                <span class="iasb-code" style="color:${cat.color}">${cat.code}</span>
+                ${cat.tag ? `<span class="iasb-tag${cat.tag === 'LIVE Finals' ? ' live-tag' : ''}">${cat.tag}</span>` : ''}
+              </div>
+              <div class="iasb-cat-name">${cat.name}</div>
+              <div class="iasb-cat-meta"><span>${cat.length}</span><span>${cat.fileFormat}</span></div>
+              <div class="iasb-entry-count${full ? ' full' : ''}">${catCount} / ${cat.perSchool} ${catCount === 1 ? 'entry' : 'entries'}</div>
+            </div>`;
+        }).join('')}
+      </div>`;
+  }).join('');
+
+  const formSection = IASB_FORM_URL
+    ? `<iframe src="${IASB_FORM_URL}" class="iasb-form-iframe" frameborder="0"></iframe>`
+    : `
+      <div class="iasb-form-instructions">
+        <div class="iasb-form-icon">📎</div>
+        <h3>Set Up File Submission</h3>
+        <p>Create a Google Form so students can upload audio files directly to your Drive, then paste the embed URL into <code>IASB_FORM_URL</code> in <code>data.js</code>.</p>
+        <div class="iasb-form-steps">
+          <div class="iasb-form-step"><span>1</span><span>Go to forms.google.com and create a new form titled "IASB Competition File Submission"</span></div>
+          <div class="iasb-form-step"><span>2</span><span>Add fields: Student Name(s), IASB Category (dropdown), Entry Title, File Upload (.mp3/.pdf), Cover Art for Podcasts (.jpg, not required), Notes</span></div>
+          <div class="iasb-form-step"><span>3</span><span>Click Send → Embed tab → copy the URL from inside <code>src="…"</code></span></div>
+          <div class="iasb-form-step"><span>4</span><span>Paste it as the value of <code>IASB_FORM_URL</code> in <code>data.js</code></span></div>
+        </div>
+      </div>`;
+
+  return `
+    ${navBar('radio')}
+    <div class="class-page">
+      <button class="back-btn" data-nav="radio">← Back to Radio</button>
+      <div class="iasb-page-header">
+        <h1>IASB Competition</h1>
+        <div class="iasb-season">${IASB_SEASON} Season</div>
+      </div>
+
+      <div class="iasb-banner">
+        <div class="iasb-banner-deadline">
+          📅 Submissions due <strong>${fmtDate(IASB_DEADLINE, false)}</strong>
+          ${days > 0 ? `— <strong>${days} days away</strong>` : days === 0 ? '— <strong>TODAY</strong>' : '— <strong>Deadline passed</strong>'}
+        </div>
+        <div class="iasb-banner-stats">
+          <span>${entries.length} ${entries.length === 1 ? 'entry' : 'entries'} registered</span>
+          <span class="iasb-stat-sep">·</span>
+          <span>${submitted} submitted to portal</span>
+        </div>
+      </div>
+
+      <div class="iasb-categories-section">${catGrids}</div>
+
+      <section class="card iasb-form-card">
+        <div class="card-header"><h2>Submit Files to Google Drive</h2></div>
+        ${formSection}
+      </section>
+    </div>`;
+}
+
+function renderIASBCategory() {
+  const cat = IASB_CATEGORIES.find(c => c.code === S.iasbCategory);
+  if (!cat) return `${navBar('radio')}<div class="class-page"><button class="back-btn" data-nav="iasb">← Back</button><p>Category not found.</p></div>`;
+
+  const entries = (S.iasbEntries || []).filter(e => e.code === cat.code);
+  const atLimit = entries.length >= cat.perSchool;
+
+  const entryCards = entries.length
+    ? entries.map(entry => renderIASBEntryCard(cat, entry)).join('')
+    : `<p class="dim" style="text-align:center;padding:24px 0">No entries registered yet for this category.</p>`;
+
+  const formBtn = IASB_FORM_URL
+    ? `<a href="${IASB_FORM_URL}" target="_blank" class="btn-primary" style="display:block;text-align:center;background:${cat.color};color:#000;text-decoration:none;padding:10px 16px;border-radius:8px;font-weight:600;font-size:0.875rem">Open Submission Form →</a>`
+    : `<p class="dim" style="font-size:0.8rem;line-height:1.5">Google Form not set up yet. See the IASB Hub for setup instructions.</p>`;
+
+  return `
+    ${navBar('radio')}
+    <div class="class-page">
+      <button class="back-btn" data-nav="iasb">← Back to IASB Hub</button>
+
+      <div class="iasb-cat-header">
+        <span class="iasb-code-lg" style="color:${cat.color}">${cat.code}</span>
+        <div class="iasb-cat-header-info">
+          <h1>${cat.name}</h1>
+          <div class="iasb-cat-header-tags">
+            <span class="iasb-division-chip" style="color:${cat.color};border-color:${cat.color}40">${cat.division}</span>
+            ${cat.tag ? `<span class="iasb-tag${cat.tag === 'LIVE Finals' ? ' live-tag' : ''}">${cat.tag}</span>` : ''}
+            ${cat.solo ? '<span class="iasb-tag">Solo entry</span>' : ''}
+            <span class="iasb-tag">${cat.perSchool} per school</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="page-grid">
+        <div class="main-col">
+          <section class="card">
+            <h2 style="margin-bottom:16px">Requirements</h2>
+            <div class="iasb-specs">
+              <div class="iasb-spec-row"><span class="spec-label">Format</span><span>${cat.format}</span></div>
+              <div class="iasb-spec-row"><span class="spec-label">Length</span><span>${cat.length}</span></div>
+              <div class="iasb-spec-row"><span class="spec-label">File</span><span>${cat.fileFormat}</span></div>
+            </div>
+            <p class="iasb-cat-desc">${cat.description}</p>
+            <div class="iasb-criteria-header">Judged On</div>
+            <div class="iasb-criteria-chips">
+              ${cat.criteria.map(c => `<span class="iasb-criterion-chip" style="border-color:${cat.color}30;color:${cat.color}">${c}</span>`).join('')}
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-header">
+              <h2>Registered Entries <span class="iasb-entry-ratio">${entries.length} / ${cat.perSchool}</span></h2>
+              <button class="btn-primary" id="register-iasb-entry"
+                ${atLimit ? 'disabled' : ''}
+                style="background:${atLimit ? 'var(--surface2)' : cat.color};color:${atLimit ? 'var(--dim)' : '#000'}">
+                ${atLimit ? 'School limit reached' : '+ Register Entry'}
+              </button>
+            </div>
+            <div class="iasb-entries-list">${entryCards}</div>
+          </section>
+        </div>
+
+        <div class="side-col">
+          <section class="card">
+            <h2 style="margin-bottom:4px">Submission Checklist</h2>
+            <p style="font-size:0.78rem;color:var(--dim);margin-bottom:14px">Applies to every entry in this category.</p>
+            <div class="iasb-base-checklist">
+              ${cat.checklist.map((item, i) => `
+                <div class="iasb-base-check-item">
+                  <span class="check-num">${i + 1}</span>
+                  <span>${item}</span>
+                </div>`).join('')}
+            </div>
+          </section>
+          <section class="card">
+            <h2 style="margin-bottom:12px">Submit Files</h2>
+            ${formBtn}
+          </section>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderIASBEntryCard(cat, entry) {
+  const checks = entry.checklist || {};
+  const done = cat.checklist.filter((_, i) => checks[i]).length;
+  const pct  = cat.checklist.length ? Math.round(done / cat.checklist.length * 100) : 0;
+
+  return `
+    <div class="iasb-entry-card" data-entry-id="${esc(entry.id)}">
+      <div class="iasb-entry-header">
+        <div class="iasb-entry-names">${esc(entry.studentName)}${entry.partnerNames ? ` · ${esc(entry.partnerNames)}` : ''}</div>
+        <div class="iasb-progress-wrap">
+          <div class="iasb-entry-progress-bar"><div class="iasb-progress-fill" style="width:${pct}%;background:${cat.color}"></div></div>
+          <span class="iasb-entry-progress-text">${done}/${cat.checklist.length}</span>
+        </div>
+        ${entry.submittedToPortal ? '<span class="iasb-submitted-badge">✓ Submitted</span>' : ''}
+      </div>
+      <div class="iasb-entry-title">${esc(entry.entryTitle || 'Untitled')}</div>
+      <div class="iasb-entry-checklist">
+        ${cat.checklist.map((item, i) => S.teacherMode ? `
+          <label class="iasb-check-item">
+            <input type="checkbox" class="iasb-entry-check"
+              data-entry-id="${esc(entry.id)}" data-idx="${i}"
+              ${checks[i] ? 'checked' : ''}>
+            <span class="${checks[i] ? 'iasb-check-done' : ''}">${item}</span>
+          </label>` : `
+          <div class="iasb-check-static ${checks[i] ? 'done' : ''}">
+            <span class="iasb-check-icon">${checks[i] ? '✓' : '○'}</span>
+            <span>${item}</span>
+          </div>`).join('')}
+      </div>
+      ${entry.notes ? `<div class="iasb-entry-notes">${esc(entry.notes)}</div>` : ''}
+      ${S.teacherMode ? `
+        <div class="iasb-teacher-controls">
+          ${!entry.submittedToPortal
+            ? `<button class="btn-primary iasb-mark-submitted" data-entry-id="${esc(entry.id)}" style="background:var(--success);color:#000;font-size:0.8rem">✓ Mark Submitted to IASB</button>`
+            : `<button class="btn-secondary iasb-unmark-submitted" data-entry-id="${esc(entry.id)}" style="font-size:0.8rem">Unmark Submitted</button>`}
+          <button class="btn-danger iasb-delete-entry" data-entry-id="${esc(entry.id)}" style="font-size:0.8rem">Delete</button>
+        </div>` : ''}
+    </div>`;
+}
+
+function iasbDeadlineDays() {
+  const d = new Date(IASB_DEADLINE + 'T00:00:00');
+  const now = new Date(); now.setHours(0, 0, 0, 0);
+  return Math.ceil((d - now) / 86400000);
+}
+
+// ── IASB Firebase ─────────────────────────────────────────────
+async function saveIASBEntry(data) {
+  const db = getDB();
+  const entry = { ...data, createdAt: new Date().toISOString() };
+  if (db) {
+    try {
+      const ref = await db.collection('hm_iasb_entries').add(entry);
+      S.iasbEntries.push({ id: ref.id, ...entry });
+      showToast('Entry registered!');
+    } catch(e) { showToast('Could not save. Try again.'); return; }
+  } else {
+    S.iasbEntries.push({ id: Date.now().toString(), ...entry });
+  }
+  render();
+}
+
+async function updateIASBCheckItem(entryId, idx, checked) {
+  const entry = S.iasbEntries.find(e => e.id === entryId);
+  if (!entry) return;
+  if (!entry.checklist) entry.checklist = {};
+  entry.checklist[idx] = checked;
+  const db = getDB();
+  if (db) {
+    const update = {};
+    update[`checklist.${idx}`] = checked;
+    await db.collection('hm_iasb_entries').doc(entryId).update(update).catch(() => {});
+  }
+  const cat = IASB_CATEGORIES.find(c => c.code === entry.code);
+  if (cat) {
+    const card = document.querySelector(`.iasb-entry-card[data-entry-id="${entryId}"]`);
+    if (card) {
+      const done = cat.checklist.filter((_, i) => (entry.checklist || {})[i]).length;
+      const pct  = cat.checklist.length ? Math.round(done / cat.checklist.length * 100) : 0;
+      const fill = card.querySelector('.iasb-progress-fill');
+      const text = card.querySelector('.iasb-entry-progress-text');
+      if (fill) fill.style.width = pct + '%';
+      if (text) text.textContent = `${done}/${cat.checklist.length}`;
+    }
+  }
+}
+
+async function markIASBSubmitted(entryId, submitted) {
+  const entry = S.iasbEntries.find(e => e.id === entryId);
+  if (!entry) return;
+  entry.submittedToPortal = submitted;
+  const db = getDB();
+  if (db) await db.collection('hm_iasb_entries').doc(entryId).update({ submittedToPortal: submitted }).catch(() => {});
+  showToast(submitted ? 'Marked as submitted!' : 'Submission mark removed.');
+  render();
+}
+
+async function deleteIASBEntry(entryId) {
+  S.iasbEntries = S.iasbEntries.filter(e => e.id !== entryId);
+  const db = getDB();
+  if (db) await db.collection('hm_iasb_entries').doc(entryId).delete().catch(() => {});
+  render();
+}
+
+// ── Teacher Dashboard ─────────────────────────────────────────
+function renderDashboard() {
+  if (!S.teacherMode) return `${navBar('dashboard')}<div class="class-page"><p class="dim">Teacher mode required.</p></div>`;
+
+  const entries  = S.iasbEntries || [];
+  const plans    = S.submissions || [];
+  const submitted = entries.filter(e => e.submittedToPortal).length;
+
+  // IASB section — group by category in IASB_CATEGORIES order
+  const iasbSection = IASB_CATEGORIES.map(cat => {
+    const catEntries = entries.filter(e => e.code === cat.code);
+    if (!catEntries.length) return `
+      <div class="db-cat-row empty">
+        <span class="db-cat-code" style="color:${cat.color}">${cat.code}</span>
+        <span class="db-cat-name dim">${cat.name}</span>
+        <span class="dim" style="font-size:0.78rem">No entries</span>
+      </div>`;
+
+    return `
+      <div class="db-cat-block">
+        <div class="db-cat-label">
+          <span class="db-cat-code" style="color:${cat.color}">${cat.code}</span>
+          <span class="db-cat-name">${cat.name}</span>
+          <span class="db-cat-count">${catEntries.length} / ${cat.perSchool}</span>
+        </div>
+        ${catEntries.map(entry => {
+          const checks = entry.checklist || {};
+          const done   = cat.checklist.filter((_, i) => checks[i]).length;
+          const pct    = cat.checklist.length ? Math.round(done / cat.checklist.length * 100) : 0;
+          return `
+            <div class="db-entry-row">
+              <div class="db-entry-main">
+                <div class="db-entry-student">${esc(entry.studentName)}${entry.partnerNames ? ` · ${esc(entry.partnerNames)}` : ''}</div>
+                <div class="db-entry-title">${esc(entry.entryTitle || 'Untitled')}</div>
+                ${entry.notes ? `<div class="db-entry-notes">${esc(entry.notes)}</div>` : ''}
+              </div>
+              <div class="db-entry-meta">
+                <div class="db-progress-wrap">
+                  <div class="db-progress-bar"><div class="db-progress-fill" style="width:${pct}%;background:${cat.color}"></div></div>
+                  <span class="db-progress-text">${done}/${cat.checklist.length}</span>
+                </div>
+                ${entry.submittedToPortal
+                  ? `<span class="db-submitted-badge">✓ Submitted</span>
+                     <button class="btn-secondary db-btn iasb-unmark-submitted" data-entry-id="${esc(entry.id)}" style="font-size:0.75rem">Unmark</button>`
+                  : `<button class="btn-primary db-btn iasb-mark-submitted" data-entry-id="${esc(entry.id)}" style="background:var(--success);color:#000;font-size:0.75rem">Mark Submitted</button>`}
+                <button class="btn-danger db-btn iasb-delete-entry" data-entry-id="${esc(entry.id)}" style="font-size:0.75rem">Delete</button>
+                <button class="btn-secondary db-btn db-view-btn" data-iasb-cat="${cat.code}" style="font-size:0.75rem">View →</button>
+              </div>
+            </div>`;
+        }).join('')}
+      </div>`;
+  }).join('');
+
+  // Talk Show plans section
+  const plansSection = plans.length
+    ? plans.map(s => `
+        <div class="db-plan-row">
+          <div class="db-plan-main">
+            <div class="db-entry-student">${esc(s.studentName || 'Unknown')}</div>
+            <div class="db-entry-title">${esc(s.showName || 'Untitled Show')}</div>
+            <div class="db-entry-notes">Partners: ${esc(s.partners || '—')} · Theme: ${esc((s.theme || {}).title || '—')}</div>
+          </div>
+          <div class="db-entry-meta">
+            <span class="dim" style="font-size:0.75rem">${s.submittedAt ? new Date(s.submittedAt).toLocaleDateString() : ''}</span>
+            <button class="btn-secondary db-btn db-plan-detail" data-sub-id="${esc(s.id)}" style="font-size:0.75rem">View Plan →</button>
+          </div>
+        </div>`).join('')
+    : `<p class="dim" style="padding:16px 0;font-size:0.875rem">No plans submitted yet.</p>`;
+
+  return `
+    ${navBar('dashboard')}
+    <div class="class-page">
+      <div class="db-header">
+        <h1>Teacher Dashboard</h1>
+        <div class="db-stats">
+          <div class="db-stat"><span class="db-stat-num">${entries.length}</span><span>IASB entries</span></div>
+          <div class="db-stat"><span class="db-stat-num" style="color:var(--success)">${submitted}</span><span>submitted to portal</span></div>
+          <div class="db-stat"><span class="db-stat-num" style="color:var(--radio)">${plans.length}</span><span>talk show plans</span></div>
+        </div>
+      </div>
+
+      <section class="card db-section">
+        <div class="card-header">
+          <h2>IASB Competition Entries</h2>
+          <button class="btn-secondary" data-nav="iasb" style="font-size:0.8rem">Open IASB Hub</button>
+        </div>
+        <div class="db-iasb-list">${iasbSection}</div>
+      </section>
+
+      <section class="card db-section">
+        <div class="card-header">
+          <h2>Talk Show Plans</h2>
+          <button class="btn-secondary" id="db-refresh-plans" style="font-size:0.8rem">Refresh</button>
+        </div>
+        <div class="db-plans-list" id="db-plans-list">${plansSection}</div>
+      </section>
+    </div>`;
+}
+
+async function dashboardLoadPlans() {
+  const db = getDB();
+  if (!db) return;
+  try {
+    const snap = await db.collection('hm_radio_plans').get();
+    const subs = [];
+    snap.forEach(doc => subs.push({ id: doc.id, ...doc.data() }));
+    S.submissions = subs;
+    render();
+  } catch(e) { showToast('Could not load plans.'); }
+}
+
+// ── IASB Register Modal ───────────────────────────────────────
+function showRegisterIASBModal(cat) {
+  const m = modal(`
+    <h2>Register Entry — ${cat.code} ${cat.name}</h2>
+    <div class="form-group">
+      <label>Your Name <span style="color:var(--danger)">*</span></label>
+      <input id="iasb-student-name" type="text" placeholder="First and last name">
+    </div>
+    ${!cat.solo ? `
+    <div class="form-group">
+      <label>Partner Name(s) <span class="hint">(optional — comma separated)</span></label>
+      <input id="iasb-partner-names" type="text" placeholder="Other DJs or collaborators">
+    </div>` : ''}
+    <div class="form-group">
+      <label>Entry Title <span style="color:var(--danger)">*</span></label>
+      <input id="iasb-entry-title" type="text" placeholder="What is this entry called?">
+    </div>
+    <div class="form-group">
+      <label>Notes <span class="hint">(optional)</span></label>
+      <textarea id="iasb-entry-notes" rows="2" placeholder="Anything to note about this entry"></textarea>
+    </div>`);
+
+  m.querySelector('#modal-save').addEventListener('click', () => {
+    const name  = val('iasb-student-name');
+    const title = val('iasb-entry-title');
+    if (!name || !title) { showToast('Please enter your name and an entry title.'); return; }
+    const data = {
+      code: cat.code,
+      season: IASB_SEASON,
+      studentName: name,
+      partnerNames: val('iasb-partner-names'),
+      entryTitle: title,
+      notes: val('iasb-entry-notes'),
+      checklist: {},
+      submittedToPortal: false,
+    };
+    m.remove();
+    saveIASBEntry(data);
+  });
+}
