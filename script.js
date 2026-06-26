@@ -198,7 +198,7 @@ function renderRadio() {
 function renderPlanner() {
   const p = S.plannerData || {};
   const step = S.plannerStep;
-  const stepLabels = ['Your Info', 'Theme', 'Break 1', 'Break 2', 'Break 3', 'Review'];
+  const stepLabels = ['Your Info', 'This Week', 'Break 1', 'Break 2', 'Break 3', 'Review'];
   const total = stepLabels.length;
 
   const progress = `
@@ -232,15 +232,15 @@ function renderPlanner() {
       break;
     case 1:
       content = `
-        <h2>Part 1 — Your Theme</h2>
-        <p>Every great talk show has a clear theme that ties everything together.</p>
+        <h2>Part 1 — This Week's Episode Theme</h2>
+        <p>What is this specific episode about? Pick a theme that's timely, interesting, and gives your breaks a direction.</p>
         <div class="form-group">
-          <label>Theme Title / Name</label>
-          <input id="p-theme-title" type="text" value="${esc((p.theme || {}).title || '')}" placeholder="e.g. This or That, School Spotlight, Pop Culture Weekly">
+          <label>Episode Theme</label>
+          <input id="p-theme-title" type="text" value="${esc((p.theme || {}).title || '')}" placeholder="e.g. Valentine's Day, Spring Break Plans, March Madness, Senior Week">
         </div>
         <div class="form-group">
-          <label>Theme Description <span class="hint">(2–3 sentences)</span></label>
-          <textarea id="p-theme-desc" rows="4" placeholder="Describe what your show is about and why your theme fits your audience.">${esc((p.theme || {}).description || '')}</textarea>
+          <label>Why this theme? <span class="hint">(2–3 sentences)</span></label>
+          <textarea id="p-theme-desc" rows="4" placeholder="Why did you pick this theme for this week? What's happening right now that makes it relevant to your audience?">${esc((p.theme || {}).description || '')}</textarea>
         </div>`;
       break;
     case 2: {
@@ -332,7 +332,7 @@ function renderPlanner() {
             <div class="review-value">${esc([p.studentName, p.partners].filter(Boolean).join(', ') || '—')}</div>
           </div>
           <div class="review-section">
-            <div class="review-label">Theme</div>
+            <div class="review-label">Episode Theme</div>
             <div class="review-value"><strong>${esc((p.theme || {}).title || '—')}</strong><br>${esc((p.theme || {}).description || '')}</div>
           </div>
           <div class="review-section">
@@ -617,10 +617,70 @@ async function submitPlan() {
     catch(e) {}
   }
   localStorage.setItem('hm_plan_' + p.studentName, JSON.stringify(submission));
-  showToast('Plan submitted! ✓');
-  S.plannerData = null;
-  S.plannerStep = 0;
-  go('radio');
+
+  const mailtoLink = buildPlanMailto(p);
+  const m = modal(`
+    <div style="text-align:center;padding:8px 0 4px">
+      <div style="font-size:2.5rem;margin-bottom:12px">✓</div>
+      <h2 style="margin-bottom:8px">Plan Submitted!</h2>
+      <p style="color:var(--dim);font-size:0.875rem;line-height:1.6;margin-bottom:24px">
+        Your talk show plan for <strong>${esc(p.showName || 'your show')}</strong> has been turned in.
+        Send yourself a copy so you have it ready on show day.
+      </p>
+      <a href="${mailtoLink}"
+         style="display:inline-block;text-decoration:none;padding:10px 20px;background:var(--radio);color:#000;border-radius:8px;font-weight:600;font-size:0.875rem">
+        📧 Email yourself a copy
+      </a>
+    </div>`, null, false);
+
+  const doneBtn = m.querySelector('#modal-cancel');
+  doneBtn.textContent = 'Done';
+  doneBtn.addEventListener('click', () => {
+    m.remove();
+    S.plannerData = null;
+    S.plannerStep = 0;
+    go('radio');
+  });
+}
+
+function buildPlanMailto(p) {
+  const b1   = ((p.breaks || [])[0]) || {};
+  const b2   = ((p.breaks || [])[1]) || {};
+  const b3   = ((p.breaks || [])[2]) || {};
+  const date = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
+  const subject = `Talk Show Plan — ${p.showName || 'My Show'} — ${date}`;
+
+  const lines = [
+    'TALK SHOW PLAN',
+    '==============',
+    `Student:  ${p.studentName || ''}`,
+    `Show:     ${p.showName || ''}`,
+    p.partners ? `Partners: ${p.partners}` : null,
+    `Date:     ${date}`,
+    '',
+    `EPISODE THEME: ${(p.theme || {}).title || ''}`,
+    (p.theme || {}).description || '',
+    '',
+    `-- BREAK 1: ${b1.title || 'News / Relevant Tie-In'} --`,
+    `News/Update:  ${b1.newsUpdate || ''}`,
+    `Connection:   ${b1.connection || ''}`,
+    `Transition:   ${b1.transition || ''}`,
+    '',
+    `-- BREAK 2: ${b2.title || 'Fun Activity / Preview'} --`,
+    `Activity:     ${b2.activityHook || ''}`,
+    `Connection:   ${b2.connection || ''}`,
+    `Tease:        ${b2.tease || ''}`,
+    '',
+    `-- BREAK 3: ${b3.title || 'Main Topic'} --`,
+    `Point 1:  ${(b3.talkingPoints || [])[0] || ''}`,
+    `Point 2:  ${(b3.talkingPoints || [])[1] || ''}`,
+    `Point 3:  ${(b3.talkingPoints || [])[2] || ''}`,
+    `Format:   ${b3.format || ''}`,
+    `Wrap-up:  ${b3.wrapUp || ''}`,
+  ].filter(l => l !== null).join('\n');
+
+  return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines)}`;
 }
 
 // ── Teacher: Schedule ─────────────────────────────────────────
