@@ -22,11 +22,16 @@ function getDB() {
 }
 
 // ── State ─────────────────────────────────────────────────────
+function emptyStationSchedule() {
+  const blank = () => DAYS.map(() => ({ show: '', djs: [] }));
+  return { point: blank(), two: blank() };
+}
+
 const S = {
   view: 'home',
   broadcastId: null,
   teacherMode: false,
-  schedule: { weekOf: '', shows: [] },
+  stationSchedule: emptyStationSchedule(),
   broadcasts: [],
   plannerStep: 0,
   plannerData: null,
@@ -112,29 +117,37 @@ function renderHome() {
 }
 
 // ── RADIO ─────────────────────────────────────────────────────
-function renderRadio() {
-  const shows = S.schedule.shows || [];
-  const weekOf = S.schedule.weekOf || '';
-
-  const slotRows = [];
-  for (let i = 0; i < RADIO_SLOTS; i++) {
-    const show = shows[i] || null;
-    slotRows.push(show ? `
-      <div class="show-slot filled">
-        <div class="slot-num">${i + 1}</div>
-        <div class="show-info">
-          <div class="show-title">${esc(show.title || 'Untitled Show')}</div>
-          <div class="show-djs">${esc((show.djs || []).join(', ') || 'TBD')}</div>
+function renderStationCard(station) {
+  const slots = (S.stationSchedule[station.id] || []);
+  const rows = DAYS.map((day, i) => {
+    const slot = slots[i] || { show: '', djs: [] };
+    const hasShow = slot.show && slot.show.trim();
+    const djList = (slot.djs || []).join(', ');
+    return `
+      <div class="sched-row ${hasShow ? 'filled' : 'empty'}">
+        <div class="sched-day">${day.slice(0,3)}</div>
+        <div class="sched-info">
+          <div class="sched-show">${hasShow ? esc(slot.show) : '<span class="dim">TBD</span>'}</div>
+          ${djList ? `<div class="sched-djs">${esc(djList)}</div>` : ''}
         </div>
-        ${show.airTime ? `<div class="show-time">${esc(show.airTime)}</div>` : ''}
-        ${S.teacherMode ? `<button class="slot-edit-btn" data-slot="${i}">Edit</button>` : ''}
-      </div>` : `
-      <div class="show-slot empty">
-        <div class="slot-num">${i + 1}</div>
-        <div class="show-info"><div class="show-title dim">Open Slot</div></div>
-        ${S.teacherMode ? `<button class="slot-edit-btn" data-slot="${i}">+ Add Show</button>` : ''}
-      </div>`);
-  }
+        ${S.teacherMode ? `<button class="slot-edit-btn btn-sm" data-station="${station.id}" data-day="${i}">Edit</button>` : ''}
+      </div>`;
+  }).join('');
+
+  return `
+    <section class="card station-card">
+      <div class="station-card-header" style="border-bottom:2px solid ${station.color}">
+        <div>
+          <div class="station-name" style="color:${station.color}">${station.name}</div>
+          <div class="station-freq">${station.freq}</div>
+        </div>
+      </div>
+      <div class="sched-list">${rows}</div>
+    </section>`;
+}
+
+function renderRadio() {
+  const stationCards = STATIONS.map(renderStationCard).join('');
 
   const resources = RADIO_RESOURCES.map(r => `
     <div class="resource-card">
@@ -154,16 +167,7 @@ function renderRadio() {
       </div>
       <div class="page-grid">
         <div class="main-col">
-          <section class="card">
-            <div class="card-header">
-              <h2>This Week's Shows</h2>
-              <div style="display:flex;gap:8px;align-items:center">
-                ${weekOf ? `<span class="week-label">Week of ${weekOf}</span>` : ''}
-                ${S.teacherMode ? `<button class="btn-primary" id="set-week-btn">Set Week</button>` : ''}
-              </div>
-            </div>
-            <div class="schedule-list">${slotRows.join('')}</div>
-          </section>
+          <div class="station-grid">${stationCards}</div>
         </div>
         <div class="side-col">
           <section class="card action-card radio-action">
@@ -683,53 +687,36 @@ function buildPlanMailto(p) {
   return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines)}`;
 }
 
-// ── Teacher: Schedule ─────────────────────────────────────────
-function showSetWeekModal() {
+// ── Teacher: Station Schedule ──────────────────────────────────
+function showEditStationSlot(stationId, dayIdx) {
+  const station = STATIONS.find(s => s.id === stationId);
+  const slot = (S.stationSchedule[stationId] || [])[dayIdx] || { show: '', djs: [] };
+  const dayName = DAYS[dayIdx];
+  const hasContent = slot.show && slot.show.trim();
   const m = modal(`
-    <h2>Set Week</h2>
-    <div class="form-group">
-      <label>Week of</label>
-      <input type="date" id="m-week" value="${S.schedule.weekOf || ''}">
-    </div>`);
-  m.querySelector('#modal-save').addEventListener('click', async () => {
-    S.schedule.weekOf = val('m-week');
-    const db = getDB();
-    if (db) await db.collection('hm_radio').doc('schedule').set(S.schedule).catch(() => {});
-    m.remove(); render();
-  });
-}
-
-function showEditSlotModal(idx) {
-  const show = (S.schedule.shows || [])[idx] || {};
-  const m = modal(`
-    <h2>Show Slot ${idx + 1}</h2>
+    <h2>${station ? station.name + ' — ' : ''}${dayName}</h2>
     <div class="form-group">
       <label>Show Name</label>
-      <input id="m-title" type="text" value="${esc(show.title || '')}" placeholder="e.g. Morning Vibes">
+      <input id="m-show" type="text" value="${esc(slot.show || '')}" placeholder="e.g. Morning Vibes">
     </div>
     <div class="form-group">
-      <label>DJs <span class="hint">(comma separated)</span></label>
-      <input id="m-djs" type="text" value="${esc((show.djs || []).join(', '))}" placeholder="Alex, Jordan">
-    </div>
-    <div class="form-group">
-      <label>Air Time</label>
-      <input id="m-time" type="text" value="${esc(show.airTime || '')}" placeholder="e.g. 8:00 AM">
-    </div>`, show.title ? 'Clear Slot' : null);
-  m.querySelector('#modal-save').addEventListener('click', async () => {
-    if (!S.schedule.shows) S.schedule.shows = [];
-    S.schedule.shows[idx] = { title: val('m-title'), djs: val('m-djs').split(',').map(s => s.trim()).filter(Boolean), airTime: val('m-time') };
+      <label>DJ(s) <span class="hint">(comma separated)</span></label>
+      <input id="m-djs" type="text" value="${esc((slot.djs || []).join(', '))}" placeholder="Alex, Jordan">
+    </div>`, hasContent ? 'Clear' : null);
+
+  const save = async (show, djs) => {
+    if (!S.stationSchedule[stationId]) S.stationSchedule[stationId] = DAYS.map(() => ({ show: '', djs: [] }));
+    S.stationSchedule[stationId][dayIdx] = { show, djs };
     const db = getDB();
-    if (db) await db.collection('hm_radio').doc('schedule').set(S.schedule).catch(() => {});
+    if (db) await db.collection('hm_radio').doc('station_schedule').set(S.stationSchedule).catch(() => {});
     m.remove(); render();
-  });
+  };
+
+  m.querySelector('#modal-save').addEventListener('click', () =>
+    save(val('m-show'), val('m-djs').split(',').map(s => s.trim()).filter(Boolean)));
+
   const clearBtn = m.querySelector('#modal-extra');
-  if (clearBtn) clearBtn.addEventListener('click', async () => {
-    if (!S.schedule.shows) S.schedule.shows = [];
-    S.schedule.shows[idx] = null;
-    const db = getDB();
-    if (db) await db.collection('hm_radio').doc('schedule').set(S.schedule).catch(() => {});
-    m.remove(); render();
-  });
+  if (clearBtn) clearBtn.addEventListener('click', () => save('', []));
 }
 
 // ── Teacher: Broadcasts ───────────────────────────────────────
@@ -951,14 +938,11 @@ function attachListeners() {
   const sn = document.getElementById('save-notes');
   if (sn) sn.addEventListener('click', saveBroadcastNotes);
 
-  const sw = document.getElementById('set-week-btn');
-  if (sw) sw.addEventListener('click', showSetWeekModal);
-
   const vs = document.getElementById('view-submissions');
   if (vs) vs.addEventListener('click', showSubmissions);
 
   document.querySelectorAll('.slot-edit-btn').forEach(btn =>
-    btn.addEventListener('click', () => showEditSlotModal(parseInt(btn.dataset.slot))));
+    btn.addEventListener('click', () => showEditStationSlot(btn.dataset.station, parseInt(btn.dataset.day))));
 
   document.querySelectorAll('.check-item').forEach(cb =>
     cb.addEventListener('change', saveChecklist));
@@ -1016,14 +1000,38 @@ async function loadFromFirebase() {
   if (!db) return;
   try {
     const [schedSnap, bcastSnap, iasbSnap] = await Promise.all([
-      db.collection('hm_radio').doc('schedule').get(),
+      db.collection('hm_radio').doc('station_schedule').get(),
       db.collection('hm_broadcasts').get(),
       db.collection('hm_iasb_entries').get()
     ]);
-    if (schedSnap.exists) S.schedule = schedSnap.data() || { shows: [] };
+    if (schedSnap.exists) {
+      const data = schedSnap.data() || {};
+      const blank = () => DAYS.map(() => ({ show: '', djs: [] }));
+      S.stationSchedule = {
+        point: data.point || blank(),
+        two:   data.two   || blank(),
+      };
+    }
     const broadcasts = [];
     bcastSnap.forEach(doc => broadcasts.push({ id: doc.id, ...doc.data() }));
-    S.broadcasts = broadcasts;
+    const ALL_SEED_GAMES = [...BASKETBALL_HOME_GAMES, ...FOOTBALL_HOME_GAMES, ...GIRLS_BASKETBALL_HOME_GAMES, ...SPECIAL_EVENTS];
+    if (broadcasts.length === 0 && ALL_SEED_GAMES.length) {
+      await Promise.all(ALL_SEED_GAMES.map(g =>
+        db.collection('hm_broadcasts').doc(g.id).set(g).catch(() => {})
+      ));
+      S.broadcasts = ALL_SEED_GAMES.map(g => ({ ...g }));
+    } else {
+      const existingIds = new Set(broadcasts.map(b => b.id));
+      const missing = ALL_SEED_GAMES.filter(g => !existingIds.has(g.id));
+      if (missing.length) {
+        await Promise.all(missing.map(g =>
+          db.collection('hm_broadcasts').doc(g.id).set(g).catch(() => {})
+        ));
+        S.broadcasts = [...broadcasts, ...missing];
+      } else {
+        S.broadcasts = broadcasts;
+      }
+    }
     const iasbEntries = [];
     iasbSnap.forEach(doc => iasbEntries.push({ id: doc.id, ...doc.data() }));
     S.iasbEntries = iasbEntries;

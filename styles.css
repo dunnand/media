@@ -226,35 +226,30 @@ body {
   font-family: inherit;
 }
 
-/* ── Radio Schedule ──────────────────────────────────────── */
-.schedule-list { display: flex; flex-direction: column; gap: 8px; }
-.show-slot {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: var(--surface2);
-  border-radius: 8px;
-  border: 1px solid var(--border);
+/* ── Radio Station Schedule ───────────────────────────── */
+.station-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.station-card { padding: 0; overflow: hidden; }
+.station-card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; margin-bottom: 0;
 }
-.show-slot.empty { opacity: 0.5; }
-.slot-num {
-  width: 28px; height: 28px;
-  background: var(--border);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.75rem; font-weight: 700; color: var(--dim);
-  flex-shrink: 0;
+.station-name { font-weight: 800; font-size: 1.1rem; letter-spacing: -0.02em; }
+.station-freq { font-size: 0.78rem; color: var(--dim); margin-top: 2px; }
+.sched-list { display: flex; flex-direction: column; }
+.sched-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px; border-top: 1px solid var(--border);
 }
-.show-slot.filled .slot-num { background: var(--radio); color: #000; }
-.show-info { flex: 1; }
-.show-title  { font-weight: 600; font-size: 0.9rem; }
-.show-djs    { font-size: 0.8rem; color: var(--dim); margin-top: 2px; }
-.show-time   { font-size: 0.8rem; color: var(--dim); }
-.slot-edit-btn {
-  background: var(--surface); border: 1px solid var(--border);
-  color: var(--dim); padding: 4px 10px; border-radius: 6px;
-  font-size: 0.75rem; cursor: pointer; font-family: inherit;
+.sched-row.empty .sched-show { opacity: 0.4; }
+.sched-day {
+  font-size: 0.72rem; font-weight: 700; color: var(--dim);
+  text-transform: uppercase; letter-spacing: 0.05em; min-width: 28px;
+}
+.sched-info { flex: 1; }
+.sched-show { font-weight: 600; font-size: 0.875rem; }
+.sched-djs  { font-size: 0.78rem; color: var(--dim); margin-top: 2px; }
+@media (max-width: 700px) {
+  .station-grid { grid-template-columns: 1fr; }
 }
 
 /* ── Action Cards ────────────────────────────────────────── */
