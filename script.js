@@ -1073,20 +1073,14 @@ function renderIASB() {
       </div>`;
   }).join('');
 
-  const formSection = IASB_FORM_URL
-    ? `<iframe src="${IASB_FORM_URL}" class="iasb-form-iframe" frameborder="0"></iframe>`
-    : `
-      <div class="iasb-form-instructions">
-        <div class="iasb-form-icon">📎</div>
-        <h3>Set Up File Submission</h3>
-        <p>Create a Google Form so students can upload audio files directly to your Drive, then paste the embed URL into <code>IASB_FORM_URL</code> in <code>data.js</code>.</p>
-        <div class="iasb-form-steps">
-          <div class="iasb-form-step"><span>1</span><span>Go to forms.google.com and create a new form titled "IASB Competition File Submission"</span></div>
-          <div class="iasb-form-step"><span>2</span><span>Add fields: Student Name(s), IASB Category (dropdown), Entry Title, File Upload (.mp3/.pdf), Cover Art for Podcasts (.jpg, not required), Notes</span></div>
-          <div class="iasb-form-step"><span>3</span><span>Click Send → Embed tab → copy the URL from inside <code>src="…"</code></span></div>
-          <div class="iasb-form-step"><span>4</span><span>Paste it as the value of <code>IASB_FORM_URL</code> in <code>data.js</code></span></div>
-        </div>
-      </div>`;
+  const dropboxGrid = IASB_CATEGORIES.map(c => {
+    const url = IASB_DRIVE_FOLDERS[c.code] || '#';
+    return `<a href="${url}" target="_blank" class="iasb-dropbox-link" style="border-left:3px solid ${c.color}">
+      <span class="iasb-dropbox-code">${c.code}</span>
+      <span class="iasb-dropbox-name">${c.name}</span>
+      <span class="iasb-dropbox-arrow">→</span>
+    </a>`;
+  }).join('');
 
   return `
     ${navBar('radio')}
@@ -1112,8 +1106,12 @@ function renderIASB() {
       <div class="iasb-categories-section">${catGrids}</div>
 
       <section class="card iasb-form-card">
-        <div class="card-header"><h2>Submit Files to Google Drive</h2></div>
-        ${formSection}
+        <div class="card-header">
+          <h2>Audio Broadcasting Dropbox 2027</h2>
+          <a href="${IASB_DROPBOX_URL}" target="_blank" class="btn-sm" style="background:var(--amber);color:#000">Open in Drive →</a>
+        </div>
+        <p style="margin:0 0 16px;color:var(--dim);font-size:0.875rem">Click your category below to open its upload folder. Name your file: <code>YourName - EntryTitle.mp3</code></p>
+        <div class="iasb-dropbox-grid">${dropboxGrid}</div>
       </section>
     </div>`;
 }
@@ -1129,9 +1127,15 @@ function renderIASBCategory() {
     ? entries.map(entry => renderIASBEntryCard(cat, entry)).join('')
     : `<p class="dim" style="text-align:center;padding:24px 0">No entries registered yet for this category.</p>`;
 
-  const formBtn = IASB_FORM_URL
-    ? `<a href="${IASB_FORM_URL}" target="_blank" class="btn-primary" style="display:block;text-align:center;background:${cat.color};color:#000;text-decoration:none;padding:10px 16px;border-radius:8px;font-weight:600;font-size:0.875rem">Open Submission Form →</a>`
-    : `<p class="dim" style="font-size:0.8rem;line-height:1.5">Google Form not set up yet. See the IASB Hub for setup instructions.</p>`;
+  const catDriveUrl = IASB_DRIVE_FOLDERS[cat.code];
+  const formBtn = catDriveUrl
+    ? `<a href="${catDriveUrl}" target="_blank" style="display:block;text-align:center;background:${cat.color};color:#000;text-decoration:none;padding:10px 16px;border-radius:8px;font-weight:700;font-size:0.875rem;margin-bottom:12px">
+        📂 Open ${cat.code} Drive Folder →
+       </a>
+       <p style="font-size:0.78rem;color:var(--dim);line-height:1.6;margin:0">Name your file:<br>
+         <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:0.75rem">YourName - Title${cat.fileFormat.split('+')[0].trim()}</code>
+       </p>`
+    : `<p class="dim" style="font-size:0.8rem;line-height:1.5">Drive folder not linked.</p>`;
 
   return `
     ${navBar('radio')}
