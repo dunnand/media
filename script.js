@@ -1014,6 +1014,15 @@ async function loadFromFirebase() {
     }
     const broadcasts = [];
     bcastSnap.forEach(doc => broadcasts.push({ id: doc.id, ...doc.data() }));
+    // One-time migration: fix old generic 'basketball' type
+    const toMigrate = broadcasts.filter(b => b.type === 'basketball');
+    if (toMigrate.length) {
+      await Promise.all(toMigrate.map(b => {
+        const newType = b.id.startsWith('gb') ? 'basketball_girls' : 'basketball_boys';
+        b.type = newType;
+        return db.collection('hm_broadcasts').doc(b.id).update({ type: newType }).catch(() => {});
+      }));
+    }
     const ALL_SEED_GAMES = [...BASKETBALL_HOME_GAMES, ...FOOTBALL_HOME_GAMES, ...GIRLS_BASKETBALL_HOME_GAMES, ...SPECIAL_EVENTS];
     if (broadcasts.length === 0 && ALL_SEED_GAMES.length) {
       await Promise.all(ALL_SEED_GAMES.map(g =>
