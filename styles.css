@@ -801,72 +801,81 @@ body {
   .db-entry-meta { width: 100%; justify-content: flex-start; }
 }
 
-/* ── Crew Availability ───────────────────────────────────────── */
-.avail-header {
-  display: flex; align-items: center;
-  justify-content: space-between; margin-bottom: 4px;
-}
-.avail-count-badge {
-  background: var(--live); color: #000;
-  font-size: 0.72rem; font-weight: 800;
-  padding: 2px 8px; border-radius: 10px; min-width: 24px; text-align: center;
-}
+/* ── Broadcast Sign-Up Page ──────────────────────────────────── */
+.avail-page-header { margin-bottom: 20px; }
+.avail-page-header h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 6px; }
+.avail-page-header p  { color: var(--dim); font-size: 0.875rem; line-height: 1.55; max-width: 560px; }
 
-/* Student: sign-up form */
-.avail-signup-row {
-  display: flex; gap: 8px; align-items: center;
-}
+.avail-name-card { margin-bottom: 20px; }
+.avail-name-label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; }
+.avail-name-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .avail-name-input {
-  flex: 1;
   background: var(--surface2); border: 1px solid var(--border);
   border-radius: 8px; color: var(--text);
-  padding: 8px 12px; font-size: 0.875rem; font-family: inherit;
-  outline: none; transition: border-color 0.15s;
+  padding: 9px 14px; font-size: 0.9rem; font-family: inherit;
+  outline: none; transition: border-color 0.15s; flex: 1;
 }
 .avail-name-input:focus { border-color: var(--live); }
+.avail-name-saved { font-size: 0.8rem; font-weight: 700; color: var(--live); }
 
-/* Student: already signed up */
-.avail-signed-up {
-  display: flex; align-items: center; gap: 10px;
-}
-.avail-signed-badge {
-  font-size: 0.85rem; font-weight: 700; color: var(--live);
-}
+.avail-broadcasts { display: flex; flex-direction: column; gap: 14px; }
 
-/* Student: signed-up names list */
-.avail-student-list { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
-.avail-list-label {
-  font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.08em; color: var(--dim); margin-bottom: 8px;
+.avail-bc-card { padding: 20px; }
+.avail-bc-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.avail-bc-type-badge {
+  padding: 2px 8px; border-radius: 10px;
+  font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  color: #000; flex-shrink: 0;
 }
-.avail-student-row {
+.avail-bc-date    { font-size: 0.8rem; color: var(--dim); }
+.avail-bc-signups { font-size: 0.75rem; color: var(--live); font-weight: 600; margin-left: auto; }
+.avail-bc-title   { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+.avail-bc-notes   { font-size: 0.8rem; color: var(--dim); margin-bottom: 12px; }
+
+.avail-roles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 8px; margin-top: 14px; padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.avail-roles-disabled { opacity: 0.4; pointer-events: none; }
+
+.avail-role-label {
   display: flex; align-items: center; gap: 8px;
-  padding: 5px 0; font-size: 0.85rem;
+  padding: 8px 10px; border-radius: 8px;
+  background: var(--surface2); border: 1px solid var(--border);
+  cursor: pointer; font-size: 0.82rem; font-weight: 500;
+  transition: border-color 0.15s, background 0.15s;
 }
-.avail-dot {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: var(--live); flex-shrink: 0;
+.avail-role-label:hover { border-color: var(--live); }
+.avail-role-label input[type="checkbox"] {
+  width: 15px; height: 15px; flex-shrink: 0;
+  accent-color: var(--live); cursor: pointer;
+}
+.avail-role-label:has(input:checked) {
+  background: rgba(6,182,212,0.08);
+  border-color: var(--live);
+  color: var(--text);
 }
 
-/* Teacher: available students list */
-.avail-list { display: flex; flex-direction: column; gap: 6px; }
-.avail-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 10px; background: var(--surface2); border-radius: 8px;
+/* ── Role grid: interested chips (teacher) ───────────────────── */
+.role-col { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.role-interested { display: flex; flex-wrap: wrap; gap: 5px; }
+.role-interest-chip {
+  background: rgba(6,182,212,0.12); border: 1px solid rgba(6,182,212,0.3);
+  color: var(--live); border-radius: 6px;
+  padding: 2px 8px; font-size: 0.72rem; font-weight: 600;
+  cursor: pointer; font-family: inherit;
+  transition: background 0.15s;
 }
-.avail-row-name { flex: 1; font-size: 0.875rem; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.avail-row-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-.avail-role-sel {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 6px; color: var(--text);
-  padding: 4px 8px; font-size: 0.78rem; font-family: inherit;
-  cursor: pointer; outline: none;
+.role-interest-chip:hover {
+  background: rgba(6,182,212,0.25);
 }
-.avail-role-sel:focus { border-color: var(--live); }
-.avail-del-btn {
-  background: none; border: 1px solid var(--border);
-  color: var(--dim); border-radius: 6px;
-  padding: 3px 7px; font-size: 0.75rem; cursor: pointer;
-  transition: all 0.15s; line-height: 1; font-family: inherit;
+
+/* ── Broadcast detail: my sign-up card ───────────────────────── */
+.avail-my-roles { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+.avail-my-role-chip {
+  background: rgba(6,182,212,0.12); border: 1px solid rgba(6,182,212,0.3);
+  color: var(--live); border-radius: 20px;
+  padding: 4px 12px; font-size: 0.78rem; font-weight: 600;
 }
-.avail-del-btn:hover { border-color: var(--danger); color: var(--danger); }
