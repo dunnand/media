@@ -380,16 +380,33 @@ body {
 
 .broadcast-list  { display: flex; flex-direction: column; gap: 2px; }
 .broadcast-item {
-  display: flex; align-items: center; gap: 12px;
+  display: flex; flex-direction: column;
   padding: 12px; border-radius: 8px;
   cursor: pointer; transition: background 0.15s;
 }
 .broadcast-item:hover { background: var(--surface2); }
+.broadcast-item-header { display: flex; align-items: center; gap: 12px; }
 .broadcast-type-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 .broadcast-info  { flex: 1; }
 .broadcast-title { font-weight: 600; font-size: 0.9rem; }
 .broadcast-date  { font-size: 0.8rem; color: var(--dim); }
 .broadcast-tag   { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+
+.broadcast-crew {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 6px 12px; margin-top: 10px; padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.broadcast-crew-role { display: flex; flex-direction: column; gap: 1px; }
+.bcr-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--dim); }
+.bcr-name  { font-size: 0.78rem; font-weight: 600; }
+.bcr-name.empty { color: var(--dim); font-style: italic; font-weight: 400; }
+
+.next-crew-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 12px 16px; margin-top: 24px; padding-top: 20px;
+  border-top: 1px solid var(--border); text-align: left;
+}
 
 .roles-list { display: flex; flex-wrap: wrap; gap: 8px; }
 .role-chip {

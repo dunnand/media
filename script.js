@@ -401,6 +401,12 @@ function renderLive() {
 
   const next = upcoming[0] || null;
 
+  const crewGrid = (roles) => LIVE_ROLES.map(role => `
+    <div class="broadcast-crew-role">
+      <span class="bcr-label">${role}</span>
+      <span class="bcr-name${roles[role] ? '' : ' empty'}">${esc(roles[role] || 'TBD')}</span>
+    </div>`).join('');
+
   const countdownBlock = next ? (() => {
     const et = EVENT_TYPES[next.type] || EVENT_TYPES.other;
     const days = Math.ceil((new Date(next.date + 'T00:00:00') - now) / 86400000);
@@ -414,6 +420,9 @@ function renderLive() {
         <button class="btn-primary" data-broadcast="${next.id}" style="background:var(--live);color:#000">
           View Broadcast Prep →
         </button>
+        <div class="next-crew-grid">
+          ${crewGrid(next.roles || {})}
+        </div>
       </section>`;
   })() : `
     <section class="card" style="text-align:center;padding:32px">
@@ -421,16 +430,21 @@ function renderLive() {
       ${S.teacherMode ? '<button class="btn-primary" id="add-broadcast">+ Add Broadcast</button>' : ''}
     </section>`;
 
-  const broadcastItems = upcoming.map(b => {
+  const broadcastItems = upcoming.slice(0, 5).map(b => {
     const et = EVENT_TYPES[b.type] || EVENT_TYPES.other;
     return `
       <div class="broadcast-item" data-broadcast="${b.id}">
-        <div class="broadcast-type-dot" style="background:${et.color}"></div>
-        <div class="broadcast-info">
-          <div class="broadcast-title">${esc(b.title)}</div>
-          <div class="broadcast-date">${fmtDate(b.date)}</div>
+        <div class="broadcast-item-header">
+          <div class="broadcast-type-dot" style="background:${et.color}"></div>
+          <div class="broadcast-info">
+            <div class="broadcast-title">${esc(b.title)}</div>
+            <div class="broadcast-date">${fmtDate(b.date)}</div>
+          </div>
+          <div class="broadcast-tag" style="color:${et.color}">${et.label}</div>
         </div>
-        <div class="broadcast-tag" style="color:${et.color}">${et.label}</div>
+        <div class="broadcast-crew">
+          ${crewGrid(b.roles || {})}
+        </div>
       </div>`;
   }).join('') || '<p class="dim">None scheduled yet.</p>';
 
@@ -455,7 +469,7 @@ function renderLive() {
           ${countdownBlock}
           <section class="card">
             <div class="card-header">
-              <h2>Upcoming Broadcasts</h2>
+              <h2>Next 5 Broadcasts</h2>
               ${S.teacherMode ? `<button class="btn-primary" id="add-broadcast">+ Add</button>` : ''}
             </div>
             <div class="broadcast-list">${broadcastItems}</div>
