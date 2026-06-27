@@ -38,6 +38,7 @@ const S = {
   submissions: [],
   iasbEntries: [],
   iasbCategory: null,
+  availabilities: [],
 };
 
 // ── Router ────────────────────────────────────────────────────
@@ -493,6 +494,68 @@ function renderLive() {
     </div>`;
 }
 
+// ── AVAILABILITY CARD ─────────────────────────────────────────
+function renderAvailabilityCard(b) {
+  const avails = (S.availabilities || []).filter(a => a.broadcastId === b.id);
+
+  if (S.teacherMode) {
+    const rows = avails.length
+      ? avails.map(a => {
+          const assignedRole = Object.entries(b.roles || {}).find(([, n]) => n === a.studentName)?.[0];
+          return `
+            <div class="avail-row">
+              <span class="avail-row-name">${esc(a.studentName)}</span>
+              <div class="avail-row-right">
+                <select class="avail-role-sel" data-name="${esc(a.studentName)}">
+                  <option value="">Assign…</option>
+                  ${LIVE_ROLES.map(r => `<option value="${r}"${assignedRole === r ? ' selected' : ''}>${r}</option>`).join('')}
+                </select>
+                <button class="avail-del-btn" data-avail-id="${a.id}">✕</button>
+              </div>
+            </div>`;
+        }).join('')
+      : `<p class="dim" style="font-size:0.85rem;padding:4px 0">No students signed up yet.</p>`;
+
+    return `
+      <section class="card">
+        <div class="avail-header">
+          <h2 style="margin:0">Available Students</h2>
+          <span class="avail-count-badge">${avails.length}</span>
+        </div>
+        <p style="font-size:0.8rem;color:var(--dim);margin-bottom:12px">Pick a role to fill that input — then Save Roles.</p>
+        <div class="avail-list">${rows}</div>
+      </section>`;
+  }
+
+  // Student mode
+  const myName = localStorage.getItem('hm_student_name') || '';
+  const myEntry = avails.find(a => a.studentName.toLowerCase() === myName.toLowerCase());
+
+  return `
+    <section class="card">
+      <h2>Crew Availability</h2>
+      <p style="font-size:0.85rem;color:var(--dim);margin-bottom:14px;line-height:1.5">Sign up so your teacher knows you're available for this broadcast.</p>
+      ${!myEntry ? `
+        <div class="avail-signup-row">
+          <input id="avail-name" type="text" class="avail-name-input" placeholder="Your name" value="${esc(myName)}">
+          <button class="btn-primary" id="submit-avail" data-bid="${b.id}" style="background:var(--live);color:#000;white-space:nowrap">I'm Available</button>
+        </div>` : `
+        <div class="avail-signed-up">
+          <span class="avail-signed-badge">✓ You're signed up</span>
+          <button class="avail-own-rm btn-secondary" data-avail-id="${myEntry.id}" style="font-size:0.8rem;padding:4px 10px">Remove</button>
+        </div>`}
+      ${avails.length ? `
+        <div class="avail-student-list">
+          <div class="avail-list-label">Signed up (${avails.length})</div>
+          ${avails.map(a => `
+            <div class="avail-student-row">
+              <span class="avail-dot"></span>
+              <span>${esc(a.studentName)}</span>
+            </div>`).join('')}
+        </div>` : ''}
+    </section>`;
+}
+
 // ── BROADCAST DETAIL ──────────────────────────────────────────
 function renderBroadcast() {
   const b = (S.broadcasts || []).find(x => x.id === S.broadcastId);
@@ -537,6 +600,7 @@ function renderBroadcast() {
           </section>
         </div>
         <div class="side-col">
+          ${renderAvailabilityCard(b)}
           <section class="card">
             <h2>Pre-Show Checklist</h2>
             <div class="checklist">
@@ -898,6 +962,36 @@ async function saveChecklist() {
   if (db) await db.collection('hm_broadcasts').doc(b.id).update({ checks }).catch(() => {});
 }
 
+// ── Availability ──────────────────────────────────────────────
+async function submitAvailability(broadcastId) {
+  const name = val('avail-name');
+  if (!name) { showToast('Please enter your name.'); return; }
+  const already = (S.availabilities || []).find(
+    a => a.broadcastId === broadcastId && a.studentName.toLowerCase() === name.toLowerCase()
+  );
+  if (already) { showToast("You're already signed up!"); return; }
+  localStorage.setItem('hm_student_name', name);
+  const entry = { broadcastId, studentName: name, submittedAt: new Date().toISOString() };
+  const db = getDB();
+  if (db) {
+    try {
+      const ref = await db.collection('hm_availability').add(entry);
+      S.availabilities.push({ id: ref.id, ...entry });
+    } catch(e) { showToast('Could not save. Try again.'); return; }
+  } else {
+    S.availabilities.push({ id: Date.now().toString(), ...entry });
+  }
+  showToast("You're signed up!");
+  render();
+}
+
+async function removeAvailability(availId) {
+  S.availabilities = (S.availabilities || []).filter(a => a.id !== availId);
+  const db = getDB();
+  if (db) await db.collection('hm_availability').doc(availId).delete().catch(() => {});
+  render();
+}
+
 // ── Teacher: Submissions ──────────────────────────────────────
 async function showSubmissions() {
   const db = getDB();
@@ -1093,6 +1187,23 @@ function attachListeners() {
       if (confirm('Delete this entry? This cannot be undone.')) deleteIASBEntry(btn.dataset.entryId);
     }));
 
+  const sa = document.getElementById('submit-avail');
+  if (sa) sa.addEventListener('click', () => submitAvailability(sa.dataset.bid));
+
+  document.querySelectorAll('.avail-role-sel').forEach(sel =>
+    sel.addEventListener('change', () => {
+      if (!sel.value) return;
+      const roleInput = document.querySelector(`.role-input[data-role="${sel.value}"]`);
+      if (roleInput) roleInput.value = sel.dataset.name;
+      showToast(`${sel.dataset.name} → ${sel.value}`);
+    }));
+
+  document.querySelectorAll('.avail-del-btn').forEach(btn =>
+    btn.addEventListener('click', () => removeAvailability(btn.dataset.availId)));
+
+  document.querySelectorAll('.avail-own-rm').forEach(btn =>
+    btn.addEventListener('click', () => removeAvailability(btn.dataset.availId)));
+
   const dbRefresh = document.getElementById('db-refresh-plans');
   if (dbRefresh) dbRefresh.addEventListener('click', dashboardLoadPlans);
 
@@ -1115,10 +1226,11 @@ async function loadFromFirebase() {
   const db = getDB();
   if (!db) return;
   try {
-    const [schedSnap, bcastSnap, iasbSnap] = await Promise.all([
+    const [schedSnap, bcastSnap, iasbSnap, availSnap] = await Promise.all([
       db.collection('hm_radio').doc('station_schedule').get(),
       db.collection('hm_broadcasts').get(),
-      db.collection('hm_iasb_entries').get()
+      db.collection('hm_iasb_entries').get(),
+      db.collection('hm_availability').get()
     ]);
     if (schedSnap.exists) {
       const data = schedSnap.data() || {};
@@ -1160,6 +1272,9 @@ async function loadFromFirebase() {
     const iasbEntries = [];
     iasbSnap.forEach(doc => iasbEntries.push({ id: doc.id, ...doc.data() }));
     S.iasbEntries = iasbEntries;
+    const availabilities = [];
+    availSnap.forEach(doc => availabilities.push({ id: doc.id, ...doc.data() }));
+    S.availabilities = availabilities;
   } catch(e) {}
 }
 

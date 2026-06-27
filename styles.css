@@ -800,3 +800,73 @@ body {
   .db-entry-row, .db-plan-row { flex-direction: column; align-items: flex-start; }
   .db-entry-meta { width: 100%; justify-content: flex-start; }
 }
+
+/* ── Crew Availability ───────────────────────────────────────── */
+.avail-header {
+  display: flex; align-items: center;
+  justify-content: space-between; margin-bottom: 4px;
+}
+.avail-count-badge {
+  background: var(--live); color: #000;
+  font-size: 0.72rem; font-weight: 800;
+  padding: 2px 8px; border-radius: 10px; min-width: 24px; text-align: center;
+}
+
+/* Student: sign-up form */
+.avail-signup-row {
+  display: flex; gap: 8px; align-items: center;
+}
+.avail-name-input {
+  flex: 1;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text);
+  padding: 8px 12px; font-size: 0.875rem; font-family: inherit;
+  outline: none; transition: border-color 0.15s;
+}
+.avail-name-input:focus { border-color: var(--live); }
+
+/* Student: already signed up */
+.avail-signed-up {
+  display: flex; align-items: center; gap: 10px;
+}
+.avail-signed-badge {
+  font-size: 0.85rem; font-weight: 700; color: var(--live);
+}
+
+/* Student: signed-up names list */
+.avail-student-list { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+.avail-list-label {
+  font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--dim); margin-bottom: 8px;
+}
+.avail-student-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 0; font-size: 0.85rem;
+}
+.avail-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--live); flex-shrink: 0;
+}
+
+/* Teacher: available students list */
+.avail-list { display: flex; flex-direction: column; gap: 6px; }
+.avail-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; background: var(--surface2); border-radius: 8px;
+}
+.avail-row-name { flex: 1; font-size: 0.875rem; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.avail-row-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.avail-role-sel {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 6px; color: var(--text);
+  padding: 4px 8px; font-size: 0.78rem; font-family: inherit;
+  cursor: pointer; outline: none;
+}
+.avail-role-sel:focus { border-color: var(--live); }
+.avail-del-btn {
+  background: none; border: 1px solid var(--border);
+  color: var(--dim); border-radius: 6px;
+  padding: 3px 7px; font-size: 0.75rem; cursor: pointer;
+  transition: all 0.15s; line-height: 1; font-family: inherit;
+}
+.avail-del-btn:hover { border-color: var(--danger); color: var(--danger); }
