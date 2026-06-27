@@ -59,6 +59,7 @@ function render() {
     case 'planner':   app.innerHTML = renderPlanner();   break;
     case 'live':      app.innerHTML = renderLive();      break;
     case 'broadcast': app.innerHTML = renderBroadcast(); break;
+    case 'schedule':  app.innerHTML = renderSchedule();  break;
     case 'yearbook':      app.innerHTML = renderYearbook();      break;
     case 'iasb':          app.innerHTML = renderIASB();          break;
     case 'iasb-category': app.innerHTML = renderIASBCategory();  break;
@@ -473,6 +474,7 @@ function renderLive() {
               ${S.teacherMode ? `<button class="btn-primary" id="add-broadcast">+ Add</button>` : ''}
             </div>
             <div class="broadcast-list">${broadcastItems}</div>
+            ${upcoming.length > 0 ? `<div style="text-align:center;margin-top:14px"><button class="btn-secondary" data-nav="schedule">View All ${upcoming.length} Broadcasts →</button></div>` : ''}
           </section>
         </div>
         <div class="side-col">
@@ -557,6 +559,103 @@ function renderBroadcast() {
         </div>
       </div>
     </div>`;
+}
+
+// ── FULL SCHEDULE ────────────────────────────────────────────
+function renderSchedule() {
+  const all = (S.broadcasts || []).slice().sort((a, b) => a.date.localeCompare(b.date));
+  const now = new Date();
+
+  const rows = all.map(b => {
+    const et = EVENT_TYPES[b.type] || EVENT_TYPES.other;
+    const past = new Date(b.date + 'T00:00:00') < now;
+    const assigned = Object.values(b.roles || {}).filter(v => v).length;
+    return `
+      <div class="sched-row${past ? ' sched-past' : ''}">
+        <div class="sched-badge" style="background:${et.color}">${et.label}</div>
+        <div class="sched-info">
+          <div class="sched-title">${esc(b.title)}</div>
+          <div class="sched-meta">${fmtDate(b.date, true)}${b.notes ? ' · ' + esc(b.notes) : ''}</div>
+          <div class="sched-crew-count">${assigned} / ${LIVE_ROLES.length} crew assigned</div>
+        </div>
+        ${S.teacherMode ? `
+          <div class="sched-actions">
+            <button class="btn-secondary sched-edit" data-id="${b.id}">Edit</button>
+          </div>` : ''}
+      </div>`;
+  }).join('') || '<p class="dim" style="padding:20px">No broadcasts scheduled.</p>';
+
+  return `
+    ${navBar('live')}
+    <div class="class-page">
+      <button class="back-btn" data-nav="live">← Back to Homestead Live</button>
+      <div class="card-header" style="margin-bottom:20px">
+        <h1>Full Schedule</h1>
+        ${S.teacherMode ? '<button class="btn-primary" id="add-broadcast">+ Add Broadcast</button>' : ''}
+      </div>
+      <section class="card" style="padding:0;overflow:hidden">
+        <div class="sched-list">${rows}</div>
+      </section>
+    </div>`;
+}
+
+function showEditBroadcastModal(id) {
+  const b = (S.broadcasts || []).find(x => x.id === id);
+  if (!b) return;
+  const roles = b.roles || {};
+  const m = modal(`
+    <h2>Edit Broadcast</h2>
+    <div class="form-group">
+      <label>Event Name</label>
+      <input id="m-title" type="text" value="${esc(b.title)}">
+    </div>
+    <div class="form-group">
+      <label>Date</label>
+      <input id="m-date" type="date" value="${b.date}">
+    </div>
+    <div class="form-group">
+      <label>Type</label>
+      <select id="m-type">
+        ${Object.entries(EVENT_TYPES).map(([k, v]) =>
+          `<option value="${k}"${b.type === k ? ' selected' : ''}>${v.label}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Notes</label>
+      <input id="m-notes" type="text" value="${esc(b.notes || '')}" placeholder="Time, location, etc.">
+    </div>
+    <div class="form-group">
+      <label>Crew</label>
+      <div class="edit-crew-grid">
+        ${LIVE_ROLES.map(role => `
+          <div class="edit-crew-row">
+            <span class="edit-crew-label">${role}</span>
+            <input class="role-input" type="text" data-role="${role}" value="${esc(roles[role] || '')}" placeholder="Student name">
+          </div>`).join('')}
+      </div>
+    </div>`, 'Delete');
+
+  m.querySelector('#modal-save').addEventListener('click', async () => {
+    const title = val('m-title');
+    const date  = val('m-date');
+    const type  = val('m-type');
+    const notes = val('m-notes');
+    if (!title || !date) { showToast('Title and date are required.'); return; }
+    const newRoles = {};
+    m.querySelectorAll('.role-input').forEach(el => { newRoles[el.dataset.role] = el.value.trim(); });
+    Object.assign(b, { title, date, type, notes, roles: newRoles });
+    const db = getDB();
+    if (db) await db.collection('hm_broadcasts').doc(b.id).update({ title, date, type, notes, roles: newRoles }).catch(() => {});
+    m.remove(); render(); showToast('Saved!');
+  });
+
+  m.querySelector('#modal-extra').addEventListener('click', async () => {
+    if (!confirm(`Delete "${b.title}"?`)) return;
+    const db = getDB();
+    if (db) await db.collection('hm_broadcasts').doc(b.id).delete().catch(() => {});
+    S.broadcasts = S.broadcasts.filter(x => x.id !== b.id);
+    m.remove(); render(); showToast('Deleted.');
+  });
 }
 
 // ── YEARBOOK ──────────────────────────────────────────────────
@@ -913,6 +1012,9 @@ function attachListeners() {
 
   document.querySelectorAll('[data-broadcast]').forEach(el =>
     el.addEventListener('click', () => go('broadcast', { broadcastId: el.dataset.broadcast })));
+
+  document.querySelectorAll('.sched-edit').forEach(el =>
+    el.addEventListener('click', (e) => { e.stopPropagation(); showEditBroadcastModal(el.dataset.id); }));
 
   const tt = document.getElementById('teacher-toggle');
   if (tt) tt.addEventListener('click', () => {
