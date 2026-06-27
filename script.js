@@ -504,26 +504,56 @@ function renderLive() {
 
 // ── AVAILABILITY CARD (broadcast detail sidebar) ──────────────
 function renderAvailabilityCard(b) {
-  if (S.teacherMode) return ''; // teacher sees interests in the role grid instead
+  const avails = (S.availabilities || []).filter(a => a.broadcastId === b.id);
 
+  if (S.teacherMode) {
+    const rows = avails.length
+      ? avails.map(a => {
+          const interests = a.interestedRoles || [];
+          const assignedRole = Object.entries(b.roles || {}).find(([, n]) => n === a.studentName)?.[0];
+          return `
+            <div class="avail-student-card">
+              <div class="avail-student-top">
+                <span class="avail-student-name">${esc(a.studentName)}</span>
+                <button class="avail-del-btn" data-avail-id="${a.id}" title="Remove from list">✕</button>
+              </div>
+              ${interests.length
+                ? `<div class="avail-interests">${interests.map(r => `<span class="avail-interest-chip">${esc(r)}</span>`).join('')}</div>`
+                : `<div class="avail-no-pref">No position preference</div>`}
+              <select class="avail-assign-sel" data-name="${esc(a.studentName)}">
+                <option value="">Assign to role…</option>
+                ${LIVE_ROLES.map(r => `<option value="${r}"${assignedRole === r ? ' selected' : ''}>${r}</option>`).join('')}
+              </select>
+            </div>`;
+        }).join('')
+      : `<p class="dim" style="font-size:0.85rem;padding:4px 0">No students signed up for this broadcast yet.</p>`;
+
+    return `
+      <section class="card">
+        <div class="card-header" style="margin-bottom:12px">
+          <h2>Available Students</h2>
+          <span class="avail-count-badge">${avails.length}</span>
+        </div>
+        <div class="avail-student-list">${rows}</div>
+      </section>`;
+  }
+
+  // Student mode — show their sign-up summary + link
   const myName = localStorage.getItem('hm_student_name') || '';
-  const myEntry = (S.availabilities || []).find(
-    a => a.broadcastId === b.id && a.studentName.toLowerCase() === myName.toLowerCase()
-  );
+  const myEntry = avails.find(a => a.studentName.toLowerCase() === myName.toLowerCase());
   const myRoles = myEntry?.interestedRoles || [];
 
   return `
     <section class="card">
       <h2>Your Sign-Up</h2>
-      ${myRoles.length
-        ? `<div class="avail-my-roles">
-             ${myRoles.map(r => `<span class="avail-my-role-chip">${esc(r)}</span>`).join('')}
-           </div>`
-        : `<p style="font-size:0.85rem;color:var(--dim);margin-bottom:12px;line-height:1.5">
-             You haven't signed up for any roles in this broadcast yet.
-           </p>`}
-      <button class="btn-secondary" data-nav="availability" style="width:100%;margin-top:${myRoles.length ? '12px' : '0'}">
-        ${myRoles.length ? 'Update My Sign-Up →' : 'Sign Up for Broadcasts →'}
+      ${myEntry
+        ? `<div class="avail-signed-badge" style="margin-bottom:10px">✓ You're marked available</div>
+           ${myRoles.length
+             ? `<div class="avail-my-roles">${myRoles.map(r => `<span class="avail-my-role-chip">${esc(r)}</span>`).join('')}</div>`
+             : `<p style="font-size:0.82rem;color:var(--dim);margin-bottom:10px">No position preference set.</p>`}`
+        : `<p style="font-size:0.85rem;color:var(--dim);margin-bottom:10px;line-height:1.5">You haven't signed up for this broadcast yet.</p>`}
+      <button class="btn-secondary" data-nav="availability" style="width:100%;margin-top:4px">
+        ${myEntry ? 'Update My Sign-Up →' : 'Sign Up for Broadcasts →'}
       </button>
     </section>`;
 }
@@ -544,10 +574,6 @@ function renderBroadcast() {
   ];
   const checklist = b.checklist || defaultChecklist;
 
-  const getInterested = (role) => (S.availabilities || [])
-    .filter(a => a.broadcastId === b.id && (a.interestedRoles || []).includes(role))
-    .map(a => a.studentName);
-
   return `
     ${navBar('live')}
     <div class="class-page">
@@ -565,27 +591,13 @@ function renderBroadcast() {
               ${S.teacherMode ? `<button class="btn-primary" id="save-roles">Save Roles</button>` : ''}
             </div>
             <div class="role-grid">
-              ${LIVE_ROLES.map(role => {
-                if (S.teacherMode) {
-                  const interested = getInterested(role);
-                  return `
+              ${LIVE_ROLES.map(role => `
                 <div class="role-row">
                   <div class="role-name">${role}</div>
-                  <div class="role-col">
-                    <input class="role-input" type="text" data-role="${role}" value="${esc(roles[role] || '')}" placeholder="Student name">
-                    ${interested.length ? `
-                    <div class="role-interested">
-                      ${interested.map(n => `<button class="role-interest-chip" data-role="${role}" data-name="${esc(n)}">${esc(n)}</button>`).join('')}
-                    </div>` : ''}
-                  </div>
-                </div>`;
-                }
-                return `
-                <div class="role-row">
-                  <div class="role-name">${role}</div>
-                  <div class="role-assigned ${roles[role] ? '' : 'empty'}">${esc(roles[role] || 'TBD')}</div>
-                </div>`;
-              }).join('')}
+                  ${S.teacherMode
+                    ? `<input class="role-input" type="text" data-role="${role}" value="${esc(roles[role] || '')}" placeholder="Student name">`
+                    : `<div class="role-assigned ${roles[role] ? '' : 'empty'}">${esc(roles[role] || 'TBD')}</div>`}
+                </div>`).join('')}
             </div>
           </section>
         </div>
@@ -761,28 +773,41 @@ function renderAvailabilityPage() {
     const myEntry = (S.availabilities || []).find(
       a => a.broadcastId === b.id && a.studentName.toLowerCase() === myName.toLowerCase()
     );
+    const isAvailable = !!myEntry;
     const myRoles = myEntry?.interestedRoles || [];
-    const totalInterested = (S.availabilities || []).filter(a => a.broadcastId === b.id).length;
+    const totalSignedUp = (S.availabilities || []).filter(a => a.broadcastId === b.id).length;
 
     return `
       <div class="avail-bc-card card">
         <div class="avail-bc-meta">
           <span class="avail-bc-type-badge" style="background:${et.color}">${et.label}</span>
           <span class="avail-bc-date">${fmtDate(b.date, false)}</span>
-          ${totalInterested > 0 ? `<span class="avail-bc-signups">${totalInterested} signed up</span>` : ''}
+          ${totalSignedUp > 0 ? `<span class="avail-bc-signups">${totalSignedUp} signed up</span>` : ''}
         </div>
         <div class="avail-bc-title">${esc(b.title)}</div>
         ${b.notes ? `<div class="avail-bc-notes">${esc(b.notes)}</div>` : ''}
-        <div class="avail-roles-grid ${!myName ? 'avail-roles-disabled' : ''}" data-bid="${b.id}">
-          ${LIVE_ROLES.map(role => `
-            <label class="avail-role-label">
-              <input type="checkbox" class="avail-role-cb"
-                data-bid="${b.id}" data-role="${role}"
-                ${myRoles.includes(role) ? 'checked' : ''}
-                ${!myName ? 'disabled' : ''}>
-              <span>${role}</span>
-            </label>`).join('')}
-        </div>
+
+        <label class="avail-available-toggle ${!myName ? 'avail-disabled' : ''}">
+          <input type="checkbox" class="avail-broadcast-cb"
+            data-bid="${b.id}"
+            ${isAvailable ? 'checked' : ''}
+            ${!myName ? 'disabled' : ''}>
+          <span class="avail-toggle-label">I'm available for this broadcast</span>
+        </label>
+
+        ${isAvailable ? `
+          <div class="avail-roles-section">
+            <div class="avail-roles-label">Interested positions <span class="hint" style="font-weight:400;color:var(--dim)">(optional)</span></div>
+            <div class="avail-roles-grid">
+              ${LIVE_ROLES.map(role => `
+                <label class="avail-role-label">
+                  <input type="checkbox" class="avail-role-cb"
+                    data-bid="${b.id}" data-role="${role}"
+                    ${myRoles.includes(role) ? 'checked' : ''}>
+                  <span>${role}</span>
+                </label>`).join('')}
+            </div>
+          </div>` : ''}
       </div>`;
   }).join('') || `<p class="dim" style="padding:24px 0">No upcoming broadcasts scheduled.</p>`;
 
@@ -1013,6 +1038,33 @@ async function saveChecklist() {
 }
 
 // ── Availability ──────────────────────────────────────────────
+async function toggleBroadcastAvailability(broadcastId, available) {
+  const myName = localStorage.getItem('hm_student_name') || '';
+  if (!myName) { showToast('Enter your name first.'); return; }
+
+  const existing = (S.availabilities || []).find(
+    a => a.broadcastId === broadcastId && a.studentName.toLowerCase() === myName.toLowerCase()
+  );
+
+  if (available && !existing) {
+    const entry = { broadcastId, studentName: myName, interestedRoles: [], submittedAt: new Date().toISOString() };
+    const db = getDB();
+    if (db) {
+      try {
+        const ref = await db.collection('hm_availability').add(entry);
+        S.availabilities.push({ id: ref.id, ...entry });
+      } catch(e) { showToast('Could not save. Try again.'); return; }
+    } else {
+      S.availabilities.push({ id: Date.now().toString(), ...entry });
+    }
+  } else if (!available && existing) {
+    S.availabilities = S.availabilities.filter(a => a.id !== existing.id);
+    const db = getDB();
+    if (db) await db.collection('hm_availability').doc(existing.id).delete().catch(() => {});
+  }
+  render();
+}
+
 async function toggleAvailabilityRole(broadcastId, role, checked) {
   const myName = localStorage.getItem('hm_student_name') || '';
   if (!myName) { showToast('Enter your name first.'); return; }
@@ -1244,15 +1296,23 @@ function attachListeners() {
       if (confirm('Delete this entry? This cannot be undone.')) deleteIASBEntry(btn.dataset.entryId);
     }));
 
+  document.querySelectorAll('.avail-broadcast-cb').forEach(cb =>
+    cb.addEventListener('change', () => toggleBroadcastAvailability(cb.dataset.bid, cb.checked)));
+
   document.querySelectorAll('.avail-role-cb').forEach(cb =>
     cb.addEventListener('change', () => toggleAvailabilityRole(cb.dataset.bid, cb.dataset.role, cb.checked)));
 
-  document.querySelectorAll('.role-interest-chip').forEach(btn =>
-    btn.addEventListener('click', () => {
-      const input = document.querySelector(`.role-input[data-role="${btn.dataset.role}"]`);
-      if (input) input.value = btn.dataset.name;
-      showToast(`${btn.dataset.name} → ${btn.dataset.role}`);
+  document.querySelectorAll('.avail-assign-sel').forEach(sel =>
+    sel.addEventListener('change', () => {
+      if (!sel.value) return;
+      const input = document.querySelector(`.role-input[data-role="${sel.value}"]`);
+      if (input) input.value = sel.dataset.name;
+      showToast(`${sel.dataset.name} → ${sel.value}`);
+      sel.value = '';
     }));
+
+  document.querySelectorAll('.avail-del-btn').forEach(btn =>
+    btn.addEventListener('click', () => removeAvailability(btn.dataset.availId)));
 
   const apn = document.getElementById('avail-page-name');
   if (apn) {

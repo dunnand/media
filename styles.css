@@ -873,9 +873,67 @@ body {
 }
 
 /* ── Broadcast detail: my sign-up card ───────────────────────── */
+.avail-signed-badge { font-size: 0.85rem; font-weight: 700; color: var(--live); display: block; }
 .avail-my-roles { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
 .avail-my-role-chip {
   background: rgba(6,182,212,0.12); border: 1px solid rgba(6,182,212,0.3);
   color: var(--live); border-radius: 20px;
   padding: 4px 12px; font-size: 0.78rem; font-weight: 600;
+}
+
+/* ── Available Students panel (teacher) ──────────────────────── */
+.avail-count-badge {
+  background: var(--live); color: #000;
+  font-size: 0.72rem; font-weight: 800;
+  padding: 2px 8px; border-radius: 10px; min-width: 24px; text-align: center;
+}
+.avail-student-list { display: flex; flex-direction: column; gap: 10px; }
+.avail-student-card {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px;
+}
+.avail-student-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.avail-student-name { font-weight: 700; font-size: 0.9rem; }
+.avail-del-btn {
+  background: none; border: 1px solid var(--border);
+  color: var(--dim); border-radius: 6px;
+  padding: 3px 7px; font-size: 0.75rem; cursor: pointer;
+  transition: all 0.15s; line-height: 1; font-family: inherit;
+}
+.avail-del-btn:hover { border-color: var(--danger); color: var(--danger); }
+.avail-interests { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+.avail-interest-chip {
+  background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.25);
+  color: var(--live); border-radius: 6px;
+  padding: 2px 8px; font-size: 0.72rem; font-weight: 600;
+}
+.avail-no-pref { font-size: 0.78rem; color: var(--dim); font-style: italic; margin-bottom: 8px; }
+.avail-assign-sel {
+  width: 100%;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 7px; color: var(--text);
+  padding: 6px 10px; font-size: 0.82rem; font-family: inherit;
+  cursor: pointer; outline: none; transition: border-color 0.15s;
+}
+.avail-assign-sel:focus { border-color: var(--live); }
+
+/* ── Sign-Up Page: I'm Available toggle ──────────────────────── */
+.avail-available-toggle {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 14px; padding-top: 14px;
+  border-top: 1px solid var(--border);
+  cursor: pointer; width: fit-content;
+}
+.avail-available-toggle.avail-disabled { opacity: 0.4; pointer-events: none; }
+.avail-available-toggle input[type="checkbox"] {
+  width: 17px; height: 17px; flex-shrink: 0;
+  accent-color: var(--live); cursor: pointer;
+}
+.avail-toggle-label { font-size: 0.875rem; font-weight: 600; }
+
+/* ── Sign-Up Page: role preferences ─────────────────────────── */
+.avail-roles-section { margin-top: 14px; }
+.avail-roles-label {
+  font-size: 0.78rem; font-weight: 700; color: var(--dim);
+  margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em;
 }
