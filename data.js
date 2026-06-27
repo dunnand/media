@@ -69,52 +69,58 @@ const STATIONS = [
   { id: 'two',   name: '2.0',       freq: 'The Next Level of Radio', color: '#ef4444' },
 ];
 
+// ── Crew Call Policy ─────────────────────────────────────────
+// Basketball (boys & girls): 75 min before tip-off (less setup needed)
+// All other events: 90 min before start (eat in classroom, then full setup)
+const CREW_CALL_MINS = { basketball_boys: 75, basketball_girls: 75 };
+const CREW_CALL_DEFAULT_MINS = 90;
+
 // ── Basketball Home Games 2026–2027 ──────────────────────────
 const BASKETBALL_HOME_GAMES = [
-  { id: 'bb26-1121', title: 'Boys Basketball Scrimmage vs. Blackford',   date: '2026-11-21', type: 'basketball_boys', roles: {}, checks: {}, notes: 'Scrimmage — 11:00 AM, Spartan Arena' },
-  { id: 'bb26-1125', title: 'Boys Basketball vs. Huntington North',       date: '2026-11-25', type: 'basketball_boys', roles: {}, checks: {}, notes: '7:30 PM, Spartan Arena' },
-  { id: 'bb26-1201', title: 'Boys Basketball vs. Leo High School',        date: '2026-12-01', type: 'basketball_boys', roles: {}, checks: {}, notes: '7:30 PM, Spartan Arena' },
-  { id: 'bb26-1204', title: 'Boys Basketball vs. Warsaw High School',     date: '2026-12-04', type: 'basketball_boys', roles: {}, checks: {}, notes: '7:45 PM, Spartan Arena' },
-  { id: 'bb26-1211', title: 'Boys Basketball vs. Bishop Dwenger',         date: '2026-12-11', type: 'basketball_boys', roles: {}, checks: {}, notes: '7:30 PM, Spartan Arena' },
-  { id: 'bb26-1229', title: 'Boys Basketball - Homestead Holiday Tournament', date: '2026-12-29', type: 'basketball_boys', roles: {}, checks: {}, notes: 'Games at 5:30 PM & 7:00 PM — Spartan Arena & Victory Gym' },
-  { id: 'bb26-1230', title: 'Boys Basketball - Homestead Holiday Tournament', date: '2026-12-30', type: 'basketball_boys', roles: {}, checks: {}, notes: 'Games at 10:00 AM, 11:30 AM, 4:00 PM & 5:30 PM — Spartan Arena & Victory Gym' },
-  { id: 'bb27-0108', title: 'Boys Basketball vs. South Side',             date: '2027-01-08', type: 'basketball_boys', roles: {}, checks: {}, notes: '7:30 PM, Spartan Arena' },
-  { id: 'bb27-0112', title: 'Boys Basketball vs. Blackhawk Christian',    date: '2027-01-12', type: 'basketball_boys', roles: {}, checks: {}, notes: '7:30 PM, Spartan Arena' },
-  { id: 'bb27-0122', title: 'Boys Basketball vs. North Side',             date: '2027-01-22', type: 'basketball_boys', roles: {}, checks: {}, notes: '7:30 PM, Spartan Arena' },
-  { id: 'bb27-0126', title: 'Boys Basketball vs. New Haven',              date: '2027-01-26', type: 'basketball_boys', roles: {}, checks: {}, notes: '7:30 PM, Spartan Arena' },
-  { id: 'bb27-0206', title: 'Boys Basketball vs. Oak Hill High School',   date: '2027-02-06', type: 'basketball_boys', roles: {}, checks: {}, notes: '1:30 PM, Spartan Arena' },
-  { id: 'bb27-0209', title: 'Boys Basketball vs. Wayne High School',      date: '2027-02-09', type: 'basketball_boys', roles: {}, checks: {}, notes: '7:30 PM, Spartan Arena' },
-  { id: 'bb27-0212', title: 'Boys Basketball vs. Concordia High School',  date: '2027-02-12', type: 'basketball_boys', roles: {}, checks: {}, notes: '7:30 PM, Spartan Arena' },
+  { id: 'bb26-1121', title: 'Boys Basketball Scrimmage vs. Blackford',       date: '2026-11-21', type: 'basketball_boys', gameTime: '11:00 AM', roles: {}, checks: {}, notes: 'Scrimmage — Spartan Arena' },
+  { id: 'bb26-1125', title: 'Boys Basketball vs. Huntington North',           date: '2026-11-25', type: 'basketball_boys', gameTime: '7:30 PM',  roles: {}, checks: {}, notes: 'Spartan Arena' },
+  { id: 'bb26-1201', title: 'Boys Basketball vs. Leo High School',            date: '2026-12-01', type: 'basketball_boys', gameTime: '7:30 PM',  roles: {}, checks: {}, notes: 'Spartan Arena' },
+  { id: 'bb26-1204', title: 'Boys Basketball vs. Warsaw High School',         date: '2026-12-04', type: 'basketball_boys', gameTime: '7:45 PM',  roles: {}, checks: {}, notes: 'Spartan Arena' },
+  { id: 'bb26-1211', title: 'Boys Basketball vs. Bishop Dwenger',             date: '2026-12-11', type: 'basketball_boys', gameTime: '7:30 PM',  roles: {}, checks: {}, notes: 'Spartan Arena' },
+  { id: 'bb26-1229', title: 'Boys Basketball — Homestead Holiday Tournament', date: '2026-12-29', type: 'basketball_boys', gameTime: '5:30 PM',  roles: {}, checks: {}, notes: 'Homestead Holiday Tournament — Spartan Arena & Victory Gym — Games: 5:30 PM & 7:00 PM' },
+  { id: 'bb26-1230', title: 'Boys Basketball — Homestead Holiday Tournament', date: '2026-12-30', type: 'basketball_boys', gameTime: '10:00 AM', roles: {}, checks: {}, notes: 'Homestead Holiday Tournament — Spartan Arena & Victory Gym — Games: 10:00 AM, 11:30 AM, 4:00 PM & 5:30 PM' },
+  { id: 'bb27-0108', title: 'Boys Basketball vs. South Side',                 date: '2027-01-08', type: 'basketball_boys', gameTime: '7:30 PM',  roles: {}, checks: {}, notes: 'Spartan Arena' },
+  { id: 'bb27-0112', title: 'Boys Basketball vs. Blackhawk Christian',        date: '2027-01-12', type: 'basketball_boys', gameTime: '7:30 PM',  roles: {}, checks: {}, notes: 'Spartan Arena' },
+  { id: 'bb27-0122', title: 'Boys Basketball vs. North Side',                 date: '2027-01-22', type: 'basketball_boys', gameTime: '7:30 PM',  roles: {}, checks: {}, notes: 'Spartan Arena' },
+  { id: 'bb27-0126', title: 'Boys Basketball vs. New Haven',                  date: '2027-01-26', type: 'basketball_boys', gameTime: '7:30 PM',  roles: {}, checks: {}, notes: 'Spartan Arena' },
+  { id: 'bb27-0206', title: 'Boys Basketball vs. Oak Hill High School',       date: '2027-02-06', type: 'basketball_boys', gameTime: '1:30 PM',  roles: {}, checks: {}, notes: 'Spartan Arena' },
+  { id: 'bb27-0209', title: 'Boys Basketball vs. Wayne High School',          date: '2027-02-09', type: 'basketball_boys', gameTime: '7:30 PM',  roles: {}, checks: {}, notes: 'Spartan Arena' },
+  { id: 'bb27-0212', title: 'Boys Basketball vs. Concordia High School',      date: '2027-02-12', type: 'basketball_boys', gameTime: '7:30 PM',  roles: {}, checks: {}, notes: 'Spartan Arena' },
 ];
 
 // ── Football Home Games 2026 ──────────────────────────────────
 const FOOTBALL_HOME_GAMES = [
-  { id: 'fb26-0814', title: 'Football Scrimmage vs. Snider',        date: '2026-08-14', type: 'football', roles: {}, checks: {}, notes: '7:00 PM, Spartan Stadium' },
-  { id: 'fb26-0821', title: 'Football vs. Westfield High School',   date: '2026-08-21', type: 'football', roles: {}, checks: {}, notes: '7:30 PM, Spartan Stadium' },
-  { id: 'fb26-0828', title: 'Football vs. Noblesville',             date: '2026-08-28', type: 'football', roles: {}, checks: {}, notes: '7:30 PM, Spartan Stadium' },
-  { id: 'fb26-0904', title: 'Football vs. South Side',              date: '2026-09-04', type: 'football', roles: {}, checks: {}, notes: '7:00 PM, Spartan Stadium' },
-  { id: 'fb26-0918', title: 'Football vs. Bishop Dwenger',          date: '2026-09-18', type: 'football', roles: {}, checks: {}, notes: '7:00 PM, Spartan Stadium' },
-  { id: 'fb26-1002', title: 'Football vs. Carroll High School',     date: '2026-10-02', type: 'football', roles: {}, checks: {}, notes: '7:00 PM, Spartan Stadium' },
+  { id: 'fb26-0814', title: 'Football Scrimmage vs. Snider',        date: '2026-08-14', type: 'football', gameTime: '7:00 PM', roles: {}, checks: {}, notes: 'Scrimmage — Spartan Stadium' },
+  { id: 'fb26-0821', title: 'Football vs. Westfield High School',   date: '2026-08-21', type: 'football', gameTime: '7:30 PM', roles: {}, checks: {}, notes: 'Spartan Stadium' },
+  { id: 'fb26-0828', title: 'Football vs. Noblesville',             date: '2026-08-28', type: 'football', gameTime: '7:30 PM', roles: {}, checks: {}, notes: 'Spartan Stadium' },
+  { id: 'fb26-0904', title: 'Football vs. South Side',              date: '2026-09-04', type: 'football', gameTime: '7:00 PM', roles: {}, checks: {}, notes: 'Spartan Stadium' },
+  { id: 'fb26-0918', title: 'Football vs. Bishop Dwenger',          date: '2026-09-18', type: 'football', gameTime: '7:00 PM', roles: {}, checks: {}, notes: 'Spartan Stadium' },
+  { id: 'fb26-1002', title: 'Football vs. Carroll High School',     date: '2026-10-02', type: 'football', gameTime: '7:00 PM', roles: {}, checks: {}, notes: 'Spartan Stadium' },
 ];
 
 // ── Girls Varsity Basketball Home Games 2026–2027 ─────────────
 const GIRLS_BASKETBALL_HOME_GAMES = [
-  { id: 'gb26-1028', title: 'Girls Basketball Scrimmage vs. Penn',              date: '2026-10-28', type: 'basketball_girls', roles: {}, checks: {}, notes: '6:00 PM, Spartan Arena' },
-  { id: 'gb26-1117', title: 'Girls Basketball vs. Norwell',                     date: '2026-11-17', type: 'basketball_girls', roles: {}, checks: {}, notes: '7:30 PM, Spartan Arena' },
-  { id: 'gb26-1127', title: 'Girls Basketball vs. Bellmont',                    date: '2026-11-27', type: 'basketball_girls', roles: {}, checks: {}, notes: '7:30 PM, Spartan Arena' },
-  { id: 'gb26-1211', title: 'Girls Basketball vs. Bishop Dwenger',              date: '2026-12-11', type: 'basketball_girls', roles: {}, checks: {}, notes: '6:00 PM, Spartan Arena' },
-  { id: 'gb26-1219', title: 'Girls Basketball vs. Hamilton Southeastern',       date: '2026-12-19', type: 'basketball_girls', roles: {}, checks: {}, notes: '3:30 PM, Spartan Arena' },
-  { id: 'gb27-0102', title: 'Girls Basketball vs. North Central HS',           date: '2027-01-02', type: 'basketball_girls', roles: {}, checks: {}, notes: '2:30 PM, Spartan Arena' },
-  { id: 'gb27-0108', title: 'Girls Basketball vs. Whitko',                     date: '2027-01-08', type: 'basketball_girls', roles: {}, checks: {}, notes: '6:00 PM, Spartan Arena' },
-  { id: 'gb27-0113', title: 'Girls Basketball vs. Oak Hill High School',       date: '2027-01-13', type: 'basketball_girls', roles: {}, checks: {}, notes: '7:30 PM, Spartan Arena' },
-  { id: 'gb27-0119', title: 'Girls Basketball vs. Warsaw High School',         date: '2027-01-19', type: 'basketball_girls', roles: {}, checks: {}, notes: '7:30 PM, Spartan Arena' },
+  { id: 'gb26-1028', title: 'Girls Basketball Scrimmage vs. Penn',        date: '2026-10-28', type: 'basketball_girls', gameTime: '6:00 PM', roles: {}, checks: {}, notes: 'Scrimmage — Spartan Arena' },
+  { id: 'gb26-1117', title: 'Girls Basketball vs. Norwell',               date: '2026-11-17', type: 'basketball_girls', gameTime: '7:30 PM', roles: {}, checks: {}, notes: 'Spartan Arena' },
+  { id: 'gb26-1127', title: 'Girls Basketball vs. Bellmont',              date: '2026-11-27', type: 'basketball_girls', gameTime: '7:30 PM', roles: {}, checks: {}, notes: 'Spartan Arena' },
+  { id: 'gb26-1211', title: 'Girls Basketball vs. Bishop Dwenger',        date: '2026-12-11', type: 'basketball_girls', gameTime: '6:00 PM', roles: {}, checks: {}, notes: 'Spartan Arena' },
+  { id: 'gb26-1219', title: 'Girls Basketball vs. Hamilton Southeastern', date: '2026-12-19', type: 'basketball_girls', gameTime: '3:30 PM', roles: {}, checks: {}, notes: 'Spartan Arena' },
+  { id: 'gb27-0102', title: 'Girls Basketball vs. North Central HS',      date: '2027-01-02', type: 'basketball_girls', gameTime: '2:30 PM', roles: {}, checks: {}, notes: 'Spartan Arena' },
+  { id: 'gb27-0108', title: 'Girls Basketball vs. Whitko',                date: '2027-01-08', type: 'basketball_girls', gameTime: '6:00 PM', roles: {}, checks: {}, notes: 'Spartan Arena' },
+  { id: 'gb27-0113', title: 'Girls Basketball vs. Oak Hill High School',  date: '2027-01-13', type: 'basketball_girls', gameTime: '7:30 PM', roles: {}, checks: {}, notes: 'Spartan Arena' },
+  { id: 'gb27-0119', title: 'Girls Basketball vs. Warsaw High School',    date: '2027-01-19', type: 'basketball_girls', gameTime: '7:30 PM', roles: {}, checks: {}, notes: 'Spartan Arena' },
 ];
 
 // ── Special Events ────────────────────────────────────────────
 const SPECIAL_EVENTS = [
-  { id: 'sc27-0219',   title: 'Show Choir Showcase',  date: '2027-02-19', type: 'showchoir',  roles: {}, checks: {}, notes: '' },
-  { id: 'sc27-0220',   title: 'Show Choir Showcase',  date: '2027-02-20', type: 'showchoir',  roles: {}, checks: {}, notes: '' },
-  { id: 'grad27-0607', title: 'Graduation',            date: '2027-06-07', type: 'graduation', roles: {}, checks: {}, notes: '' },
+  { id: 'sc27-0219',   title: 'Show Choir Showcase', date: '2027-02-19', type: 'showchoir',  gameTime: '', roles: {}, checks: {}, notes: 'TBD — time to be announced' },
+  { id: 'sc27-0220',   title: 'Show Choir Showcase', date: '2027-02-20', type: 'showchoir',  gameTime: '', roles: {}, checks: {}, notes: 'TBD — time to be announced' },
+  { id: 'grad27-0607', title: 'Graduation',           date: '2027-06-07', type: 'graduation', gameTime: '', roles: {}, checks: {}, notes: 'TBD — time to be announced' },
 ];
 
 // ── IASB Competition ──────────────────────────────────────────

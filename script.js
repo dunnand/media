@@ -41,6 +41,26 @@ const S = {
   availabilities: [],
 };
 
+// ── Crew Call Helper ─────────────────────────────────────────
+function computeCrewCall(gameTime, type) {
+  if (!gameTime) return null;
+  const m = gameTime.match(/^(\d+):(\d+)\s*(AM|PM)$/i);
+  if (!m) return null;
+  let h = parseInt(m[1]);
+  const min = parseInt(m[2]);
+  const isPM = m[3].toUpperCase() === 'PM';
+  if (isPM && h !== 12) h += 12;
+  if (!isPM && h === 12) h = 0;
+  const offset = CREW_CALL_MINS[type] ?? CREW_CALL_DEFAULT_MINS;
+  let total = h * 60 + min - offset;
+  if (total < 0) total += 1440;
+  const ch = Math.floor(total / 60);
+  const cm = total % 60;
+  const period = ch >= 12 ? 'PM' : 'AM';
+  const dh = ch > 12 ? ch - 12 : ch === 0 ? 12 : ch;
+  return `${dh}:${cm.toString().padStart(2, '0')} ${period}`;
+}
+
 // ── Router ────────────────────────────────────────────────────
 function go(view, extra) {
   S.view = view;
@@ -419,6 +439,12 @@ function renderLive() {
         <div class="next-event-type" style="color:${et.color}">${et.label}</div>
         <div class="next-event-name">${esc(next.title)}</div>
         <div class="next-date">${fmtDate(next.date, true)}</div>
+        ${next.gameTime ? `
+        <div class="next-times">
+          <span class="next-gametime">Game ${esc(next.gameTime)}</span>
+          <span style="color:var(--border)">·</span>
+          <span class="next-crewcall">Crew call ${computeCrewCall(next.gameTime, next.type)}</span>
+        </div>` : ''}
         <div class="countdown">${days <= 0 ? 'TODAY' : days === 1 ? '1 day away' : days + ' days away'}</div>
         <button class="btn-primary" data-broadcast="${next.id}" style="background:var(--live);color:#000">
           View Broadcast Prep →
@@ -441,7 +467,8 @@ function renderLive() {
           <div class="broadcast-type-dot" style="background:${et.color}"></div>
           <div class="broadcast-info">
             <div class="broadcast-title">${esc(b.title)}</div>
-            <div class="broadcast-date">${fmtDate(b.date)}</div>
+            <div class="broadcast-date">${fmtDate(b.date)}${b.gameTime ? ' · ' + esc(b.gameTime) : ''}</div>
+            ${b.gameTime ? `<div class="broadcast-crewcall">Crew call ${computeCrewCall(b.gameTime, b.type)}</div>` : ''}
           </div>
           <div class="broadcast-tag" style="color:${et.color}">${et.label}</div>
         </div>
@@ -504,41 +531,79 @@ function renderLive() {
 
 // ── AVAILABILITY CARD (broadcast detail sidebar) ──────────────
 function renderAvailabilityCard(b) {
-  const avails = (S.availabilities || []).filter(a => a.broadcastId === b.id);
+  if (!S.teacherMode) return renderStudentSignupCard(b);
 
-  if (S.teacherMode) {
-    const rows = avails.length
-      ? avails.map(a => {
-          const interests = a.interestedRoles || [];
-          const assignedRole = Object.entries(b.roles || {}).find(([, n]) => n === a.studentName)?.[0];
-          return `
-            <div class="avail-student-card">
-              <div class="avail-student-top">
+  const avails     = (S.availabilities || []).filter(a => a.broadcastId === b.id);
+  const withEmails = avails.filter(a => a.email);
+  const crewCall  = computeCrewCall(b.gameTime, b.type);
+
+  const reminderMailto = (() => {
+    if (!withEmails.length) return null;
+    const isBasketball = b.type === 'basketball_boys' || b.type === 'basketball_girls';
+    const offsetMins   = CREW_CALL_MINS[b.type] ?? CREW_CALL_DEFAULT_MINS;
+    const subject = `Tomorrow — ${b.title}`;
+    const body = [
+      `Hi,`,
+      ``,
+      `Reminder: you are signed up to crew the following broadcast TOMORROW.`,
+      ``,
+      `Event:     ${b.title}`,
+      `Date:      ${fmtDate(b.date, true)}`,
+      b.gameTime ? `Game Time: ${b.gameTime}` : null,
+      crewCall   ? `Crew Call: ${crewCall}  ← BE HERE` : null,
+      b.notes && b.notes !== 'TBD — time to be announced' ? `Location:  ${b.notes}` : null,
+      ``,
+      crewCall ? `Arrive at ${crewCall}. Eat in the classroom first (${offsetMins} min before ${isBasketball ? 'tip-off' : 'kickoff'}), then setup.` : null,
+      ``,
+      `See you there!`,
+      `— Homestead Live`,
+    ].filter(l => l !== null).join('\n');
+    const emails = withEmails.map(a => a.email).join(',');
+    return `mailto:${emails}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  })();
+
+  const rows = avails.length
+    ? avails.map(a => {
+        const interests = a.interestedRoles || [];
+        const assignedRole = Object.entries(b.roles || {}).find(([, n]) => n === a.studentName)?.[0];
+        return `
+          <div class="avail-student-card">
+            <div class="avail-student-top">
+              <div>
                 <span class="avail-student-name">${esc(a.studentName)}</span>
-                <button class="avail-del-btn" data-avail-id="${a.id}" title="Remove from list">✕</button>
+                ${a.email ? `<div class="avail-student-email">${esc(a.email)}</div>` : '<div class="avail-no-email">No email</div>'}
               </div>
-              ${interests.length
-                ? `<div class="avail-interests">${interests.map(r => `<span class="avail-interest-chip">${esc(r)}</span>`).join('')}</div>`
-                : `<div class="avail-no-pref">No position preference</div>`}
-              <select class="avail-assign-sel" data-name="${esc(a.studentName)}">
-                <option value="">Assign to role…</option>
-                ${LIVE_ROLES.map(r => `<option value="${r}"${assignedRole === r ? ' selected' : ''}>${r}</option>`).join('')}
-              </select>
-            </div>`;
-        }).join('')
-      : `<p class="dim" style="font-size:0.85rem;padding:4px 0">No students signed up for this broadcast yet.</p>`;
+              <button class="avail-del-btn" data-avail-id="${a.id}" title="Remove from list">✕</button>
+            </div>
+            ${interests.length
+              ? `<div class="avail-interests">${interests.map(r => `<span class="avail-interest-chip">${esc(r)}</span>`).join('')}</div>`
+              : `<div class="avail-no-pref">No position preference</div>`}
+            <select class="avail-assign-sel" data-name="${esc(a.studentName)}">
+              <option value="">Assign to role…</option>
+              ${LIVE_ROLES.map(r => `<option value="${r}"${assignedRole === r ? ' selected' : ''}>${r}</option>`).join('')}
+            </select>
+          </div>`;
+      }).join('')
+    : `<p class="dim" style="font-size:0.85rem;padding:4px 0">No students signed up for this broadcast yet.</p>`;
 
-    return `
-      <section class="card">
-        <div class="card-header" style="margin-bottom:12px">
-          <h2>Available Students</h2>
-          <span class="avail-count-badge">${avails.length}</span>
-        </div>
-        <div class="avail-student-list">${rows}</div>
-      </section>`;
-  }
+  return `
+    <section class="card">
+      <div class="card-header" style="margin-bottom:${reminderMailto ? '10px' : '12px'}">
+        <h2>Available Students</h2>
+        <span class="avail-count-badge">${avails.length}</span>
+      </div>
+      ${reminderMailto ? `
+      <a href="${reminderMailto}" class="reminder-btn">
+        📧 Send Reminder Emails <span class="reminder-count">${withEmails.length} / ${avails.length}</span>
+      </a>` : avails.length && !withEmails.length ? `
+      <p style="font-size:0.78rem;color:var(--dim);margin-bottom:12px">No email addresses on file — students can add one on the Sign-Up page.</p>` : ''}
+      <div class="avail-student-list">${rows}</div>
+    </section>`;
+}
 
-  // Student mode — show their sign-up summary + link
+// ── Student side of broadcast detail ──────────────────────────
+function renderStudentSignupCard(b) {
+  const avails = (S.availabilities || []).filter(a => a.broadcastId === b.id);
   const myName = localStorage.getItem('hm_student_name') || '';
   const myEntry = avails.find(a => a.studentName.toLowerCase() === myName.toLowerCase());
   const myRoles = myEntry?.interestedRoles || [];
@@ -574,6 +639,10 @@ function renderBroadcast() {
   ];
   const checklist = b.checklist || defaultChecklist;
 
+  const crewCall = computeCrewCall(b.gameTime, b.type);
+  const isBasketball = b.type === 'basketball_boys' || b.type === 'basketball_girls';
+  const offsetMins = CREW_CALL_MINS[b.type] ?? CREW_CALL_DEFAULT_MINS;
+
   return `
     ${navBar('live')}
     <div class="class-page">
@@ -582,6 +651,22 @@ function renderBroadcast() {
         <div class="broadcast-type-badge" style="background:${et.color}">${et.label}</div>
         <h1>${esc(b.title)}</h1>
         <div class="broadcast-detail-date">${fmtDate(b.date, true)}</div>
+        ${crewCall ? `
+        <div class="crew-call-banner">
+          <div class="crew-call-block">
+            <div class="crew-call-time-val">${crewCall}</div>
+            <div class="crew-call-time-label">Crew Call</div>
+          </div>
+          <div class="crew-call-divider"></div>
+          <div class="crew-call-block">
+            <div class="crew-call-time-val">${esc(b.gameTime)}</div>
+            <div class="crew-call-time-label">Game Time</div>
+          </div>
+          <div class="crew-call-rule">
+            ${offsetMins} min early — eat in classroom, then setup
+            ${isBasketball ? '<span class="crew-call-tag">Basketball</span>' : ''}
+          </div>
+        </div>` : ''}
       </div>
       <div class="page-grid">
         <div class="main-col">
@@ -642,6 +727,11 @@ function renderSchedule() {
         <div class="sched-info">
           <div class="sched-title">${esc(b.title)}</div>
           <div class="sched-meta">${fmtDate(b.date, true)}${b.notes ? ' · ' + esc(b.notes) : ''}</div>
+          ${b.gameTime ? `<div class="sched-times">
+            <span class="sched-gametime">Game ${esc(b.gameTime)}</span>
+            <span class="sched-sep">·</span>
+            <span class="sched-crewcall">Crew call ${computeCrewCall(b.gameTime, b.type)}</span>
+          </div>` : ''}
           <div class="sched-crew-count">${assigned} / ${LIVE_ROLES.length} crew assigned</div>
         </div>
         ${S.teacherMode ? `
@@ -786,6 +876,11 @@ function renderAvailabilityPage() {
         </div>
         <div class="avail-bc-title">${esc(b.title)}</div>
         ${b.notes ? `<div class="avail-bc-notes">${esc(b.notes)}</div>` : ''}
+        ${b.gameTime ? `
+        <div class="avail-bc-times">
+          <span class="avail-gametime-chip">Game ${esc(b.gameTime)}</span>
+          <span class="avail-crewcall-chip">Crew call ${computeCrewCall(b.gameTime, b.type)}</span>
+        </div>` : ''}
 
         <label class="avail-available-toggle ${!myName ? 'avail-disabled' : ''}">
           <input type="checkbox" class="avail-broadcast-cb"
@@ -820,13 +915,27 @@ function renderAvailabilityPage() {
         <p>Check the positions you're interested in for each upcoming broadcast. Your teacher will use this to assign the crew.</p>
       </div>
       <div class="avail-name-card card">
-        <label class="avail-name-label">Your Name</label>
-        <div class="avail-name-row">
-          <input id="avail-page-name" type="text" class="avail-name-input"
-            placeholder="First and last name" value="${esc(myName)}" style="max-width:320px">
-          ${myName
-            ? `<span class="avail-name-saved">✓ Saved</span>`
-            : `<span class="dim" style="font-size:0.8rem">Enter your name to enable sign-ups</span>`}
+        <div class="avail-name-fields">
+          <div class="avail-name-field">
+            <label class="avail-name-label">Your Name</label>
+            <div class="avail-name-row">
+              <input id="avail-page-name" type="text" class="avail-name-input"
+                placeholder="First and last name" value="${esc(myName)}">
+              ${myName
+                ? `<span class="avail-name-saved">✓ Saved</span>`
+                : `<span class="dim" style="font-size:0.8rem">Enter your name to enable sign-ups</span>`}
+            </div>
+          </div>
+          <div class="avail-name-field">
+            <label class="avail-name-label">Email Address <span style="font-weight:400;color:var(--dim)">(for broadcast reminders)</span></label>
+            <div class="avail-name-row">
+              <input id="avail-page-email" type="email" class="avail-name-input"
+                placeholder="your@email.com" value="${esc(localStorage.getItem('hm_student_email') || '')}">
+              ${localStorage.getItem('hm_student_email')
+                ? `<span class="avail-name-saved">✓ Saved</span>`
+                : `<span class="dim" style="font-size:0.8rem">Receive day-before reminders</span>`}
+            </div>
+          </div>
         </div>
       </div>
       <div class="avail-broadcasts">${broadcastCards}</div>
@@ -1047,7 +1156,8 @@ async function toggleBroadcastAvailability(broadcastId, available) {
   );
 
   if (available && !existing) {
-    const entry = { broadcastId, studentName: myName, interestedRoles: [], submittedAt: new Date().toISOString() };
+    const myEmail = localStorage.getItem('hm_student_email') || '';
+    const entry = { broadcastId, studentName: myName, email: myEmail, interestedRoles: [], submittedAt: new Date().toISOString() };
     const db = getDB();
     if (db) {
       try {
@@ -1082,7 +1192,8 @@ async function toggleAvailabilityRole(broadcastId, role, checked) {
     if (db) await db.collection('hm_availability').doc(existing.id)
       .update({ interestedRoles: existing.interestedRoles }).catch(() => {});
   } else {
-    const entry = { broadcastId, studentName: myName, interestedRoles: checked ? [role] : [], submittedAt: new Date().toISOString() };
+    const myEmail = localStorage.getItem('hm_student_email') || '';
+    const entry = { broadcastId, studentName: myName, email: myEmail, interestedRoles: checked ? [role] : [], submittedAt: new Date().toISOString() };
     if (db) {
       try {
         const ref = await db.collection('hm_availability').add(entry);
@@ -1320,9 +1431,29 @@ function attachListeners() {
       const n = apn.value.trim();
       if (n) { localStorage.setItem('hm_student_name', n); render(); }
     });
-    apn.addEventListener('keydown', e => {
-      if (e.key === 'Enter') apn.blur();
+    apn.addEventListener('keydown', e => { if (e.key === 'Enter') apn.blur(); });
+  }
+
+  const ape = document.getElementById('avail-page-email');
+  if (ape) {
+    ape.addEventListener('blur', () => {
+      const e = ape.value.trim();
+      if (e) {
+        localStorage.setItem('hm_student_email', e);
+        // Update all existing availability entries for this student
+        const myName = localStorage.getItem('hm_student_name') || '';
+        if (myName) {
+          (S.availabilities || [])
+            .filter(a => a.studentName.toLowerCase() === myName.toLowerCase() && a.email !== e)
+            .forEach(a => {
+              a.email = e;
+              db.collection('hm_availability').doc(a.id).update({ email: e }).catch(() => {});
+            });
+        }
+        render();
+      }
     });
+    ape.addEventListener('keydown', e => { if (e.key === 'Enter') ape.blur(); });
   }
 
   const dbRefresh = document.getElementById('db-refresh-plans');
@@ -1373,6 +1504,21 @@ async function loadFromFirebase() {
       }));
     }
     const ALL_SEED_GAMES = [...BASKETBALL_HOME_GAMES, ...FOOTBALL_HOME_GAMES, ...GIRLS_BASKETBALL_HOME_GAMES, ...SPECIAL_EVENTS];
+
+    // Patch existing records missing gameTime (one-time migration)
+    const needsGameTime = broadcasts.filter(b => {
+      const seed = ALL_SEED_GAMES.find(g => g.id === b.id);
+      return seed && seed.gameTime !== undefined && b.gameTime === undefined;
+    });
+    if (needsGameTime.length) {
+      await Promise.all(needsGameTime.map(b => {
+        const seed = ALL_SEED_GAMES.find(g => g.id === b.id);
+        b.gameTime = seed.gameTime;
+        b.notes    = seed.notes;
+        return db.collection('hm_broadcasts').doc(b.id).update({ gameTime: seed.gameTime, notes: seed.notes }).catch(() => {});
+      }));
+    }
+
     if (broadcasts.length === 0 && ALL_SEED_GAMES.length) {
       await Promise.all(ALL_SEED_GAMES.map(g =>
         db.collection('hm_broadcasts').doc(g.id).set(g).catch(() => {})
