@@ -1628,14 +1628,17 @@ function renderLessonCourse() {
 }
 
 function renderLessonSection(sec, courseColor) {
+  let inner = '';
+
   switch (sec.type) {
 
     case 'intro':
-      return `
+      inner = `
         <div class="lesson-intro-block">
           <div class="lesson-intro-icon">💡</div>
           <p class="lesson-intro-para">${sec.content}</p>
         </div>`;
+      break;
 
     case 'callout': {
       const isWarn = sec.warning;
@@ -1644,7 +1647,7 @@ function renderLessonSection(sec, courseColor) {
       const body   = sec.content
         ? `<p class="lesson-callout-text">${sec.content}</p>`
         : `<ul class="lesson-callout-list">${(sec.items || []).map(i => `<li>${i}</li>`).join('')}</ul>`;
-      return `
+      inner = `
         <div class="lesson-callout ${cls}">
           <div class="lesson-callout-head">
             <span class="lesson-callout-icon">${icon}</span>
@@ -1652,10 +1655,11 @@ function renderLessonSection(sec, courseColor) {
           </div>
           ${body}
         </div>`;
+      break;
     }
 
     case 'keyterms':
-      return `
+      inner = `
         <div class="lesson-block">
           ${sec.title ? `
             <div class="lesson-block-head">
@@ -1670,9 +1674,10 @@ function renderLessonSection(sec, courseColor) {
               </div>`).join('')}
           </div>
         </div>`;
+      break;
 
     case 'list':
-      return `
+      inner = `
         <div class="lesson-block">
           ${sec.title ? `
             <div class="lesson-block-head">
@@ -1683,9 +1688,10 @@ function renderLessonSection(sec, courseColor) {
             ${(sec.items || []).map(i => `<li>${i}</li>`).join('')}
           </ul>
         </div>`;
+      break;
 
     case 'text':
-      return `
+      inner = `
         <div class="lesson-block">
           ${sec.title ? `
             <div class="lesson-block-head">
@@ -1694,25 +1700,52 @@ function renderLessonSection(sec, courseColor) {
             </div>` : ''}
           <p class="lesson-text-para">${sec.content}</p>
         </div>`;
+      break;
 
-    case 'image':
-      return `
-        <div class="lesson-image-block">
-          <img src="${sec.src}" alt="${sec.caption || ''}" class="lesson-img" loading="lazy">
-          ${sec.caption ? `<p class="lesson-img-caption">${sec.caption}</p>` : ''}
+    case 'gallery':
+      inner = `
+        <div class="lesson-block">
+          ${sec.label ? `<div class="lesson-block-head"><span class="lesson-block-icon">🖼️</span><h3 class="lesson-block-title">${sec.label}</h3></div>` : ''}
+          <div class="lesson-gallery">
+            ${(sec.images || []).map(img => `
+              <div class="lesson-gallery-item">
+                <img src="${img.src}" alt="${img.alt || ''}" loading="lazy">
+                ${img.alt ? `<p class="lesson-gallery-cap">${img.alt}</p>` : ''}
+              </div>`).join('')}
+          </div>
         </div>`;
+      break;
 
-    case 'logos':
-      return `
-        <div class="lesson-logos">
-          ${(sec.images || []).map(img => `
-            <div class="lesson-logo-item">
-              <img src="${img.src}" alt="${img.alt || ''}" class="lesson-logo-img" loading="lazy">
-            </div>`).join('')}
+    case 'video': {
+      const vid = sec.youtube.replace(/.*(?:youtu\.be\/|v=)([^&?]+).*/, '$1');
+      inner = `
+        <div class="lesson-block">
+          ${sec.label ? `<div class="lesson-block-head"><span class="lesson-block-icon">📺</span><h3 class="lesson-block-title">${sec.label}</h3></div>` : ''}
+          <div class="lesson-video-wrap">
+            <iframe src="https://www.youtube.com/embed/${vid}" allowfullscreen title="${sec.label || 'Video'}"></iframe>
+          </div>
+          ${sec.note ? `<p class="lesson-video-note">${sec.note}</p>` : ''}
         </div>`;
+      break;
+    }
 
     default: return '';
   }
+
+  if (!inner) return '';
+
+  if (sec.sideImg) {
+    return `
+      <div class="ls-panel">
+        <div class="ls-panel-content">${inner}</div>
+        <div class="ls-side-img">
+          <img src="${sec.sideImg}" alt="${sec.sideImgAlt || ''}" loading="lazy">
+          ${sec.sideImgCap ? `<p class="ls-side-img-cap">${sec.sideImgCap}</p>` : ''}
+        </div>
+      </div>`;
+  }
+
+  return inner;
 }
 
 function renderLessonSlide(slide, lesson, lessonNum, icon, course, next) {

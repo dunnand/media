@@ -1256,6 +1256,48 @@ body {
 .lesson-text-para em     { color: var(--text); font-style: italic; }
 .lesson-text-para strong { color: var(--text); }
 
+/* ── Lesson Side-Image Panel ─────────────────────────────────── */
+.ls-panel {
+  display: grid; grid-template-columns: 1fr 300px; gap: 24px; align-items: start;
+}
+.ls-panel-content { min-width: 0; }
+.ls-side-img { flex-shrink: 0; }
+.ls-side-img img {
+  width: 100%; border-radius: 12px;
+  border: 1px solid var(--border); display: block;
+}
+.ls-side-img-cap {
+  font-size: 0.75rem; color: var(--dim); font-style: italic;
+  margin-top: 8px; line-height: 1.45; text-align: center;
+}
+
+/* ── Lesson Gallery ───────────────────────────────────────────── */
+.lesson-gallery {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px; margin-top: 4px;
+}
+.lesson-gallery-item img {
+  width: 100%; aspect-ratio: 1; object-fit: cover;
+  border-radius: 10px; border: 1px solid var(--border); display: block;
+}
+.lesson-gallery-cap {
+  font-size: 0.72rem; color: var(--dim); text-align: center;
+  margin-top: 5px; line-height: 1.3;
+}
+
+/* ── Lesson Video ─────────────────────────────────────────────── */
+.lesson-video-wrap {
+  position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;
+  border-radius: 12px; border: 1px solid var(--border); background: #000;
+  margin-top: 8px;
+}
+.lesson-video-wrap iframe {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; border-radius: 12px;
+}
+.lesson-video-note {
+  font-size: 0.88rem; color: var(--dim); margin-top: 10px; font-style: italic; line-height: 1.5;
+}
+
 /* ── Lesson Logos (side-by-side) ─────────────────────────────── */
 .lesson-logos {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -1311,4 +1353,7 @@ body {
   .ls-slide { padding: 32px 18px; }
   .ls-title-h1 { font-size: 1.75rem; }
   .ls-progress-wrap { width: 60px; }
+  .ls-panel { grid-template-columns: 1fr; }
+  .ls-side-img { order: -1; max-height: 220px; overflow: hidden; }
+  .ls-side-img img { object-fit: cover; height: 220px; }
 }
