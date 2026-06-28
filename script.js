@@ -42,6 +42,7 @@ const S = {
   lessonCourse: null,
   lessonUnit: null,
   lessonId: null,
+  lessonSlide: 0,
 };
 
 // ── Timing Helpers ────────────────────────────────────────────
@@ -1505,6 +1506,7 @@ function attachListeners() {
       S.lessonCourse = el.dataset.lessonCourse;
       S.lessonUnit   = el.dataset.lessonUnit  || null;
       S.lessonId     = el.dataset.lessonId    || null;
+      S.lessonSlide  = 0;
       go('lessons');
     }));
 
@@ -1513,6 +1515,22 @@ function attachListeners() {
       const dest = el.dataset.lessonBack;
       if (dest === 'hub')    { S.lessonCourse = null; S.lessonUnit = null; S.lessonId = null; }
       if (dest === 'course') { S.lessonUnit = null; S.lessonId = null; }
+      S.lessonSlide = 0;
+      go('lessons');
+    }));
+
+  document.querySelectorAll('[data-lesson-slide]').forEach(el =>
+    el.addEventListener('click', () => {
+      const dir = el.dataset.lessonSlide;
+      const course = LESSONS[S.lessonCourse];
+      if (!course) return;
+      const unit = course.units.find(u => u.id === S.lessonUnit);
+      if (!unit) return;
+      const lesson = unit.lessons.find(l => l.id === S.lessonId);
+      if (!lesson) return;
+      const total = (lesson.sections || []).length + 2;
+      if (dir === 'next' && S.lessonSlide < total - 1) S.lessonSlide++;
+      if (dir === 'prev' && S.lessonSlide > 0) S.lessonSlide--;
       go('lessons');
     }));
 }
@@ -1697,6 +1715,55 @@ function renderLessonSection(sec, courseColor) {
   }
 }
 
+function renderLessonSlide(slide, lesson, lessonNum, icon, course, next) {
+  if (slide.type === '_title') {
+    return `
+      <div class="ls-slide ls-title-slide">
+        <div class="ls-title-icon">${icon}</div>
+        <div class="ls-title-eyebrow">Lesson ${lessonNum} &nbsp;·&nbsp; ${lesson.duration}</div>
+        <h1 class="ls-title-h1">${lesson.title}</h1>
+        <p class="ls-title-summary">${lesson.summary}</p>
+        <div class="ls-start-hint">Press → to begin</div>
+      </div>`;
+  }
+
+  if (slide.type === '_end') {
+    if (next) {
+      return `
+        <div class="ls-slide ls-end-slide">
+          <div class="ls-end-icon">✅</div>
+          <h2 class="ls-end-h2">Lesson Complete!</h2>
+          <p class="ls-end-sub">Up next in ${course.name}:</p>
+          <div class="lesson-next-card ls-end-next-card"
+               data-lesson-course="${S.lessonCourse}"
+               data-lesson-unit="${next.unitId}"
+               data-lesson-id="${next.id}">
+            <span class="lesson-next-icon">${LESSON_ICONS[next.id] || course.icon}</span>
+            <div>
+              <div class="lesson-next-title">${next.title}</div>
+              <div class="lesson-next-meta">${next.duration}</div>
+            </div>
+            <span class="lesson-next-arrow">→</span>
+          </div>
+        </div>`;
+    }
+    return `
+      <div class="ls-slide ls-end-slide">
+        <div class="ls-end-icon">🎉</div>
+        <h2 class="ls-end-h2">Unit Complete!</h2>
+        <p class="ls-end-sub">You've finished all lessons in this unit.</p>
+        <button class="btn-secondary ls-end-back" data-lesson-back="course">← Back to ${course.name}</button>
+      </div>`;
+  }
+
+  return `
+    <div class="ls-slide ls-section-slide">
+      <div class="ls-section-inner">
+        ${renderLessonSection(slide, course.color)}
+      </div>
+    </div>`;
+}
+
 function renderLessonPage() {
   const course = LESSONS[S.lessonCourse];
   if (!course) return renderLessonsHub();
@@ -1706,54 +1773,36 @@ function renderLessonPage() {
   if (!lesson) return renderLessonCourse();
 
   const allLessons = course.units.flatMap(u => u.lessons.map(l => ({ ...l, unitId: u.id })));
-  const idx  = allLessons.findIndex(l => l.id === S.lessonId && l.unitId === S.lessonUnit);
-  const next = allLessons[idx + 1] || null;
-  const lessonNum = idx + 1;
+  const lessonIdx = allLessons.findIndex(l => l.id === S.lessonId && l.unitId === S.lessonUnit);
+  const next = allLessons[lessonIdx + 1] || null;
+  const lessonNum = lessonIdx + 1;
   const icon = LESSON_ICONS[lesson.id] || course.icon;
 
-  const sections = (lesson.sections || []).map(s => renderLessonSection(s, course.color)).join('');
+  const slides = [{ type: '_title' }, ...(lesson.sections || []), { type: '_end' }];
+  const total  = slides.length;
+  const idx    = Math.max(0, Math.min(S.lessonSlide || 0, total - 1));
+  const pct    = Math.round(((idx + 1) / total) * 100);
 
   return `
-    ${navBar('lessons')}
-    <div class="lesson-page">
-      <div class="lesson-hero" style="--clr:${course.color}">
-        <div class="lesson-hero-inner">
-          <div class="lesson-hero-breadcrumb">
-            <span class="lesson-bc-link" data-lesson-back="hub">Lessons</span>
-            <span class="lesson-bc-sep">›</span>
-            <span class="lesson-bc-link" data-lesson-back="course">${course.name}</span>
-            <span class="lesson-bc-sep">›</span>
-            <span class="lesson-bc-current">${unit.title}</span>
-          </div>
-          <div class="lesson-hero-body">
-            <div class="lesson-hero-icon">${icon}</div>
-            <div class="lesson-hero-text">
-              <div class="lesson-hero-num">Lesson ${lessonNum} &nbsp;·&nbsp; ${lesson.duration}</div>
-              <h1 class="lesson-hero-title">${lesson.title}</h1>
-              <p class="lesson-hero-summary">${lesson.summary}</p>
-            </div>
-          </div>
-        </div>
+    <div class="ls-show" style="--clr:${course.color}">
+      <div class="ls-slide-area">
+        ${renderLessonSlide(slides[idx], lesson, lessonNum, icon, course, next)}
       </div>
-      <div class="class-page lesson-body">
-        <div class="lesson-content">${sections}</div>
-        <div class="lesson-footer">
-          ${next ? `
-            <div class="lesson-next-label">Up Next →</div>
-            <div class="lesson-next-card"
-                 data-lesson-course="${S.lessonCourse}"
-                 data-lesson-unit="${next.unitId}"
-                 data-lesson-id="${next.id}"
-                 style="--clr:${course.color}">
-              <span class="lesson-next-icon">${LESSON_ICONS[next.id] || course.icon}</span>
-              <div>
-                <div class="lesson-next-title">${next.title}</div>
-                <div class="lesson-next-meta">${next.duration}</div>
-              </div>
-              <span class="lesson-next-arrow">→</span>
-            </div>` : `
-            <div class="lesson-complete-msg">🎉 Unit Complete!</div>
-            <button class="btn-secondary" data-lesson-back="course">← Back to ${course.name}</button>`}
+      <div class="ls-controls">
+        <div class="ls-ctrl-left">
+          <button class="ls-back-btn" data-lesson-back="course">← ${course.name}</button>
+        </div>
+        <div class="ls-ctrl-center">
+          <div class="ls-nav">
+            <button class="ls-nav-btn" data-lesson-slide="prev" ${idx === 0 ? 'disabled' : ''}>&#8592;</button>
+            <div class="ls-counter">${idx + 1} <span class="ls-counter-of">/ ${total}</span></div>
+            <button class="ls-nav-btn" data-lesson-slide="next" ${idx === total - 1 ? 'disabled' : ''}>&#8594;</button>
+          </div>
+          <div class="ls-progress-wrap"><div class="ls-progress-fill" style="width:${pct}%"></div></div>
+          <div class="ls-lesson-label">${icon} ${lesson.title}</div>
+        </div>
+        <div class="ls-ctrl-right">
+          <span class="ls-lesson-num">L${lessonNum}</span>
         </div>
       </div>
     </div>`;
@@ -1835,6 +1884,22 @@ async function loadFromFirebase() {
 async function init() {
   await loadFromFirebase();
   render();
+  document.addEventListener('keydown', e => {
+    if (!S.lessonId) return;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      const course = LESSONS[S.lessonCourse];
+      const unit = course && course.units.find(u => u.id === S.lessonUnit);
+      const lesson = unit && unit.lessons.find(l => l.id === S.lessonId);
+      if (!lesson) return;
+      const total = (lesson.sections || []).length + 2;
+      if (S.lessonSlide < total - 1) { S.lessonSlide++; go('lessons'); }
+    }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (S.lessonSlide > 0) { S.lessonSlide--; go('lessons'); }
+    }
+  });
 }
 
 document.addEventListener('DOMContentLoaded', init);
