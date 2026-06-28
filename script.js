@@ -39,10 +39,13 @@ const S = {
   iasbEntries: [],
   iasbCategory: null,
   availabilities: [],
+  lessonCourse: null,
+  lessonUnit: null,
+  lessonId: null,
 };
 
-// ── Crew Call Helper ─────────────────────────────────────────
-function computeCrewCall(gameTime, type) {
+// ── Timing Helpers ────────────────────────────────────────────
+function computeTimeOffset(gameTime, offsetMins) {
   if (!gameTime) return null;
   const m = gameTime.match(/^(\d+):(\d+)\s*(AM|PM)$/i);
   if (!m) return null;
@@ -51,14 +54,19 @@ function computeCrewCall(gameTime, type) {
   const isPM = m[3].toUpperCase() === 'PM';
   if (isPM && h !== 12) h += 12;
   if (!isPM && h === 12) h = 0;
-  const offset = CREW_CALL_MINS[type] ?? CREW_CALL_DEFAULT_MINS;
-  let total = h * 60 + min - offset;
+  let total = h * 60 + min - offsetMins;
   if (total < 0) total += 1440;
   const ch = Math.floor(total / 60);
   const cm = total % 60;
   const period = ch >= 12 ? 'PM' : 'AM';
   const dh = ch > 12 ? ch - 12 : ch === 0 ? 12 : ch;
   return `${dh}:${cm.toString().padStart(2, '0')} ${period}`;
+}
+function computeArrival(gameTime, type) {
+  return computeTimeOffset(gameTime, ARRIVAL_MINS[type] ?? ARRIVAL_DEFAULT_MINS);
+}
+function computeDoor33(gameTime, type) {
+  return computeTimeOffset(gameTime, (ARRIVAL_MINS[type] ?? ARRIVAL_DEFAULT_MINS) + DOOR_EXTRA_MINS);
 }
 
 // ── Router ────────────────────────────────────────────────────
@@ -86,6 +94,7 @@ function render() {
     case 'iasb':          app.innerHTML = renderIASB();          break;
     case 'iasb-category': app.innerHTML = renderIASBCategory();  break;
     case 'dashboard':     app.innerHTML = renderDashboard();     break;
+    case 'lessons':       app.innerHTML = renderLessons();       break;
     default:              app.innerHTML = renderHome();
   }
   attachListeners();
@@ -99,7 +108,8 @@ function navBar(active) {
       <div class="nav-links">
         <a class="${active === 'radio'    ? 'active' : ''}" data-nav="radio">📻 Radio</a>
         <a class="${active === 'live'     ? 'active' : ''}" data-nav="live">🎬 Live</a>
-        <a class="${active === 'yearbook'   ? 'active' : ''}" data-nav="yearbook">📖 Yearbook</a>
+        <a class="${active === 'yearbook' ? 'active' : ''}" data-nav="yearbook">📖 Yearbook</a>
+        <a class="${active === 'lessons'  ? 'active' : ''}" data-nav="lessons">📚 Lessons</a>
         ${S.teacherMode ? `<a class="${active === 'dashboard' ? 'active' : ''}" data-nav="dashboard" style="color:var(--radio)">📊 Dashboard</a>` : ''}
         <button class="teacher-btn ${S.teacherMode ? 'active' : ''}" id="teacher-toggle">
           ${S.teacherMode ? '🔓 Teacher' : '🔑'}
@@ -441,9 +451,11 @@ function renderLive() {
         <div class="next-date">${fmtDate(next.date, true)}</div>
         ${next.gameTime ? `
         <div class="next-times">
-          <span class="next-gametime">Game ${esc(next.gameTime)}</span>
+          <span class="next-door33">Door 33 ${computeDoor33(next.gameTime, next.type)}</span>
           <span style="color:var(--border)">·</span>
-          <span class="next-crewcall">Crew call ${computeCrewCall(next.gameTime, next.type)}</span>
+          <span class="next-arrival">${ARRIVAL_LABEL[next.type] ?? ARRIVAL_DEFAULT_LABEL} ${computeArrival(next.gameTime, next.type)}</span>
+          <span style="color:var(--border)">·</span>
+          <span class="next-gametime">Game ${esc(next.gameTime)}</span>
         </div>` : ''}
         <div class="countdown">${days <= 0 ? 'TODAY' : days === 1 ? '1 day away' : days + ' days away'}</div>
         <button class="btn-primary" data-broadcast="${next.id}" style="background:var(--live);color:#000">
@@ -467,8 +479,8 @@ function renderLive() {
           <div class="broadcast-type-dot" style="background:${et.color}"></div>
           <div class="broadcast-info">
             <div class="broadcast-title">${esc(b.title)}</div>
-            <div class="broadcast-date">${fmtDate(b.date)}${b.gameTime ? ' · ' + esc(b.gameTime) : ''}</div>
-            ${b.gameTime ? `<div class="broadcast-crewcall">Crew call ${computeCrewCall(b.gameTime, b.type)}</div>` : ''}
+            <div class="broadcast-date">${fmtDate(b.date)}${b.gameTime ? ' · Game ' + esc(b.gameTime) : ''}</div>
+            ${b.gameTime ? `<div class="broadcast-crewcall">Door 33 ${computeDoor33(b.gameTime, b.type)} · ${ARRIVAL_LABEL[b.type] ?? ARRIVAL_DEFAULT_LABEL} ${computeArrival(b.gameTime, b.type)}</div>` : ''}
           </div>
           <div class="broadcast-tag" style="color:${et.color}">${et.label}</div>
         </div>
@@ -535,25 +547,24 @@ function renderAvailabilityCard(b) {
 
   const avails     = (S.availabilities || []).filter(a => a.broadcastId === b.id);
   const withEmails = avails.filter(a => a.email);
-  const crewCall  = computeCrewCall(b.gameTime, b.type);
+  const arrivalTime = computeArrival(b.gameTime, b.type);
+  const door33Time  = computeDoor33(b.gameTime, b.type);
+  const arrivalLbl  = ARRIVAL_LABEL[b.type] ?? ARRIVAL_DEFAULT_LABEL;
 
   const reminderMailto = (() => {
     if (!withEmails.length) return null;
-    const isBasketball = b.type === 'basketball_boys' || b.type === 'basketball_girls';
-    const offsetMins   = CREW_CALL_MINS[b.type] ?? CREW_CALL_DEFAULT_MINS;
     const subject = `Tomorrow — ${b.title}`;
     const body = [
       `Hi,`,
       ``,
       `Reminder: you are signed up to crew the following broadcast TOMORROW.`,
       ``,
-      `Event:     ${b.title}`,
-      `Date:      ${fmtDate(b.date, true)}`,
-      b.gameTime ? `Game Time: ${b.gameTime}` : null,
-      crewCall   ? `Crew Call: ${crewCall}  ← BE HERE` : null,
-      b.notes && b.notes !== 'TBD — time to be announced' ? `Location:  ${b.notes}` : null,
-      ``,
-      crewCall ? `Arrive at ${crewCall}. Eat in the classroom first (${offsetMins} min before ${isBasketball ? 'tip-off' : 'kickoff'}), then setup.` : null,
+      `Event:        ${b.title}`,
+      `Date:         ${fmtDate(b.date, true)}`,
+      door33Time  ? `DOOR 33:      ${door33Time}  ← Arrive here first` : null,
+      arrivalTime ? `${arrivalLbl.toUpperCase().padEnd(13)} ${arrivalTime}  ← Be set up by this time` : null,
+      b.gameTime  ? `Game Time:    ${b.gameTime}` : null,
+      b.notes && b.notes !== 'TBD — time to be announced' ? `Location:     ${b.notes}` : null,
       ``,
       `See you there!`,
       `— Homestead Live`,
@@ -639,9 +650,9 @@ function renderBroadcast() {
   ];
   const checklist = b.checklist || defaultChecklist;
 
-  const crewCall = computeCrewCall(b.gameTime, b.type);
-  const isBasketball = b.type === 'basketball_boys' || b.type === 'basketball_girls';
-  const offsetMins = CREW_CALL_MINS[b.type] ?? CREW_CALL_DEFAULT_MINS;
+  const arrivalTime = computeArrival(b.gameTime, b.type);
+  const door33Time  = computeDoor33(b.gameTime, b.type);
+  const arrivalLbl  = ARRIVAL_LABEL[b.type] ?? ARRIVAL_DEFAULT_LABEL;
 
   return `
     ${navBar('live')}
@@ -651,11 +662,16 @@ function renderBroadcast() {
         <div class="broadcast-type-badge" style="background:${et.color}">${et.label}</div>
         <h1>${esc(b.title)}</h1>
         <div class="broadcast-detail-date">${fmtDate(b.date, true)}</div>
-        ${crewCall ? `
+        ${arrivalTime ? `
         <div class="crew-call-banner">
           <div class="crew-call-block">
-            <div class="crew-call-time-val">${crewCall}</div>
-            <div class="crew-call-time-label">Crew Call</div>
+            <div class="crew-call-time-val door33-val">${door33Time}</div>
+            <div class="crew-call-time-label">Door 33</div>
+          </div>
+          <div class="crew-call-divider"></div>
+          <div class="crew-call-block">
+            <div class="crew-call-time-val arrival-val">${arrivalTime}</div>
+            <div class="crew-call-time-label">${arrivalLbl}</div>
           </div>
           <div class="crew-call-divider"></div>
           <div class="crew-call-block">
@@ -663,8 +679,7 @@ function renderBroadcast() {
             <div class="crew-call-time-label">Game Time</div>
           </div>
           <div class="crew-call-rule">
-            ${offsetMins} min early — eat in classroom, then setup
-            ${isBasketball ? '<span class="crew-call-tag">Basketball</span>' : ''}
+            Enter through <strong>Door 33</strong> at ${door33Time} · Be in ${arrivalLbl} by ${arrivalTime}
           </div>
         </div>` : ''}
       </div>
@@ -728,9 +743,11 @@ function renderSchedule() {
           <div class="sched-title">${esc(b.title)}</div>
           <div class="sched-meta">${fmtDate(b.date, true)}${b.notes ? ' · ' + esc(b.notes) : ''}</div>
           ${b.gameTime ? `<div class="sched-times">
-            <span class="sched-gametime">Game ${esc(b.gameTime)}</span>
+            <span class="sched-door33">Door 33 ${computeDoor33(b.gameTime, b.type)}</span>
             <span class="sched-sep">·</span>
-            <span class="sched-crewcall">Crew call ${computeCrewCall(b.gameTime, b.type)}</span>
+            <span class="sched-arrival">${ARRIVAL_LABEL[b.type] ?? ARRIVAL_DEFAULT_LABEL} ${computeArrival(b.gameTime, b.type)}</span>
+            <span class="sched-sep">·</span>
+            <span class="sched-gametime">Game ${esc(b.gameTime)}</span>
           </div>` : ''}
           <div class="sched-crew-count">${assigned} / ${LIVE_ROLES.length} crew assigned</div>
         </div>
@@ -852,7 +869,9 @@ function renderYearbook() {
 
 // ── BROADCAST SIGN-UP (Student) ───────────────────────────────
 function renderAvailabilityPage() {
-  const myName = localStorage.getItem('hm_student_name') || '';
+  const myName  = localStorage.getItem('hm_student_name') || '';
+  const myEmail = localStorage.getItem('hm_student_email') || '';
+  const canSignUp = !!(myName && myEmail);
   const now = new Date();
   const upcoming = (S.broadcasts || [])
     .filter(b => new Date(b.date + 'T00:00:00') >= now)
@@ -878,15 +897,16 @@ function renderAvailabilityPage() {
         ${b.notes ? `<div class="avail-bc-notes">${esc(b.notes)}</div>` : ''}
         ${b.gameTime ? `
         <div class="avail-bc-times">
+          <span class="avail-door33-chip">🚪 Door 33 ${computeDoor33(b.gameTime, b.type)}</span>
+          <span class="avail-arrival-chip">${ARRIVAL_LABEL[b.type] ?? ARRIVAL_DEFAULT_LABEL} ${computeArrival(b.gameTime, b.type)}</span>
           <span class="avail-gametime-chip">Game ${esc(b.gameTime)}</span>
-          <span class="avail-crewcall-chip">Crew call ${computeCrewCall(b.gameTime, b.type)}</span>
         </div>` : ''}
 
-        <label class="avail-available-toggle ${!myName ? 'avail-disabled' : ''}">
+        <label class="avail-available-toggle ${!canSignUp ? 'avail-disabled' : ''}">
           <input type="checkbox" class="avail-broadcast-cb"
             data-bid="${b.id}"
             ${isAvailable ? 'checked' : ''}
-            ${!myName ? 'disabled' : ''}>
+            ${!canSignUp ? 'disabled' : ''}>
           <span class="avail-toggle-label">I'm available for this broadcast</span>
         </label>
 
@@ -917,25 +937,26 @@ function renderAvailabilityPage() {
       <div class="avail-name-card card">
         <div class="avail-name-fields">
           <div class="avail-name-field">
-            <label class="avail-name-label">Your Name</label>
+            <label class="avail-name-label">Your Name <span class="avail-required">required</span></label>
             <div class="avail-name-row">
-              <input id="avail-page-name" type="text" class="avail-name-input"
+              <input id="avail-page-name" type="text" class="avail-name-input ${!myName ? 'avail-input-empty' : ''}"
                 placeholder="First and last name" value="${esc(myName)}">
               ${myName
                 ? `<span class="avail-name-saved">✓ Saved</span>`
-                : `<span class="dim" style="font-size:0.8rem">Enter your name to enable sign-ups</span>`}
+                : `<span class="avail-hint-warn">← Enter to unlock sign-ups</span>`}
             </div>
           </div>
           <div class="avail-name-field">
-            <label class="avail-name-label">Email Address <span style="font-weight:400;color:var(--dim)">(for broadcast reminders)</span></label>
+            <label class="avail-name-label">Email Address <span class="avail-required">required</span></label>
             <div class="avail-name-row">
-              <input id="avail-page-email" type="email" class="avail-name-input"
-                placeholder="your@email.com" value="${esc(localStorage.getItem('hm_student_email') || '')}">
-              ${localStorage.getItem('hm_student_email')
+              <input id="avail-page-email" type="email" class="avail-name-input ${!myEmail ? 'avail-input-empty' : ''}"
+                placeholder="your@email.com" value="${esc(myEmail)}">
+              ${myEmail
                 ? `<span class="avail-name-saved">✓ Saved</span>`
-                : `<span class="dim" style="font-size:0.8rem">Receive day-before reminders</span>`}
+                : `<span class="avail-hint-warn">← Enter to unlock sign-ups</span>`}
             </div>
           </div>
+          ${!canSignUp ? `<p class="avail-unlock-msg">Enter your name and email above to sign up for broadcasts.</p>` : ''}
         </div>
       </div>
       <div class="avail-broadcasts">${broadcastCards}</div>
@@ -1148,8 +1169,9 @@ async function saveChecklist() {
 
 // ── Availability ──────────────────────────────────────────────
 async function toggleBroadcastAvailability(broadcastId, available) {
-  const myName = localStorage.getItem('hm_student_name') || '';
-  if (!myName) { showToast('Enter your name first.'); return; }
+  const myName  = localStorage.getItem('hm_student_name') || '';
+  const myEmail = localStorage.getItem('hm_student_email') || '';
+  if (!myName || !myEmail) { showToast('Enter your name and email first.'); return; }
 
   const existing = (S.availabilities || []).find(
     a => a.broadcastId === broadcastId && a.studentName.toLowerCase() === myName.toLowerCase()
@@ -1176,8 +1198,9 @@ async function toggleBroadcastAvailability(broadcastId, available) {
 }
 
 async function toggleAvailabilityRole(broadcastId, role, checked) {
-  const myName = localStorage.getItem('hm_student_name') || '';
-  if (!myName) { showToast('Enter your name first.'); return; }
+  const myName  = localStorage.getItem('hm_student_name') || '';
+  const myEmail = localStorage.getItem('hm_student_email') || '';
+  if (!myName || !myEmail) { showToast('Enter your name and email first.'); return; }
 
   const existing = (S.availabilities || []).find(
     a => a.broadcastId === broadcastId && a.studentName.toLowerCase() === myName.toLowerCase()
@@ -1322,7 +1345,12 @@ function showToast(msg) {
 // ── Event Listeners ───────────────────────────────────────────
 function attachListeners() {
   document.querySelectorAll('[data-nav]').forEach(el =>
-    el.addEventListener('click', () => go(el.dataset.nav)));
+    el.addEventListener('click', () => {
+      if (el.dataset.nav === 'lessons') {
+        S.lessonCourse = null; S.lessonUnit = null; S.lessonId = null;
+      }
+      go(el.dataset.nav);
+    }));
 
   document.querySelectorAll('[data-broadcast]').forEach(el =>
     el.addEventListener('click', () => go('broadcast', { broadcastId: el.dataset.broadcast })));
@@ -1471,6 +1499,200 @@ function attachListeners() {
       if (sub) showSubmissionDetail(sub, null);
     });
   });
+
+  document.querySelectorAll('[data-lesson-course]').forEach(el =>
+    el.addEventListener('click', () => {
+      S.lessonCourse = el.dataset.lessonCourse;
+      S.lessonUnit   = el.dataset.lessonUnit  || null;
+      S.lessonId     = el.dataset.lessonId    || null;
+      go('lessons');
+    }));
+
+  document.querySelectorAll('[data-lesson-back]').forEach(el =>
+    el.addEventListener('click', () => {
+      const dest = el.dataset.lessonBack;
+      if (dest === 'hub')    { S.lessonCourse = null; S.lessonUnit = null; S.lessonId = null; }
+      if (dest === 'course') { S.lessonUnit = null; S.lessonId = null; }
+      go('lessons');
+    }));
+}
+
+// ── LESSONS ───────────────────────────────────────────────────
+function renderLessons() {
+  if (S.lessonId) return renderLessonPage();
+  if (S.lessonCourse) return renderLessonCourse();
+  return renderLessonsHub();
+}
+
+function renderLessonsHub() {
+  const cards = Object.entries(LESSONS).map(([key, course]) => {
+    const totalLessons = course.units.reduce((sum, u) => sum + u.lessons.length, 0);
+    const locked = totalLessons === 0;
+    return `
+      <div class="class-card lesson-hub-card ${locked ? 'lesson-locked' : ''}"
+           ${locked ? '' : `data-lesson-course="${key}"`}
+           style="${locked ? '' : `--course-color:${course.color}`}">
+        <div class="class-icon">${course.icon}</div>
+        <div class="class-name" style="color:${locked ? 'var(--dim)' : course.color}">${course.name}</div>
+        ${totalLessons > 0
+          ? `<div class="lesson-hub-meta">${course.units.length} unit${course.units.length !== 1 ? 's' : ''} · ${totalLessons} lesson${totalLessons !== 1 ? 's' : ''}</div>`
+          : `<div class="lesson-hub-meta dim">Coming soon</div>`}
+        <div class="class-enter">${locked ? 'Coming Soon' : 'View Lessons →'}</div>
+      </div>`;
+  }).join('');
+
+  return `
+    ${navBar('lessons')}
+    <div class="class-page">
+      <div class="class-header">
+        <div class="class-header-icon">📚</div>
+        <div>
+          <h1>Lessons</h1>
+          <p>Course units and lesson content for each Media Arts class.</p>
+        </div>
+      </div>
+      <div class="class-grid">${cards}</div>
+    </div>`;
+}
+
+function renderLessonCourse() {
+  const course = LESSONS[S.lessonCourse];
+  if (!course) return renderLessonsHub();
+
+  const units = course.units.map(unit => {
+    const items = unit.lessons.map(l => `
+      <div class="lesson-item"
+           data-lesson-course="${S.lessonCourse}"
+           data-lesson-unit="${unit.id}"
+           data-lesson-id="${l.id}">
+        <div class="lesson-item-body">
+          <div class="lesson-item-title">${l.title}</div>
+          <div class="lesson-item-summary">${l.summary}</div>
+        </div>
+        <div class="lesson-item-right">
+          <span class="lesson-duration-chip">${l.duration}</span>
+          <span class="lesson-arrow">→</span>
+        </div>
+      </div>`).join('');
+    return `
+      <div class="lesson-unit-block">
+        <div class="lesson-unit-header" style="color:${course.color}">${unit.title}</div>
+        <div class="lesson-items-list">${items}</div>
+      </div>`;
+  }).join('');
+
+  return `
+    ${navBar('lessons')}
+    <div class="class-page">
+      <button class="back-btn" data-lesson-back="hub">← Back to Lessons</button>
+      <div class="class-header">
+        <div class="class-header-icon">${course.icon}</div>
+        <div>
+          <h1 style="color:${course.color}">${course.name}</h1>
+          <p>${course.units.length} unit${course.units.length !== 1 ? 's' : ''} · ${course.units.reduce((s, u) => s + u.lessons.length, 0)} lessons</p>
+        </div>
+      </div>
+      <div class="lesson-units-list">${units}</div>
+    </div>`;
+}
+
+function renderLessonSection(sec) {
+  switch (sec.type) {
+    case 'intro':
+      return `<p class="lesson-intro-para">${sec.content}</p>`;
+
+    case 'callout': {
+      const cls = sec.warning ? 'lesson-callout-warn' : 'lesson-callout-tip';
+      const body = sec.content
+        ? `<p class="lesson-callout-text">${sec.content}</p>`
+        : `<ul class="lesson-callout-list">${(sec.items || []).map(i => `<li>${i}</li>`).join('')}</ul>`;
+      return `
+        <div class="lesson-callout ${cls}">
+          <div class="lesson-callout-label">${sec.label}</div>
+          ${body}
+        </div>`;
+    }
+
+    case 'keyterms':
+      return `
+        <div class="lesson-block">
+          ${sec.title ? `<h3 class="lesson-block-title">${sec.title}</h3>` : ''}
+          <div class="lesson-keyterms">
+            ${(sec.terms || []).map(t => `
+              <div class="keyterm-row">
+                <div class="keyterm-key">${t.term}</div>
+                <div class="keyterm-val">${t.def}</div>
+              </div>`).join('')}
+          </div>
+        </div>`;
+
+    case 'list':
+      return `
+        <div class="lesson-block">
+          ${sec.title ? `<h3 class="lesson-block-title">${sec.title}</h3>` : ''}
+          <ul class="lesson-list">
+            ${(sec.items || []).map(i => `<li>${i}</li>`).join('')}
+          </ul>
+        </div>`;
+
+    case 'text':
+      return `
+        <div class="lesson-block">
+          ${sec.title ? `<h3 class="lesson-block-title">${sec.title}</h3>` : ''}
+          <p class="lesson-text-para">${sec.content}</p>
+        </div>`;
+
+    default: return '';
+  }
+}
+
+function renderLessonPage() {
+  const course = LESSONS[S.lessonCourse];
+  if (!course) return renderLessonsHub();
+  const unit = course.units.find(u => u.id === S.lessonUnit);
+  if (!unit) return renderLessonCourse();
+  const lesson = unit.lessons.find(l => l.id === S.lessonId);
+  if (!lesson) return renderLessonCourse();
+
+  const allLessons = course.units.flatMap(u => u.lessons.map(l => ({ ...l, unitId: u.id })));
+  const idx = allLessons.findIndex(l => l.id === S.lessonId && l.unitId === S.lessonUnit);
+  const next = allLessons[idx + 1] || null;
+
+  const sections = (lesson.sections || []).map(renderLessonSection).join('');
+
+  return `
+    ${navBar('lessons')}
+    <div class="class-page lesson-page">
+      <div class="lesson-breadcrumb">
+        <span class="lesson-bc-link" data-lesson-back="hub">Lessons</span>
+        <span class="lesson-bc-sep">›</span>
+        <span class="lesson-bc-link" data-lesson-back="course">${course.name}</span>
+        <span class="lesson-bc-sep">›</span>
+        <span class="lesson-bc-current">${unit.title}</span>
+      </div>
+      <div class="lesson-page-header">
+        <span class="lesson-duration-badge">${lesson.duration}</span>
+        <h1 class="lesson-page-title">${lesson.title}</h1>
+        <p class="lesson-page-summary">${lesson.summary}</p>
+      </div>
+      <div class="lesson-content">${sections}</div>
+      <div class="lesson-footer">
+        ${next ? `
+          <div class="lesson-next-label">Up Next</div>
+          <div class="lesson-next-card"
+               data-lesson-course="${S.lessonCourse}"
+               data-lesson-unit="${next.unitId}"
+               data-lesson-id="${next.id}">
+            <div>
+              <div class="lesson-next-title">${next.title}</div>
+              <div class="lesson-next-meta">${next.duration}</div>
+            </div>
+            <span class="lesson-arrow">→</span>
+          </div>` : `
+          <div class="lesson-complete-msg">✓ You've completed this unit</div>
+          <button class="btn-secondary" data-lesson-back="course">← Back to ${course.name}</button>`}
+      </div>
+    </div>`;
 }
 
 // ── Firebase Load ─────────────────────────────────────────────

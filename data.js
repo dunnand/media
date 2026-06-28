@@ -69,11 +69,14 @@ const STATIONS = [
   { id: 'two',   name: '2.0',       freq: 'The Next Level of Radio', color: '#ef4444' },
 ];
 
-// ── Crew Call Policy ─────────────────────────────────────────
-// Basketball (boys & girls): 75 min before tip-off (less setup needed)
-// All other events: 90 min before start (eat in classroom, then full setup)
-const CREW_CALL_MINS = { basketball_boys: 75, basketball_girls: 75 };
-const CREW_CALL_DEFAULT_MINS = 90;
+// ── Timing Policy ────────────────────────────────────────────
+// Basketball: Media Row 45 min before tip-off · Door 33 unlocks 30 min earlier (75 min before)
+// Football:   Press Box 60 min before kickoff · Door 33 unlocks 30 min earlier (90 min before)
+const ARRIVAL_MINS          = { basketball_boys: 45, basketball_girls: 45, football: 60 };
+const ARRIVAL_DEFAULT_MINS  = 60;
+const DOOR_EXTRA_MINS       = 30;
+const ARRIVAL_LABEL         = { basketball_boys: 'Media Row', basketball_girls: 'Media Row', football: 'Press Box' };
+const ARRIVAL_DEFAULT_LABEL = 'Crew Call';
 
 // ── Basketball Home Games 2026–2027 ──────────────────────────
 const BASKETBALL_HOME_GAMES = [
@@ -316,3 +319,262 @@ const IASB_CATEGORIES = [
     ]
   },
 ];
+
+// ── Lessons ───────────────────────────────────────────────────
+const LESSONS = {
+  radio: {
+    name: 'Radio Broadcasting',
+    color: '#a78bfa',
+    icon: '📻',
+    units: [
+      {
+        id: 'u1',
+        title: 'Unit 1 — Introduction',
+        lessons: [
+          {
+            id: 'welcome',
+            title: 'Welcome to Audio Broadcasting',
+            duration: '1 class',
+            summary: 'What you\'ll do this semester, the daily routine, and program overview.',
+            sections: [
+              { type: 'intro', content: 'This class is about doing real radio. From day one you\'ll be on the air at one of two actual stations — The Point 91FM and WCYT 2.0. You\'ll produce real content, work with professional equipment, and build skills that carry into any broadcast career.' },
+              { type: 'callout', label: 'Semester Roadmap', items: [
+                'Air Personality — Solo DJ breaks on The Point and 2.0',
+                'Talk Shows — Weekly group radio shows with your crew',
+                'Projects — Issue Report, Copywriting, IASB Competition entries',
+                'Production — Adobe Audition, imaging, spot production',
+              ]},
+              { type: 'text', title: 'Daily Routine', content: 'The first 5–10 minutes of every class are prep time. Use this to organize your show notes, review your playlist, write DJ breaks, or work on class assignments. Come in ready to work — not ready to start getting ready.' },
+              { type: 'callout', label: 'After School', items: [
+                'The Point and 2.0 run live shows Monday through Friday after school',
+                'Audio Aficionados — full album listening club (day TBD)',
+              ]},
+            ]
+          },
+          {
+            id: 'stations',
+            title: 'Our Stations',
+            duration: '1 class',
+            summary: 'WCYT The Point 91FM and 2.0 — history, genre, power, and identity.',
+            sections: [
+              { type: 'intro', content: 'Homestead Audio Broadcasting operates two real radio stations. Both are student-run and broadcast to real audiences. Knowing your station is essential before you go on air.' },
+              { type: 'keyterms', title: 'WCYT — The Point 91FM', terms: [
+                { term: 'On Air Since', def: '1993' },
+                { term: 'Genre', def: 'Independent Music' },
+                { term: 'Frequency', def: '91.1 FM' },
+                { term: 'Power', def: '1 Kilowatt (upgraded from 125W in 2024)' },
+                { term: 'Taglines', def: '"Where Music is the Point" · "Your Alternative to Commercial Radio" · "The Independent Music Source"' },
+                { term: 'Website', def: 'WCYT.org' },
+              ]},
+              { type: 'keyterms', title: 'WCYT 2.0', terms: [
+                { term: 'On Air Since', def: '2023' },
+                { term: 'Genre', def: 'All music types' },
+                { term: 'Platform', def: 'Online only — WCYT.org' },
+                { term: 'Tagline', def: '"The Next Level of Radio"' },
+              ]},
+              { type: 'callout', label: 'Studio Facilities', items: [
+                'Recording Studios — multitrack production sessions',
+                'Podcast Studios — close-mic interview and podcast setup',
+                'Radio Stations — live broadcast environments',
+              ]},
+              { type: 'text', title: 'School of the Year', content: 'The program has won IASB Radio School of the Year in 2024, 2023, 2021, 2019, 2018, and 2017. That reputation is built one air shift at a time — by students like you.' },
+            ]
+          },
+          {
+            id: 'fcc',
+            title: 'FCC Rules & On-Air Standards',
+            duration: '2 classes',
+            summary: 'Federal regulations every broadcaster must know — obscenity, indecency, underwriting.',
+            sections: [
+              { type: 'intro', content: 'Every broadcaster in America is regulated by the FCC — the Federal Communications Commission. As a student broadcaster on a licensed station, you are held to the exact same legal standards as any professional. "I didn\'t know I was on the air" is not a defense the FCC accepts.' },
+              { type: 'callout', label: '⚠️ Non-Negotiable', warning: true, content: 'Any profanity or unprofessional language — whether you think the mic is live or not — will get you pulled from air immediately. Treat every microphone as live at all times.' },
+              { type: 'keyterms', title: 'The Three Content Categories', terms: [
+                { term: 'Obscene', def: 'No First Amendment protection. Must meet the Supreme Court\'s 3-part test. Prohibited at ALL hours, 24/7.' },
+                { term: 'Indecent', def: 'Sexual or excretory content that is patently offensive but doesn\'t meet the obscenity test. Banned 6 AM–10 PM when children may be listening.' },
+                { term: 'Profane', def: '"Grossly offensive" language considered a public nuisance. Also banned 6 AM–10 PM.' },
+              ]},
+              { type: 'text', title: 'Enforcement & Consequences', content: 'Violations begin with listener complaints reviewed by FCC staff. Penalties range from a formal warning to a fine to revoking the station\'s broadcast license. In 2020, one university paid a $76,000 fine for underwriting violations alone. These consequences are real — for a licensed station and for you personally.' },
+              { type: 'text', title: 'Our Standard Goes Further', content: 'At Homestead we go beyond the legal minimum. Speak on air as if Mrs. Summers is in the room — G-rated only. No speaking negatively about students, teachers, or anyone else. The FCC also prohibits broadcasting false information about crimes or catastrophes if it would cause public harm.' },
+              { type: 'keyterms', title: 'Sponsors & Underwriting', terms: [
+                { term: 'Why underwriting?', def: 'Noncommercial FM stations cannot run traditional advertisements. Sponsors are instead acknowledged with scripted underwriting announcements.' },
+                { term: 'Our sponsors', def: 'Marcos Pizza · Casa Italian Restaurants' },
+                { term: 'What\'s not allowed', def: 'Comparative or qualitative descriptions, price information, sales, calls to action, inducements to buy, or detailed "menu listings"' },
+                { term: 'The rule', def: 'If you\'re unsure whether you can say it about a sponsor — don\'t say it.' },
+              ]},
+            ]
+          },
+          {
+            id: 'expectations',
+            title: 'Classroom Expectations & Grading',
+            duration: '1 class',
+            summary: 'Room rules, participation grading, project submission, and the late work policy.',
+            sections: [
+              { type: 'intro', content: 'Your grade is built on participation and effort — not tests. Show up prepared, engage with the work, and push yourself on air. Every week is a fresh opportunity to earn full credit.' },
+              { type: 'list', title: 'Room Rules', items: [
+                'No food in editing studios or radio stations. Drinks with lids at desks only.',
+                'Phones out of sight unless pre-approved by the teacher.',
+                'One person in the hallway at a time. No passes in the first or last 10 minutes of class.',
+                'If you\'re scheduled on-air, use the restroom before class — missing your air shift affects your participation grade.',
+                'Leave all spaces clean. Repeated messes = no food privileges for everyone.',
+              ]},
+              { type: 'callout', label: 'What Counts for Your Grade', items: [
+                'Effort and time spent on your on-air shifts',
+                'Engagement during class — discussions, prep, activities',
+                'Projects turned in on time and complete',
+                'Staying on task (no games, no email chatting)',
+                'How you use the last 10 minutes — leaving early tells me you could have fit in one more break',
+              ]},
+              { type: 'text', title: 'Project Submission', content: 'All projects go into the Google Shared Drive Dropbox with your name and the project title in the correct folder for the year. Late work must be emailed to adunn@sacs.k12.in.us with the assignment name and file location — it can help your grade but won\'t replace the participation points you missed that week.' },
+              { type: 'text', title: 'Different Skill Levels Are a Feature', content: 'Grades are individual — you are not compared to anyone else. There are many different experience levels in this room, and that\'s a strength. Work with students who are more advanced, ask questions, and use the people around you as a resource.' },
+            ]
+          },
+        ]
+      },
+      {
+        id: 'u2',
+        title: 'Unit 2 — Air Personality',
+        lessons: [
+          {
+            id: 'ap-intro',
+            title: 'What is Air Personality?',
+            duration: '1 class',
+            summary: 'Goals for your air shifts, the 5-break structure, and what makes a great DJ break.',
+            sections: [
+              { type: 'intro', content: 'Air personality is the art of connecting with listeners between songs. Great radio isn\'t just music — it\'s about making people feel like someone real is there with them. Your job is to be that presence.' },
+              { type: 'callout', label: 'Your Air Shift Goals', items: [
+                'Goal of 5 DJ breaks per class period — before and after songs only',
+                'Always skip ID Shouts and move Top of Hour breaks',
+                'Introduce yourself in your first break of every shift',
+                'Give the listener artist and song information with a personal touch',
+                'Final break: sign off, thank listeners, announce who\'s on next',
+              ]},
+              { type: 'keyterms', title: 'Pre-Sell and Back-Sell', terms: [
+                { term: 'Back-Sell', def: 'Identifying what song just played — artist, title, album. Done immediately after a song ends, before you say anything else.' },
+                { term: 'Pre-Sell', def: 'Teasing what\'s coming up next. Creates anticipation and gives listeners a reason to stay.' },
+              ]},
+              { type: 'text', title: 'Personality on Air', content: 'Every break should include a window into your actual personality — your hobbies, a dream destination, music that matters to you, something you found interesting. Genuine interest is audible. Listeners hear the difference between real and forced.' },
+            ]
+          },
+          {
+            id: 'front-load',
+            title: 'Front Loading Content',
+            duration: '1 class',
+            summary: 'Lead with the most important info first. Artist, song, album, year — never filler phrases.',
+            sections: [
+              { type: 'intro', content: 'Front loading means delivering the most important information first. Listeners don\'t wait around — if your break opens with a filler phrase, you\'ve already lost them before you\'ve said anything meaningful.' },
+              { type: 'callout', label: '🚫 Never Open a Break With These', warning: true, items: [
+                '"That was…"',
+                '"You just heard…"',
+                '"What was just played was…"',
+              ]},
+              { type: 'list', title: 'Back-Sell Formula — Always Lead With This', items: [
+                'Artist Name',
+                'Song Title',
+                'Album Title',
+                'Release Year',
+              ]},
+              { type: 'text', title: 'Example Back-Sell', content: '"It\'s The Point 91FM — The XX, \'I Dare You\' from <em>I See You</em>, 2017. I\'m [Your Name]…"<br><br>Notice: the artist name comes before anything else. The listener hears what they need immediately, not after you warm up.' },
+              { type: 'callout', label: 'Every Break Should End With', items: [
+                'Your name or show name',
+                'A WCYT tagline (e.g. "Where Music is the Point" or "Your Alternative to Commercial Radio")',
+                'A tease for the next song or segment',
+              ]},
+            ]
+          },
+          {
+            id: 'first-break',
+            title: 'Your First DJ Break',
+            duration: '1–2 classes',
+            summary: 'The assignment: a complete on-air break with back-sell, intro, promo, fun fact, and pre-sell.',
+            sections: [
+              { type: 'intro', content: 'Time to go on air. Your first DJ break assignment puts every element together into one complete on-air break. Each piece serves a purpose — don\'t skip any of them.' },
+              { type: 'list', title: 'Assignment: Build Your Break', items: [
+                '<strong>Back-Sell</strong> — Go to Simian, choose a song. Prepare a brief, engaging back-sell with the artist, song title, and album.',
+                '<strong>Introduction</strong> — Your name, your role at WCYT, and one honest thing about yourself.',
+                '<strong>WCYT Promotion</strong> — One promotional line: a special show, upcoming event, or how to follow the station on social media.',
+                '<strong>Fun Fact</strong> — Something interesting related to music, local events, or high school life.',
+                '<strong>Pre-Sell</strong> — Choose your next Simian song. Tease it with the title, artist, and a reason to stay.',
+              ]},
+              { type: 'text', title: 'After Your Solo Break', content: 'Once you\'ve done your solo break, you\'ll pair up with a partner for 4 DJ breaks the following week. No themes like a Talk Show — use the Air Shift Prep Page in the Shared Drive (AIRCHECKS2025) to plan before the shift.' },
+              { type: 'callout', label: 'Air Shift Rules (Every Shift)', items: [
+                'Head directly to your assigned studio at the start of air time',
+                'Both DJs participate in every break — no one sits out',
+                'Use the prep page for every break — do not wing it',
+                'Final break: sign off, thank listeners, announce who\'s on next',
+                'Headphones go on mic stands — clean them with wipes before you leave',
+              ]},
+            ]
+          },
+        ]
+      },
+      {
+        id: 'u3',
+        title: 'Unit 3 — Radio Talk Shows',
+        lessons: [
+          {
+            id: 'show-structure',
+            title: 'Talk Show Structure',
+            duration: '2 classes',
+            summary: 'How a show is structured — three breaks, recurring segments, group formation, and topic research.',
+            sections: [
+              { type: 'intro', content: 'Talk shows run the full class period with two or more hosts. Three 8–10 minute breaks cover News, Celebrities, Entertainment, Social Media, Teens, and Lifestyle. No sports — there\'s a separate class for that.' },
+              { type: 'keyterms', title: 'Three-Break Format', terms: [
+                { term: 'Break 1', def: 'Introduction — overview of the episode\'s topics + News of the Week. Use Google News, Reddit, or X for a current relevant story.' },
+                { term: 'Break 2', def: 'Recurring Segment — your show\'s weekly feature with an engaging hook and station promotion.' },
+                { term: 'Break 3', def: 'Main Topic — the signature deep-dive of the episode. Can also be a second news story.' },
+              ]},
+              { type: 'list', title: 'Topic Categories', items: [
+                'Celebrity', 'Video Games', 'Movies', 'Technology',
+                'Super Heroes', 'School Life', 'Music', 'Pop Culture', 'Advice',
+              ]},
+              { type: 'callout', label: 'Building Your Show Identity', items: [
+                'Choose a show name',
+                'Write a tagline — one sentence describing what the show is about (e.g. "Wild Ride: Where we discuss our weekly Tears, Trials, and Tribulations")',
+                'Design a recurring segment that gives listeners something consistent to come back for',
+                'Use your tagline at the start of every show and in promotional mentions',
+              ]},
+              { type: 'text', title: 'Finding Your Group', content: 'Groups are 3–4 students. When forming, think about what topic you\'d all genuinely research and talk about every week for a full semester. Shared real interest makes far better radio than just picking your friends.' },
+            ]
+          },
+        ]
+      },
+      {
+        id: 'u4',
+        title: 'Unit 4 — Production',
+        lessons: [
+          {
+            id: 'audition-basics',
+            title: 'Adobe Audition Basics',
+            duration: '2–3 classes',
+            summary: 'Destructive vs. non-destructive editing, normalize, hard limit, and audio cleanup tools.',
+            sections: [
+              { type: 'intro', content: 'Adobe Audition is your main production tool. You\'ll use it to edit airchecks, build show opens, produce promos, master competition entries, and clean up voice recordings.' },
+              { type: 'keyterms', title: 'Two Modes of Editing', terms: [
+                { term: 'Destructive Edit', def: 'Permanently changes the source audio file. Cannot be undone after saving. Use only when you\'re completely sure.' },
+                { term: 'Non-Destructive Edit', def: 'Works with clips and effects on a multitrack timeline. Original file is untouched. This is the default method for most production work.' },
+              ]},
+              { type: 'list', title: 'Mastering Your Audio — The 2-Step', items: [
+                'Normalize to −0.1 dB (or −6 dB for multitrack mixes)',
+                'Apply Hard Limit to prevent clipping and control peak levels',
+              ]},
+              { type: 'callout', label: 'Quick Cleanup Tool', content: 'Adobe Podcast Enhance (podcast.adobe.com/enhance) dramatically cleans up voice recordings — removes room noise, improves mic quality. Run your audio through it before you master. The before/after difference is significant.' },
+              { type: 'text', title: 'Remixing Audio', content: 'Audition\'s Remix tool lets you re-cut music to any target length. Use <strong>Edit Length</strong> (Short = more cuts, Long = fewer transitions) and <strong>Features</strong> (Timbre for beat-focused cuts, Harmonic for melody-based). Set <strong>Minimum Loop</strong> and <strong>Maximum Slack</strong> to control how close the output needs to hit your target duration.' },
+            ]
+          },
+        ]
+      },
+    ]
+  },
+  live: {
+    name: 'Homestead Live',
+    color: '#06b6d4',
+    icon: '🎬',
+    units: []
+  },
+  yearbook: {
+    name: 'Yearbook',
+    color: '#34d399',
+    icon: '📖',
+    units: []
+  }
+};
