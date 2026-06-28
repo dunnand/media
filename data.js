@@ -349,6 +349,7 @@ const LESSONS = {
                 'The Point and 2.0 run live shows Monday through Friday after school',
                 'Audio Aficionados — full album listening club (day TBD)',
               ]},
+              { type: 'image', src: 'images/iasb-group.png', caption: 'The Homestead Audio Broadcasting team at IASB competition — this could be you.' },
             ]
           },
           {
@@ -358,6 +359,10 @@ const LESSONS = {
             summary: 'WCYT The Point 91FM and 2.0 — history, genre, power, and identity.',
             sections: [
               { type: 'intro', content: 'Homestead Audio Broadcasting operates two real radio stations. Both are student-run and broadcast to real audiences. Knowing your station is essential before you go on air.' },
+              { type: 'logos', images: [
+                { src: 'images/logo-wcyt-point.png', alt: 'WCYT The Point 91FM' },
+                { src: 'images/logo-2point0.png', alt: 'WCYT 2.0 — The Next Level of Radio' },
+              ]},
               { type: 'keyterms', title: 'WCYT — The Point 91FM', terms: [
                 { term: 'On Air Since', def: '1993' },
                 { term: 'Genre', def: 'Independent Music' },
@@ -372,6 +377,8 @@ const LESSONS = {
                 { term: 'Platform', def: 'Online only — WCYT.org' },
                 { term: 'Tagline', def: '"The Next Level of Radio"' },
               ]},
+              { type: 'image', src: 'images/wcyt-website.png', caption: 'WCYT.org — the station\'s home online. Community focused, student run.' },
+              { type: 'image', src: 'images/coverage-map.png', caption: 'The Point 91FM\'s broadcast coverage area across Fort Wayne and surrounding communities.' },
               { type: 'callout', label: 'Studio Facilities', items: [
                 'Recording Studios — multitrack production sessions',
                 'Podcast Studios — close-mic interview and podcast setup',
@@ -452,6 +459,8 @@ const LESSONS = {
                 { term: 'Back-Sell', def: 'Identifying what song just played — artist, title, album. Done immediately after a song ends, before you say anything else.' },
                 { term: 'Pre-Sell', def: 'Teasing what\'s coming up next. Creates anticipation and gives listeners a reason to stay.' },
               ]},
+              { type: 'image', src: 'images/mic-cartoon.png', caption: 'Every break is your moment — make it count.' },
+              { type: 'image', src: 'images/npr-tips.png', caption: 'NPR\'s guide to sounding your best on air. These apply to every single shift.' },
               { type: 'text', title: 'Personality on Air', content: 'Every break should include a window into your actual personality — your hobbies, a dream destination, music that matters to you, something you found interesting. Genuine interest is audible. Listeners hear the difference between real and forced.' },
             ]
           },
@@ -495,6 +504,8 @@ const LESSONS = {
                 '<strong>Fun Fact</strong> — Something interesting related to music, local events, or high school life.',
                 '<strong>Pre-Sell</strong> — Choose your next Simian song. Tease it with the title, artist, and a reason to stay.',
               ]},
+              { type: 'image', src: 'images/simian.png', caption: 'Simian — the playlist and automation software you\'ll use to find songs and schedule your breaks.' },
+              { type: 'image', src: 'images/benztown.png', caption: 'Benztown music library — 166,000+ production tracks, jingles, and music beds available to you.' },
               { type: 'text', title: 'After Your Solo Break', content: 'Once you\'ve done your solo break, you\'ll pair up with a partner for 4 DJ breaks the following week. No themes like a Talk Show — use the Air Shift Prep Page in the Shared Drive (AIRCHECKS2025) to plan before the shift.' },
               { type: 'callout', label: 'Air Shift Rules (Every Shift)', items: [
                 'Head directly to your assigned studio at the start of air time',
@@ -557,6 +568,8 @@ const LESSONS = {
                 'Normalize to −0.1 dB (or −6 dB for multitrack mixes)',
                 'Apply Hard Limit to prevent clipping and control peak levels',
               ]},
+              { type: 'image', src: 'images/clipping.png', caption: 'Clipping happens when your audio peaks above 0 dB — the waveform hits the ceiling and distorts. Normalize + Hard Limit prevents this.' },
+              { type: 'image', src: 'images/save-as-wav.png', caption: 'Always save your final export as .WAV for the best quality. Use "Save As" in Audition and choose Wave PCM.' },
               { type: 'callout', label: 'Quick Cleanup Tool', content: 'Adobe Podcast Enhance (podcast.adobe.com/enhance) dramatically cleans up voice recordings — removes room noise, improves mic quality. Run your audio through it before you master. The before/after difference is significant.' },
               { type: 'text', title: 'Remixing Audio', content: 'Audition\'s Remix tool lets you re-cut music to any target length. Use <strong>Edit Length</strong> (Short = more cuts, Long = fewer transitions) and <strong>Features</strong> (Timbre for beat-focused cuts, Harmonic for melody-based). Set <strong>Minimum Loop</strong> and <strong>Maximum Slack</strong> to control how close the output needs to hit your target duration.' },
             ]

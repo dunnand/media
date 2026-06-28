@@ -1518,6 +1518,12 @@ function attachListeners() {
 }
 
 // ── LESSONS ───────────────────────────────────────────────────
+const LESSON_ICONS = {
+  welcome: '🎙️', stations: '📡', fcc: '📜', expectations: '📋',
+  'ap-intro': '🎤', 'front-load': '⏩', 'first-break': '🎛️',
+  'show-structure': '🎭', 'audition-basics': '🎚️',
+};
+
 function renderLessons() {
   if (S.lessonId) return renderLessonPage();
   if (S.lessonCourse) return renderLessonCourse();
@@ -1531,13 +1537,13 @@ function renderLessonsHub() {
     return `
       <div class="class-card lesson-hub-card ${locked ? 'lesson-locked' : ''}"
            ${locked ? '' : `data-lesson-course="${key}"`}
-           style="${locked ? '' : `--course-color:${course.color}`}">
-        <div class="class-icon">${course.icon}</div>
+           style="${locked ? '' : `--course-color:${course.color};border-color:${course.color}22`}">
+        <div class="lesson-hub-icon" style="${locked ? '' : `background:${course.color}18`}">${course.icon}</div>
         <div class="class-name" style="color:${locked ? 'var(--dim)' : course.color}">${course.name}</div>
         ${totalLessons > 0
-          ? `<div class="lesson-hub-meta">${course.units.length} unit${course.units.length !== 1 ? 's' : ''} · ${totalLessons} lesson${totalLessons !== 1 ? 's' : ''}</div>`
-          : `<div class="lesson-hub-meta dim">Coming soon</div>`}
-        <div class="class-enter">${locked ? 'Coming Soon' : 'View Lessons →'}</div>
+          ? `<div class="lesson-hub-meta">${course.units.length} unit${course.units.length !== 1 ? 's' : ''} &nbsp;·&nbsp; ${totalLessons} lesson${totalLessons !== 1 ? 's' : ''}</div>`
+          : `<div class="lesson-hub-meta">Coming soon</div>`}
+        <div class="class-enter">${locked ? 'Coming Soon' : 'Open →'}</div>
       </div>`;
   }).join('');
 
@@ -1548,7 +1554,7 @@ function renderLessonsHub() {
         <div class="class-header-icon">📚</div>
         <div>
           <h1>Lessons</h1>
-          <p>Course units and lesson content for each Media Arts class.</p>
+          <p>Pick a class to see units and lessons.</p>
         </div>
       </div>
       <div class="class-grid">${cards}</div>
@@ -1559,24 +1565,31 @@ function renderLessonCourse() {
   const course = LESSONS[S.lessonCourse];
   if (!course) return renderLessonsHub();
 
-  const units = course.units.map(unit => {
-    const items = unit.lessons.map(l => `
-      <div class="lesson-item"
-           data-lesson-course="${S.lessonCourse}"
-           data-lesson-unit="${unit.id}"
-           data-lesson-id="${l.id}">
-        <div class="lesson-item-body">
-          <div class="lesson-item-title">${l.title}</div>
-          <div class="lesson-item-summary">${l.summary}</div>
-        </div>
-        <div class="lesson-item-right">
-          <span class="lesson-duration-chip">${l.duration}</span>
-          <span class="lesson-arrow">→</span>
-        </div>
-      </div>`).join('');
+  const units = course.units.map((unit, ui) => {
+    const items = unit.lessons.map((l, li) => {
+      const icon = LESSON_ICONS[l.id] || course.icon;
+      return `
+        <div class="lesson-item"
+             data-lesson-course="${S.lessonCourse}"
+             data-lesson-unit="${unit.id}"
+             data-lesson-id="${l.id}">
+          <div class="lesson-item-icon">${icon}</div>
+          <div class="lesson-item-body">
+            <div class="lesson-item-num">Lesson ${ui * 10 + li + 1}</div>
+            <div class="lesson-item-title">${l.title}</div>
+            <div class="lesson-item-summary">${l.summary}</div>
+          </div>
+          <div class="lesson-item-right">
+            <span class="lesson-duration-chip">${l.duration}</span>
+            <span class="lesson-item-arrow">→</span>
+          </div>
+        </div>`;
+    }).join('');
     return `
       <div class="lesson-unit-block">
-        <div class="lesson-unit-header" style="color:${course.color}">${unit.title}</div>
+        <div class="lesson-unit-header" style="border-left:4px solid ${course.color};color:${course.color}">
+          ${unit.title}
+        </div>
         <div class="lesson-items-list">${items}</div>
       </div>`;
   }).join('');
@@ -1584,9 +1597,9 @@ function renderLessonCourse() {
   return `
     ${navBar('lessons')}
     <div class="class-page">
-      <button class="back-btn" data-lesson-back="hub">← Back to Lessons</button>
-      <div class="class-header">
-        <div class="class-header-icon">${course.icon}</div>
+      <button class="back-btn" data-lesson-back="hub">← All Lessons</button>
+      <div class="lesson-course-header" style="--clr:${course.color}">
+        <div class="lesson-course-header-icon">${course.icon}</div>
         <div>
           <h1 style="color:${course.color}">${course.name}</h1>
           <p>${course.units.length} unit${course.units.length !== 1 ? 's' : ''} · ${course.units.reduce((s, u) => s + u.lessons.length, 0)} lessons</p>
@@ -1596,19 +1609,29 @@ function renderLessonCourse() {
     </div>`;
 }
 
-function renderLessonSection(sec) {
+function renderLessonSection(sec, courseColor) {
   switch (sec.type) {
+
     case 'intro':
-      return `<p class="lesson-intro-para">${sec.content}</p>`;
+      return `
+        <div class="lesson-intro-block">
+          <div class="lesson-intro-icon">💡</div>
+          <p class="lesson-intro-para">${sec.content}</p>
+        </div>`;
 
     case 'callout': {
-      const cls = sec.warning ? 'lesson-callout-warn' : 'lesson-callout-tip';
-      const body = sec.content
+      const isWarn = sec.warning;
+      const icon   = isWarn ? '⚠️' : '✅';
+      const cls    = isWarn ? 'lesson-callout-warn' : 'lesson-callout-tip';
+      const body   = sec.content
         ? `<p class="lesson-callout-text">${sec.content}</p>`
         : `<ul class="lesson-callout-list">${(sec.items || []).map(i => `<li>${i}</li>`).join('')}</ul>`;
       return `
         <div class="lesson-callout ${cls}">
-          <div class="lesson-callout-label">${sec.label}</div>
+          <div class="lesson-callout-head">
+            <span class="lesson-callout-icon">${icon}</span>
+            <span class="lesson-callout-label">${sec.label}</span>
+          </div>
           ${body}
         </div>`;
     }
@@ -1616,7 +1639,11 @@ function renderLessonSection(sec) {
     case 'keyterms':
       return `
         <div class="lesson-block">
-          ${sec.title ? `<h3 class="lesson-block-title">${sec.title}</h3>` : ''}
+          ${sec.title ? `
+            <div class="lesson-block-head">
+              <span class="lesson-block-icon">📖</span>
+              <h3 class="lesson-block-title">${sec.title}</h3>
+            </div>` : ''}
           <div class="lesson-keyterms">
             ${(sec.terms || []).map(t => `
               <div class="keyterm-row">
@@ -1629,7 +1656,11 @@ function renderLessonSection(sec) {
     case 'list':
       return `
         <div class="lesson-block">
-          ${sec.title ? `<h3 class="lesson-block-title">${sec.title}</h3>` : ''}
+          ${sec.title ? `
+            <div class="lesson-block-head">
+              <span class="lesson-block-icon">📋</span>
+              <h3 class="lesson-block-title">${sec.title}</h3>
+            </div>` : ''}
           <ul class="lesson-list">
             ${(sec.items || []).map(i => `<li>${i}</li>`).join('')}
           </ul>
@@ -1638,8 +1669,28 @@ function renderLessonSection(sec) {
     case 'text':
       return `
         <div class="lesson-block">
-          ${sec.title ? `<h3 class="lesson-block-title">${sec.title}</h3>` : ''}
+          ${sec.title ? `
+            <div class="lesson-block-head">
+              <span class="lesson-block-icon">📝</span>
+              <h3 class="lesson-block-title">${sec.title}</h3>
+            </div>` : ''}
           <p class="lesson-text-para">${sec.content}</p>
+        </div>`;
+
+    case 'image':
+      return `
+        <div class="lesson-image-block">
+          <img src="${sec.src}" alt="${sec.caption || ''}" class="lesson-img" loading="lazy">
+          ${sec.caption ? `<p class="lesson-img-caption">${sec.caption}</p>` : ''}
+        </div>`;
+
+    case 'logos':
+      return `
+        <div class="lesson-logos">
+          ${(sec.images || []).map(img => `
+            <div class="lesson-logo-item">
+              <img src="${img.src}" alt="${img.alt || ''}" class="lesson-logo-img" loading="lazy">
+            </div>`).join('')}
         </div>`;
 
     default: return '';
@@ -1655,42 +1706,55 @@ function renderLessonPage() {
   if (!lesson) return renderLessonCourse();
 
   const allLessons = course.units.flatMap(u => u.lessons.map(l => ({ ...l, unitId: u.id })));
-  const idx = allLessons.findIndex(l => l.id === S.lessonId && l.unitId === S.lessonUnit);
+  const idx  = allLessons.findIndex(l => l.id === S.lessonId && l.unitId === S.lessonUnit);
   const next = allLessons[idx + 1] || null;
+  const lessonNum = idx + 1;
+  const icon = LESSON_ICONS[lesson.id] || course.icon;
 
-  const sections = (lesson.sections || []).map(renderLessonSection).join('');
+  const sections = (lesson.sections || []).map(s => renderLessonSection(s, course.color)).join('');
 
   return `
     ${navBar('lessons')}
-    <div class="class-page lesson-page">
-      <div class="lesson-breadcrumb">
-        <span class="lesson-bc-link" data-lesson-back="hub">Lessons</span>
-        <span class="lesson-bc-sep">›</span>
-        <span class="lesson-bc-link" data-lesson-back="course">${course.name}</span>
-        <span class="lesson-bc-sep">›</span>
-        <span class="lesson-bc-current">${unit.title}</span>
-      </div>
-      <div class="lesson-page-header">
-        <span class="lesson-duration-badge">${lesson.duration}</span>
-        <h1 class="lesson-page-title">${lesson.title}</h1>
-        <p class="lesson-page-summary">${lesson.summary}</p>
-      </div>
-      <div class="lesson-content">${sections}</div>
-      <div class="lesson-footer">
-        ${next ? `
-          <div class="lesson-next-label">Up Next</div>
-          <div class="lesson-next-card"
-               data-lesson-course="${S.lessonCourse}"
-               data-lesson-unit="${next.unitId}"
-               data-lesson-id="${next.id}">
-            <div>
-              <div class="lesson-next-title">${next.title}</div>
-              <div class="lesson-next-meta">${next.duration}</div>
+    <div class="lesson-page">
+      <div class="lesson-hero" style="--clr:${course.color}">
+        <div class="lesson-hero-inner">
+          <div class="lesson-hero-breadcrumb">
+            <span class="lesson-bc-link" data-lesson-back="hub">Lessons</span>
+            <span class="lesson-bc-sep">›</span>
+            <span class="lesson-bc-link" data-lesson-back="course">${course.name}</span>
+            <span class="lesson-bc-sep">›</span>
+            <span class="lesson-bc-current">${unit.title}</span>
+          </div>
+          <div class="lesson-hero-body">
+            <div class="lesson-hero-icon">${icon}</div>
+            <div class="lesson-hero-text">
+              <div class="lesson-hero-num">Lesson ${lessonNum} &nbsp;·&nbsp; ${lesson.duration}</div>
+              <h1 class="lesson-hero-title">${lesson.title}</h1>
+              <p class="lesson-hero-summary">${lesson.summary}</p>
             </div>
-            <span class="lesson-arrow">→</span>
-          </div>` : `
-          <div class="lesson-complete-msg">✓ You've completed this unit</div>
-          <button class="btn-secondary" data-lesson-back="course">← Back to ${course.name}</button>`}
+          </div>
+        </div>
+      </div>
+      <div class="class-page lesson-body">
+        <div class="lesson-content">${sections}</div>
+        <div class="lesson-footer">
+          ${next ? `
+            <div class="lesson-next-label">Up Next →</div>
+            <div class="lesson-next-card"
+                 data-lesson-course="${S.lessonCourse}"
+                 data-lesson-unit="${next.unitId}"
+                 data-lesson-id="${next.id}"
+                 style="--clr:${course.color}">
+              <span class="lesson-next-icon">${LESSON_ICONS[next.id] || course.icon}</span>
+              <div>
+                <div class="lesson-next-title">${next.title}</div>
+                <div class="lesson-next-meta">${next.duration}</div>
+              </div>
+              <span class="lesson-next-arrow">→</span>
+            </div>` : `
+            <div class="lesson-complete-msg">🎉 Unit Complete!</div>
+            <button class="btn-secondary" data-lesson-back="course">← Back to ${course.name}</button>`}
+        </div>
       </div>
     </div>`;
 }
