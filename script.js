@@ -147,6 +147,12 @@ function renderHome() {
           <div class="class-enter">Enter →</div>
         </div>
       </div>
+      <div class="quick-access-bar">
+        <span class="quick-access-label">Quick Access</span>
+        <a class="quick-access-btn" href="https://wcyt.org/dj" target="_blank" rel="noopener">
+          🎙️ DJ Panel <span class="quick-access-url">wcyt.org/dj</span> ↗
+        </a>
+      </div>
     </div>`;
 }
 

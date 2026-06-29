@@ -103,6 +103,29 @@ body {
 }
 .home-tagline { color: var(--dim); font-size: 0.95rem; }
 
+.quick-access-bar {
+  display: flex; align-items: center; gap: 14px;
+  width: 100%; max-width: 960px;
+  padding: 14px 20px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.quick-access-label {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--dim); white-space: nowrap;
+}
+.quick-access-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 18px; border-radius: 8px;
+  background: rgba(167,139,250,0.12); border: 1px solid rgba(167,139,250,0.3);
+  color: var(--radio); font-size: 0.9rem; font-weight: 600;
+  text-decoration: none; transition: all 0.2s;
+}
+.quick-access-btn:hover {
+  background: rgba(167,139,250,0.22); border-color: var(--radio);
+}
+.quick-access-url { font-size: 0.78rem; color: var(--dim); font-weight: 400; }
+
 .class-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
