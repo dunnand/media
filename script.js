@@ -128,7 +128,7 @@ function renderHome() {
   return `
     <div class="home-page">
       <header class="home-header">
-        <div class="home-logo">Homestead Media</div>
+        <img src="images/logo-homestead-media.png" alt="Homestead Media" class="home-logo-img">
         <div class="home-tagline">Homestead High School — Media Arts Program</div>
       </header>
       <div class="class-grid">
