@@ -822,7 +822,7 @@ const LESSONS = {
   indepth: {
     name: 'HHS In-Depth',
     color: '#3b82f6',
-    icon: '🎧',
+    icon: '📺',
     units: []
   }
 };
