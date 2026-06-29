@@ -43,6 +43,7 @@ const S = {
   lessonUnit: null,
   lessonId: null,
   lessonSlide: 0,
+  yearbookCoverage: [],
 };
 
 // ── Timing Helpers ────────────────────────────────────────────
@@ -76,7 +77,8 @@ function go(view, extra) {
   if (extra) Object.assign(S, extra);
   render();
   window.scrollTo(0, 0);
-  if (view === 'dashboard') dashboardLoadPlans();
+  if (view === 'dashboard') { dashboardLoadPlans(); loadYearbookCoverage(); }
+  if (view === 'yearbook')  loadYearbookCoverage();
 }
 
 // ── Render ────────────────────────────────────────────────────
@@ -924,6 +926,29 @@ function renderInDepth() {
 
 // ── YEARBOOK ──────────────────────────────────────────────────
 function renderYearbook() {
+  const myName  = localStorage.getItem('hm_yb_name')  || '';
+  const myEmail = localStorage.getItem('hm_yb_email') || '';
+  const now     = new Date();
+
+  const upcomingEvents = YEARBOOK_EVENTS.filter(e => new Date(e.date + 'T23:59:00') >= now);
+
+  const mySignups = (S.yearbookCoverage || []).filter(
+    s => s.studentName.toLowerCase() === myName.toLowerCase()
+  );
+
+  const eventOptions = upcomingEvents.map(e =>
+    `<option value="${e.id}">${e.icon} ${e.title} — ${fmtDate(e.date, false)}</option>`
+  ).join('');
+
+  const mySignupRows = mySignups.length
+    ? mySignups.map(s => `
+        <div class="yb-my-signup">
+          <span class="yb-my-event">${esc(s.eventTitle)}</span>
+          <span class="yb-my-role yb-role-${s.role}">${roleLabel(s.role)}</span>
+          <button class="yb-unsign-btn" data-yb-unsign="${esc(s.id)}">✕</button>
+        </div>`).join('')
+    : `<p class="dim" style="font-size:0.85rem">You haven't signed up for any events yet.</p>`;
+
   return `
     ${navBar('yearbook')}
     <div class="class-page">
@@ -936,6 +961,7 @@ function renderYearbook() {
       </div>
       <div class="page-grid">
         <div class="main-col">
+
           <section class="card">
             <h2 class="cal-section-title">📅 Coverage Calendar</h2>
             <p class="cal-section-sub">Upcoming events that need to be photographed or covered for Yearbook.</p>
@@ -943,11 +969,156 @@ function renderYearbook() {
               <iframe src="https://calendar.google.com/calendar/embed?src=2b9bdfdee65f7330d8d5d2fd1d4877c1b709289fa0b0747427f57fd62516bed5%40group.calendar.google.com&ctz=America%2FIndiana%2FIndianapolis&bgcolor=%23111111&color=%230F9D58&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=1&showCalendars=0&showTz=0" frameborder="0" scrolling="no" class="cal-embed"></iframe>
             </div>
           </section>
+
+          <section class="card" id="yb-signup-card">
+            <h2 class="cal-section-title">✏️ Sign Up to Cover an Event</h2>
+            <p class="cal-section-sub">Pick an event, choose your role, and submit. Your teacher will confirm assignments.</p>
+
+            <div class="yb-name-row">
+              <div class="form-group">
+                <label>Your Name</label>
+                <input id="yb-name" type="text" placeholder="First and last name" value="${esc(myName)}">
+              </div>
+              <div class="form-group">
+                <label>Your Email</label>
+                <input id="yb-email" type="email" placeholder="student@email.com" value="${esc(myEmail)}">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Event</label>
+              <select id="yb-event">
+                <option value="">— Select an event —</option>
+                ${eventOptions}
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Role</label>
+              <div class="yb-role-picker">
+                <button class="yb-role-btn" data-role="photographer">📷 Photographer</button>
+                <button class="yb-role-btn" data-role="writer">✏️ Writer</button>
+                <button class="yb-role-btn" data-role="designer">🎨 Designer</button>
+              </div>
+              <input type="hidden" id="yb-role" value="">
+            </div>
+
+            <button class="btn-primary" id="yb-submit-btn" style="margin-top:8px">Submit Sign-Up →</button>
+          </section>
+
+          ${myName ? `
+          <section class="card">
+            <h2 class="cal-section-title">My Sign-Ups</h2>
+            <div id="yb-my-signups">${mySignupRows}</div>
+          </section>` : ''}
+
         </div>
         <div class="side-col">
+
+          <section class="card action-card">
+            <div class="action-icon">📒</div>
+            <h3>Walsworth Yearbooks</h3>
+            <p>Log in to build pages, submit layouts, and manage your section.</p>
+            <a class="btn-primary" href="https://login.walsworthyearbooks.com/login" target="_blank" rel="noopener">Open Walsworth ↗</a>
+          </section>
+
+          <section class="card">
+            <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px">📷 Shot List Tips</h3>
+            <div class="yb-shot-list">
+              <div class="yb-shot-type">
+                <div class="yb-shot-label">🏈 Football</div>
+                <ul>
+                  <li>Line of scrimmage action</li>
+                  <li>Touchdown celebrations</li>
+                  <li>Sideline + coaches</li>
+                  <li>Crowd &amp; student section</li>
+                  <li>Band &amp; cheerleaders</li>
+                </ul>
+              </div>
+              <div class="yb-shot-type">
+                <div class="yb-shot-label">🏀 Basketball</div>
+                <ul>
+                  <li>Layups &amp; dunks</li>
+                  <li>Free throw focus</li>
+                  <li>Bench reactions</li>
+                  <li>Halftime &amp; timeouts</li>
+                </ul>
+              </div>
+              <div class="yb-shot-type">
+                <div class="yb-shot-label">🏫 On Campus</div>
+                <ul>
+                  <li>Candid classroom moments</li>
+                  <li>Club &amp; org group photos</li>
+                  <li>Hallway between classes</li>
+                  <li>Events &amp; assemblies</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
         </div>
       </div>
     </div>`;
+}
+
+function roleLabel(role) {
+  return { photographer: '📷 Photographer', writer: '✏️ Writer', designer: '🎨 Designer' }[role] || role;
+}
+
+async function loadYearbookCoverage() {
+  const db = getDB();
+  if (!db) return;
+  try {
+    const snap = await db.collection('hm_yearbook_coverage').orderBy('submittedAt', 'desc').get();
+    S.yearbookCoverage = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    if (S.view === 'yearbook' || S.view === 'dashboard') render();
+  } catch(e) { console.error('yearbook coverage load failed', e); }
+}
+
+async function submitYearbookSignup() {
+  const name    = (document.getElementById('yb-name')?.value || '').trim();
+  const email   = (document.getElementById('yb-email')?.value || '').trim();
+  const eventId = document.getElementById('yb-event')?.value;
+  const role    = document.getElementById('yb-role')?.value;
+
+  if (!name)    { showToast('Please enter your name.');    return; }
+  if (!email)   { showToast('Please enter your email.');   return; }
+  if (!eventId) { showToast('Please select an event.');    return; }
+  if (!role)    { showToast('Please choose a role.');      return; }
+
+  const event = YEARBOOK_EVENTS.find(e => e.id === eventId);
+  if (!event) return;
+
+  const already = (S.yearbookCoverage || []).find(
+    s => s.eventId === eventId && s.studentName.toLowerCase() === name.toLowerCase()
+  );
+  if (already) { showToast('You are already signed up for that event.'); return; }
+
+  const db = getDB();
+  if (!db) { showToast('Database unavailable.'); return; }
+
+  localStorage.setItem('hm_yb_name',  name);
+  localStorage.setItem('hm_yb_email', email);
+
+  try {
+    await db.collection('hm_yearbook_coverage').add({
+      studentName: name, email, eventId, eventTitle: event.title,
+      eventDate: event.date, role, submittedAt: Date.now(),
+    });
+    showToast('Signed up! Your teacher will confirm your assignment.');
+    await loadYearbookCoverage();
+  } catch(e) { showToast('Could not save — try again.'); }
+}
+
+async function unsignYearbook(docId) {
+  if (!confirm('Remove your sign-up for this event?')) return;
+  const db = getDB();
+  if (!db) return;
+  try {
+    await db.collection('hm_yearbook_coverage').doc(docId).delete();
+    showToast('Sign-up removed.');
+    await loadYearbookCoverage();
+  } catch(e) { showToast('Could not remove — try again.'); }
 }
 
 // ── BROADCAST SIGN-UP (Student) ───────────────────────────────
@@ -1582,6 +1753,26 @@ function attachListeners() {
       if (sub) showSubmissionDetail(sub, null);
     });
   });
+
+  // Yearbook role picker
+  document.querySelectorAll('.yb-role-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.yb-role-btn').forEach(b => b.classList.remove('yb-role-active'));
+      btn.classList.add('yb-role-active');
+      const ri = document.getElementById('yb-role');
+      if (ri) ri.value = btn.dataset.role;
+    });
+  });
+
+  const ybSubmit = document.getElementById('yb-submit-btn');
+  if (ybSubmit) ybSubmit.addEventListener('click', submitYearbookSignup);
+
+  document.querySelectorAll('[data-yb-unsign]').forEach(btn =>
+    btn.addEventListener('click', () => unsignYearbook(btn.dataset.ybUnsign)));
+
+  // Yearbook dashboard
+  const ybDash = document.getElementById('yb-dash-refresh');
+  if (ybDash) ybDash.addEventListener('click', loadYearbookCoverage);
 
   document.querySelectorAll('[data-lesson-course]').forEach(el =>
     el.addEventListener('click', () => {
@@ -2404,6 +2595,34 @@ function renderDashboard() {
           <button class="btn-secondary" id="db-refresh-plans" style="font-size:0.8rem">Refresh</button>
         </div>
         <div class="db-plans-list" id="db-plans-list">${plansSection}</div>
+      </section>
+
+      <section class="card db-section">
+        <div class="card-header">
+          <h2>📖 Yearbook Coverage Sign-Ups</h2>
+          <button class="btn-secondary" id="yb-dash-refresh" style="font-size:0.8rem">Refresh</button>
+        </div>
+        ${(() => {
+          const coverage = S.yearbookCoverage || [];
+          if (!coverage.length) return `<p class="dim" style="padding:16px 0;font-size:0.875rem">No sign-ups yet.</p>`;
+          const byEvent = {};
+          coverage.forEach(s => {
+            if (!byEvent[s.eventId]) byEvent[s.eventId] = { title: s.eventTitle, date: s.eventDate, signups: [] };
+            byEvent[s.eventId].signups.push(s);
+          });
+          return Object.values(byEvent).sort((a,b) => a.date.localeCompare(b.date)).map(ev => `
+            <div class="yb-db-event">
+              <div class="yb-db-event-title">${esc(ev.title)} <span class="dim" style="font-weight:400;font-size:0.8rem">${fmtDate(ev.date, false)}</span></div>
+              <div class="yb-db-signups">
+                ${ev.signups.map(s => `
+                  <div class="yb-db-row">
+                    <span class="yb-db-name">${esc(s.studentName)}</span>
+                    <span class="yb-my-role yb-role-${s.role}">${roleLabel(s.role)}</span>
+                    <span class="dim" style="font-size:0.75rem">${s.email}</span>
+                  </div>`).join('')}
+              </div>
+            </div>`).join('');
+        })()}
       </section>
     </div>`;
 }
