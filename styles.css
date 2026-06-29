@@ -1258,16 +1258,17 @@ body {
 
 /* ── Lesson Side-Image Panel ─────────────────────────────────── */
 .ls-panel {
-  display: grid; grid-template-columns: 1fr 300px; gap: 24px; align-items: start;
+  display: flex; flex-direction: column; gap: 20px; width: 100%;
 }
-.ls-panel-content { min-width: 0; }
-.ls-side-img { flex-shrink: 0; }
+.ls-panel-content { width: 100%; }
+.ls-side-img { order: -1; width: 100%; }
 .ls-side-img img {
-  width: 100%; border-radius: 12px;
-  border: 1px solid var(--border); display: block;
+  width: 100%; max-height: 52vh; object-fit: contain;
+  border-radius: 12px; border: 1px solid var(--border);
+  display: block; background: #111;
 }
 .ls-side-img-cap {
-  font-size: 0.75rem; color: var(--dim); font-style: italic;
+  font-size: 0.8rem; color: var(--dim); font-style: italic;
   margin-top: 8px; line-height: 1.45; text-align: center;
 }
 
@@ -1367,7 +1368,5 @@ body {
   .ls-slide { padding: 32px 18px; }
   .ls-title-h1 { font-size: 1.75rem; }
   .ls-progress-wrap { width: 60px; }
-  .ls-panel { grid-template-columns: 1fr; }
-  .ls-side-img { order: -1; max-height: 220px; overflow: hidden; }
-  .ls-side-img img { object-fit: cover; height: 220px; }
+  .ls-side-img img { max-height: 38vh; }
 }
