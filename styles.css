@@ -97,7 +97,7 @@ body {
   padding: 60px 24px;
 }
 .home-header { text-align: center; margin-bottom: 56px; }
-.home-logo-img { max-height: 120px; width: auto; margin: 0 auto 10px; display: block; mix-blend-mode: screen; }
+.home-logo-img { max-height: 120px; width: auto; margin: 0 auto 10px; display: block; }
 .home-logo {
   font-size: 3rem;
   font-weight: 900;
