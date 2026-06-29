@@ -885,7 +885,7 @@ function renderInDepth() {
     ${navBar('indepth')}
     <div class="class-page">
       <div class="class-header">
-        <img src="images/hhs-indepth-thumb.jpg" alt="HHS In-Depth" class="class-header-logo">
+        <img src="images/logo-hhs-indepth.png" alt="HHS In-Depth" class="class-header-logo">
         <div>
           <h1>HHS In-Depth</h1>
           <p>TV news production — anchoring, reporting, packages, and live shots.</p>
