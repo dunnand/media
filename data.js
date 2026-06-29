@@ -449,7 +449,7 @@ const LESSONS = {
               { type: 'callout', label: 'Your Air Shift Goals', items: [
                 'Goal of 5 DJ breaks per class period — before and after songs only',
                 'Always skip ID Shouts and move Top of Hour breaks',
-                'Introduce yourself in your first break of every shift',
+                'Introduce yourself in every break',
                 'Give the listener artist and song information with a personal touch',
                 'Final break: sign off, thank listeners, announce who\'s on next',
               ]},
@@ -503,7 +503,7 @@ const LESSONS = {
                 tip: '⭐ <strong>Advanced move — notice this:</strong> At the end, Carter talks over the instrumental intro of the next song and lands his last word exactly as the lyrics begin. This is called <strong>hitting the post</strong>. You\'ll learn this technique later in the semester. For now, just notice it happens.' },
               { type: 'list', title: 'Every DJ Break Has 5 Elements', items: [
                 '<strong>Back-Sell</strong> — Tell them what just played',
-                '<strong>Introduction</strong> — Tell them who you are <em>(first break of your shift only)</em>',
+                '<strong>Introduction</strong> — Tell them who you are <em>(every break)</em>',
                 '<strong>Promotion</strong> — One line for WCYT',
                 '<strong>Fun Fact</strong> — Something genuine you actually care about',
                 '<strong>Pre-Sell</strong> — Tell them what\'s coming next',
@@ -519,18 +519,10 @@ const LESSONS = {
                 '<strong>Station + Name First</strong> — "It\'s The Point 91FM, I\'m [name], and we just heard [artist/title]..."',
                 '<strong>Name + Tagline First</strong> — "[Name] on Your Alternative to Commercial Radio — [artist/title]..."',
               ]},
-              { type: 'text', title: 'Element 2 — Introduction', content: 'Your intro goes in the <strong>first break of your shift only</strong>. After that, listeners already know who you are. Include your name, the station, and one real thing about yourself — a hobby, an opinion, something honest. Carter\'s intro came <em>after</em> he hooked the listener with a topic — he earned it by being interesting first.' },
+              { type: 'text', title: 'Element 2 — Introduction', content: 'Introduce yourself <strong>every break</strong>. Your name, the station, and one real thing about yourself — a hobby, an opinion, something honest. Keep it fresh each time — don\'t repeat the same line. Carter\'s intro came <em>after</em> he hooked the listener with a topic — he earned it by being interesting first.' },
               { type: 'text', title: 'Element 3 — Promotion', content: 'One line. A special show, an upcoming event, social media, or the station website. Keep it brief — the promotion should feel like something you actually want listeners to know, not a commercial crammed into your break.' },
               { type: 'text', title: 'Element 4 — Fun Fact', content: 'This is where your personality lives. Pick something you actually find interesting — music news, a current event, something at school, a personal take. Carter\'s AI commercials take worked because it was <em>specific</em>: "Coke did it better, not gonna lie." Specific opinions are always better than vague ones. Listeners can tell the difference.' },
               { type: 'text', title: 'Element 5 — Pre-Sell', content: 'Go into Simian and pick your next song <em>before</em> your break starts. Then tease it with the artist, title, and a reason to stay tuned. <em>"Coming up — Vampire Weekend\'s \'Hannah Hunt\' — do not touch that dial."</em><br><br>The pre-sell gives listeners a reason to stay through the music. No pre-sell, no reason to stay.' },
-              { type: 'keyterms', title: 'Finding Your Songs in Simian', terms: [
-                { term: 'How to search', def: 'Use the artist search dropdown to find a specific song — don\'t scroll the live queue' },
-                { term: 'Category 1', def: 'Newest (under 2 months old) — 28% of playlist' },
-                { term: 'Category 2', def: 'Fresh (under 6 months old) — 14%' },
-                { term: 'Category 3', def: '2010s — 14%' },
-                { term: 'Category 4', def: '2000s — 14%' },
-                { term: 'Category 6', def: 'Songs over 6 minutes — 3%' },
-              ], sideImg: 'images/song-catalog.png', sideImgCap: 'Pick your back-sell song and pre-sell song before your break — not during it.' },
               { type: 'text', title: 'The DJ Panel — wcyt.org/dj', content: 'Every shift starts and ends here. Log in at <strong>wcyt.org/dj</strong> (password: <strong>Homestead911-2.0</strong>). Enter your Show/DJ name, select your station, and set status to <strong>On Air</strong> when you go live. Hit <strong>End Show</strong> when you\'re done. The Now Playing Override lets you manually enter what\'s on air when the system can\'t auto-detect it.',
                 sideImg: 'images/dj-panel.png', sideImgCap: 'Set On Air when you start. End Show when you\'re done. Every single shift.' },
               { type: 'callout', label: '✍️ Write Your Break Before You Sit Down', items: [
