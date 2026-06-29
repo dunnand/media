@@ -496,7 +496,7 @@ const LESSONS = {
             sections: [
               { type: 'intro', content: 'Today you go on air. Before you sit down at the board, you need to know exactly what you\'re going to say — and why every word matters.' },
               { type: 'audio',
-                src: 'https://drive.google.com/file/d/1PDoXH2ODiKZXZXFjZN-C9-WuepZUTqqN/preview',
+                src: 'audio/carter-dj-break.mp3',
                 label: 'Listen First — Carter\'s DJ Break',
                 context: 'Before we break down the formula, hear what a complete break sounds like from a real WCYT DJ. Listen for how he opens, where his personality shows up, and how he ends.',
                 note: '<strong>What to listen for:</strong> He opens with the artist and title — not "that was." He gives a real opinion on something happening right now. He invites the listener into a conversation. He teases what\'s next.',
