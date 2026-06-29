@@ -545,6 +545,43 @@ const LESSONS = {
         ]
       },
       {
+        id: 'u2b',
+        title: 'Unit 2 — Radio Show Pairs',
+        lessons: [
+          {
+            id: 'radio-pairs',
+            title: 'Radio Show Pairs',
+            duration: '1 class',
+            summary: 'How pairs work — every other song, both stations, what you say in each break.',
+            sections: [
+              { type: 'intro', content: 'Radio Show Pairs puts two DJs on air together on every other song. Half the class runs The Point, half runs 2.0. You\'re still doing everything from Unit 2 — just with a partner and a faster rotation.',
+                sideImg: 'images/pairs-schedule.png', sideImgCap: 'The weekly pairs schedule — The Point 91FM and 2.0 side by side.' },
+              { type: 'callout', label: 'How Pairs Work', items: [
+                'Half the class is on WCYT The Point — half is on 2.0',
+                'Pairs go on air every other song — not every song',
+                'Both DJs are on mic for every break — no sitting out',
+                'RECORD your shifts — airchecks are required',
+              ]},
+              { type: 'list', title: 'What Goes In Every Break', items: [
+                '<strong>Pre-Sell & Back-Sell</strong> — Artist, title, what just played and what\'s next',
+                '<strong>Coming Up in the Hour</strong> — Tease something interesting ahead',
+                '<strong>Quick Music News</strong> — One current story from the music world',
+                '<strong>Quick Artist Info</strong> — A fact about the artist you just played',
+                '<strong>Fun Topic</strong> — Something genuine, your opinion, your personality',
+                '<strong>Pre-Sell</strong> — Tease the next song with a reason to stay',
+              ]},
+              { type: 'callout', label: 'Pick Your Own Playlist', items: [
+                'You choose your songs from the Simian catalog — not auto-scheduled',
+                'Be creative — don\'t just play the first songs you find',
+                'Your playlist should reflect your taste and fit the station\'s vibe',
+                'Pre-sell every song before it plays so listeners know what\'s coming',
+              ]},
+              { type: 'callout', label: '⚠️ Record Every Shift', warning: true, content: 'You must record your airshift every time. Airchecks are how you self-assess, how your teacher grades, and how you build your IASB portfolio. If you don\'t record, that shift didn\'t happen.' },
+            ]
+          },
+        ]
+      },
+      {
         id: 'u3',
         title: 'Unit 3 — Radio Talk Shows',
         lessons: [
@@ -596,6 +633,7 @@ const LESSONS = {
         lessons: [
           {
             id: 'audition-basics',
+
             title: 'Adobe Audition Basics',
             duration: '2–3 classes',
             summary: 'Destructive vs. non-destructive editing, normalize, hard limit, and audio cleanup tools.',
@@ -615,6 +653,126 @@ const LESSONS = {
                 sideImg: 'images/save-as-wav.png', sideImgCap: 'Use "Save As" in Audition → Wave PCM. This is your final export step every time.' },
               { type: 'callout', label: 'Quick Cleanup Tool', content: 'Adobe Podcast Enhance (podcast.adobe.com/enhance) dramatically cleans up voice recordings — removes room noise, improves mic quality. Run your audio through it before you master.' },
               { type: 'video', youtube: 'xI0USfUwJRs', label: 'How to Edit Keyframes in Adobe Audition', note: 'Keyframes let you automate volume, panning, and effects over time — essential for building polished promos and show opens.' },
+            ]
+          },
+          {
+            id: 'stutter',
+            title: 'Stutter Effect',
+            duration: '1–2 classes',
+            summary: 'Build a stutter effect in Audition using copy/paste, crossfades, and pitch shifting on envelopes.',
+            sections: [
+              { type: 'intro', content: 'The stutter effect is one of the most recognizable sounds in radio imaging. You\'ll build it by cutting a single word into repeated pieces, crossfading them, then automating a pitch shift over time using envelopes.' },
+              { type: 'list', title: 'Step 1 — Record and Set Up', items: [
+                'Record: "The Point 91FM — Louder, Clearer, Better"',
+                'Record two complete versions',
+                'Place your recording into a multitrack session',
+              ]},
+              { type: 'list', title: 'Step 2 — Build the Stutter', items: [
+                'Use the Razor tool to cut after "The Point 91FM, Louder, Clearer"',
+                'Move "Better" to the right to create space',
+                'Highlight just the "Buh" sound from "Better"',
+                'Copy and paste that "Buh" sound 4 times in a row',
+                'Make sure all 4 clips are crossfaded into each other',
+              ]},
+              { type: 'list', title: 'Step 3 — Add Pitch Shift', items: [
+                'Open the Effects Rack for your stutter track',
+                'Add Time and Pitch → Pitch Shifter',
+                'Close the effect popup',
+                'Click the > arrow next to the Read menu on your stutter track',
+                'Select Show Envelopes → Pitch Shifter',
+                'Draw keyframes on the timeline to shift pitch across the stutter',
+              ], sideImg: 'images/pitch-shifter-envelope.png', sideImgCap: 'Show Envelopes → Pitch Shifter lets you draw pitch changes over time directly on the track.' },
+              { type: 'video', youtube: 'PtJ6bZzFUW8', label: 'How to Get a Stutter Effect on Vocals (Adobe Audition Multitrack)', note: 'This covers the exact stutter workflow you\'ll use — watch before you start.' },
+            ]
+          },
+          {
+            id: 'double-track',
+            title: 'Double Track',
+            duration: '1 class',
+            summary: 'Use Automatic Speech Alignment to layer two voice recordings and create a thicker, doubled sound.',
+            sections: [
+              { type: 'intro', content: 'Double tracking takes two recordings of the same line and aligns them perfectly using Adobe Audition\'s Automatic Speech Alignment tool. The result is a thicker, more powerful vocal sound used in radio imaging and production.' },
+              { type: 'list', title: 'How to Double Track', items: [
+                'Select your two different "Clearer" audio parts from your recordings',
+                'Copy one and paste it to the track directly below the other',
+                'Hold <strong>Ctrl + Left Click</strong> to select both clips at once',
+                'Right-click one of the clips → <strong>Automatic Speech Alignment</strong>',
+                'Audition will align the second clip to match the first perfectly',
+              ], sideImg: 'images/audition-remix-align.png', sideImgCap: 'Right-click menu showing Automatic Speech Alignment — this is what locks two vocal tracks together.' },
+              { type: 'callout', label: 'Why It Works', items: [
+                'Even two perfect takes are slightly different in timing and tone',
+                'Speech Alignment corrects those differences automatically',
+                'The result sounds thicker and more professional than a single track',
+                'Used on station IDs, imaging elements, and show opens',
+              ]},
+              { type: 'video', youtube: 'Zuxzl8pl-Jg', label: 'Double Up Your Voice in Adobe Audition', note: 'Watch this to see the full double tracking workflow in action.' },
+            ]
+          },
+          {
+            id: 'remix-stretch',
+            title: 'Remix & Stretch',
+            duration: '1–2 classes',
+            summary: 'Use Remix to fit a music bed to any length, and Stretch to manually resize audio clips on the timeline.',
+            sections: [
+              { type: 'intro', content: 'Remix and Stretch are two ways to make audio fit a specific duration. Remix intelligently rearranges a music bed to hit an exact length. Stretch lets you manually drag a clip longer or shorter. Together they\'re essential for production work.' },
+              { type: 'list', title: 'Getting Your Files', items: [
+                'Log into Benztown: User <strong>wcytfm</strong> / Password <strong>WCYT91.1homestead</strong>',
+                'Download 1 music bed and 1 alien/imaging FX clip',
+                'Place both into your multitrack session',
+              ]},
+              { type: 'list', title: 'Enable Remix on Your Music Bed', items: [
+                'Right-click your music bed clip on the timeline',
+                'Go to <strong>Remix → Enable Remix</strong>',
+                'A blue Remix bar will appear on the clip',
+              ], sideImg: 'images/audition-remix-align.png', sideImgCap: 'Right-click → Remix → Enable Remix to activate intelligent duration matching.' },
+              { type: 'list', title: 'Set Your Target Duration', items: [
+                'Click the <strong>Properties</strong> tab in the panel on the right',
+                'Change the <strong>Target Duration</strong> to your desired length',
+                'Audition will intelligently rearrange the music to fit',
+                'Use <strong>Edit Length</strong> slider (Short → Long) to control how much it edits',
+                'Use <strong>Features</strong> slider (Timbre → Harmonic) to control what it matches',
+              ], sideImg: 'images/remix-properties.png', sideImgCap: 'Remix Properties — set Target Duration and adjust Edit Length and Features sliders.' },
+              { type: 'list', title: 'Using Stretch', items: [
+                'Select the Stretch icon in the toolbar (time-stretch cursor)',
+                'Drag the edge of any clip to make it longer or shorter',
+                'Use on your FX sound clip to fit it into your imaging piece',
+              ]},
+              { type: 'video', youtube: '8xopxZ_zvUU', label: 'Adobe Audition Stretch in the Multitrack', note: 'Covers the Stretch tool — watch before using it on your FX clip.' },
+            ]
+          },
+          {
+            id: 'reverb',
+            title: 'Effects Rack — Reverb',
+            duration: '1–2 classes',
+            summary: 'Add Studio Reverb via the Effects Rack, then use envelopes to automate the wet/dry mix over time.',
+            sections: [
+              { type: 'intro', content: 'Reverb adds space and depth to audio — it makes sound feel like it\'s in a room, a hall, or an enormous space. In radio production, you\'ll use it to make station IDs and imaging elements feel bigger. The key skill is automating the reverb with envelopes so it builds over time.' },
+              { type: 'list', title: 'Add Reverb via the Effects Rack', items: [
+                'Open the Effects Rack panel for your track',
+                'Click an empty slot → <strong>Reverb → Studio Reverb</strong>',
+                'A Studio Reverb settings window will open',
+                'Adjust Room Size, Decay, and Wet/Dry mix to taste',
+              ], sideImg: 'images/reverb-menu.png', sideImgCap: 'Effects Rack → Reverb → Studio Reverb. Start here to add reverb to any track.' },
+              { type: 'keyterms', title: 'Studio Reverb Settings', terms: [
+                { term: 'Room Size', def: 'How large the simulated space is — bigger = more reverb spread' },
+                { term: 'Decay', def: 'How long the reverb tail lasts after the sound ends' },
+                { term: 'Early Reflections', def: 'The first bounces off walls — affects how natural it sounds' },
+                { term: 'Dry', def: 'The original, unaffected signal level' },
+                { term: 'Wet', def: 'How much reverb effect is applied — higher = more reverb' },
+              ], sideImg: 'images/studio-reverb.png', sideImgCap: 'Studio Reverb settings — start with default and adjust Decay and Wet to hear the difference.' },
+              { type: 'list', title: 'Automate Reverb with Envelopes', items: [
+                'Click the > arrow next to the Read menu on your reverb track',
+                'Select <strong>Show Envelopes → Studio Reverb → Wet Output Level</strong>',
+                'An orange envelope line appears on your clip',
+                'Add keyframes to make the reverb build up over time',
+                'Start dry at the beginning — bring the wet level up toward "Louder"',
+              ], sideImg: 'images/reverb-envelope.png', sideImgCap: 'Show Envelopes → Studio Reverb → Wet Output Level — draw keyframes to automate reverb over time.' },
+              { type: 'list', title: 'Match Clip Loudness — Final Step', items: [
+                'Select all clips in your multitrack',
+                'Right-click → <strong>Match Clip Loudness</strong>',
+                'This balances all your clips to the same volume before mixdown',
+                'Always do this before your final export',
+              ], sideImg: 'images/match-clip-loudness.png', sideImgCap: 'Right-click → Match Clip Loudness. Run this on all clips before your final mixdown.' },
             ]
           },
         ]

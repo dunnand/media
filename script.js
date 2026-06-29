@@ -1539,7 +1539,10 @@ function attachListeners() {
 const LESSON_ICONS = {
   welcome: '🎙️', stations: '📡', fcc: '📜', expectations: '📋',
   'ap-intro': '🎤', 'front-load': '⏩', 'first-break': '🎛️',
-  'show-structure': '🎭', 'audition-basics': '🎚️',
+  'radio-pairs': '👥',
+  'show-structure': '🎭',
+  'audition-basics': '🎚️', 'stutter': '🔊', 'double-track': '🔁',
+  'remix-stretch': '🎵', 'reverb': '🌊',
 };
 
 function renderLessons() {
