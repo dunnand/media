@@ -1729,6 +1729,19 @@ function renderLessonSection(sec, courseColor) {
       break;
     }
 
+    case 'audio':
+      inner = `
+        <div class="lesson-block">
+          ${sec.label ? `<div class="lesson-block-head"><span class="lesson-block-icon">🎧</span><h3 class="lesson-block-title">${sec.label}</h3></div>` : ''}
+          ${sec.context ? `<p class="lesson-audio-context">${sec.context}</p>` : ''}
+          <div class="lesson-audio-wrap">
+            <iframe src="${sec.src}" allow="autoplay"></iframe>
+          </div>
+          ${sec.note ? `<p class="lesson-video-note">${sec.note}</p>` : ''}
+          ${sec.tip ? `<div class="lesson-audio-tip">${sec.tip}</div>` : ''}
+        </div>`;
+      break;
+
     default: return '';
   }
 
