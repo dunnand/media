@@ -896,10 +896,12 @@ function renderInDepth() {
       </div>
       <div class="page-grid">
         <div class="main-col">
-          <section class="card coming-soon-card">
-            <div class="coming-soon-icon">🚧</div>
-            <h2>Coming Soon</h2>
-            <p>HHS In-Depth content is being built out. News scripts, story packages, anchor rundowns, and lessons will appear here.</p>
+          <section class="card">
+            <h2 class="cal-section-title">📅 Coverage Calendar</h2>
+            <p class="cal-section-sub">Upcoming events that need to be covered by the In-Depth team.</p>
+            <div class="cal-embed-wrap">
+              <iframe src="https://calendar.google.com/calendar/embed?src=2b9bdfdee65f7330d8d5d2fd1d4877c1b709289fa0b0747427f57fd62516bed5%40group.calendar.google.com&ctz=America%2FIndiana%2FIndianapolis&bgcolor=%23111111&color=%230F9D58&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=1&showCalendars=0&showTz=0" frameborder="0" scrolling="no" class="cal-embed"></iframe>
+            </div>
           </section>
         </div>
         <div class="side-col">
@@ -934,10 +936,12 @@ function renderYearbook() {
       </div>
       <div class="page-grid">
         <div class="main-col">
-          <section class="card coming-soon-card">
-            <div class="coming-soon-icon">🚧</div>
-            <h2>Coming Soon</h2>
-            <p>The Yearbook section is being built out. Check back soon for section assignments, deadlines, and design resources.</p>
+          <section class="card">
+            <h2 class="cal-section-title">📅 Coverage Calendar</h2>
+            <p class="cal-section-sub">Upcoming events that need to be photographed or covered for Yearbook.</p>
+            <div class="cal-embed-wrap">
+              <iframe src="https://calendar.google.com/calendar/embed?src=2b9bdfdee65f7330d8d5d2fd1d4877c1b709289fa0b0747427f57fd62516bed5%40group.calendar.google.com&ctz=America%2FIndiana%2FIndianapolis&bgcolor=%23111111&color=%230F9D58&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=1&showCalendars=0&showTz=0" frameborder="0" scrolling="no" class="cal-embed"></iframe>
+            </div>
           </section>
         </div>
         <div class="side-col">
