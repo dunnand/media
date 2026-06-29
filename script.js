@@ -147,12 +147,6 @@ function renderHome() {
           <div class="class-enter">Enter →</div>
         </div>
       </div>
-      <div class="quick-access-bar">
-        <span class="quick-access-label">Quick Access</span>
-        <a class="quick-access-btn" href="https://wcyt.org/dj" target="_blank" rel="noopener">
-          🎙️ DJ Panel <span class="quick-access-url">wcyt.org/dj</span> ↗
-        </a>
-      </div>
     </div>`;
 }
 
@@ -210,6 +204,12 @@ function renderRadio() {
           <div class="station-grid">${stationCards}</div>
         </div>
         <div class="side-col">
+          <section class="card action-card radio-action">
+            <div class="action-icon">🎙️</div>
+            <h3>DJ Panel</h3>
+            <p>Set your on-air status — On Air, On Break, or End Show.</p>
+            <a class="btn-primary" href="https://wcyt.org/dj" target="_blank" rel="noopener">Open DJ Panel ↗</a>
+          </section>
           <section class="card action-card radio-action">
             <div class="action-icon">✍️</div>
             <h3>Talk Show Planner</h3>
