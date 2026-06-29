@@ -632,8 +632,31 @@ const LESSONS = {
         title: 'Unit 4 — Production',
         lessons: [
           {
+            id: 'destructive-editing',
+            title: 'Destructive vs Non-Destructive Editing',
+            duration: '1 class',
+            summary: 'Why there are two editors in Audition — and which one you should almost always use.',
+            sections: [
+              { type: 'intro', content: 'Audition has two completely different workspaces: the Waveform Editor and the Multitrack Editor. Most students don\'t understand why both exist. The difference comes down to one question: do your edits permanently change the file, or not?' },
+              { type: 'keyterms', title: 'The Two Editors', terms: [
+                { term: 'Waveform Editor', def: 'Destructive — every change is stamped permanently onto the audio file. Opens automatically when you double-click a clip.' },
+                { term: 'Multitrack Editor', def: 'Non-destructive — changes happen inside the session file. Your original audio clips are never touched.' },
+              ], sideImg: 'images/waveform-editor.png', sideImgCap: 'The Waveform Editor shows raw audio at the sample level — every change is permanent.' },
+              { type: 'text', title: 'Destructive Editing — The Waveform Editor', content: 'The Waveform Editor opens immediately when you drag in an audio file. It\'s quick and feels obvious, which is why beginners default to it. The problem: every cut, filter, or effect you apply is baked into the file permanently. It\'s like applying an Instagram filter and saving it over your original photo — that first-take audio is gone for good once you hit Save.',
+                sideImg: 'images/waveform-editor.png', sideImgCap: 'Waveform Editor — great for trimming dead air at the end of a clip. Bad for anything you might want to undo later.' },
+              { type: 'text', title: 'Non-Destructive Editing — The Multitrack', content: 'In the Multitrack Editor, cuts, fades, and effects happen inside the session file — not the source audio. Your original clips are always safe. You can close Audition, come back a week later, and pick up exactly where you left off. This is the right tool for almost every project.',
+                sideImg: 'images/multitrack-editor.png', sideImgCap: 'Multitrack Editor — edits live in the session file. The original audio is always preserved.' },
+              { type: 'callout', label: '⚠️ Auto-Save Only Works in Multitrack', warning: true, content: '"My computer crashed and I lost everything" — this only happens in the Waveform Editor. The Multitrack has built-in auto-save. Find it under Edit → Preferences → Auto Save. Always work in Multitrack so your project is protected.' },
+              { type: 'list', title: 'When to Use Each', items: [
+                '<strong>Waveform Editor:</strong> Trimming dead air off the end of a file — a quick fix you\'ll never need to undo',
+                '<strong>Waveform Editor:</strong> Noise reduction processing (this effect requires destructive editing)',
+                '<strong>Multitrack:</strong> Everything else — DJ breaks, imaging spots, music beds, show recordings',
+                'If there\'s even a 5% chance you might want to undo it, use Multitrack',
+              ]},
+            ]
+          },
+          {
             id: 'audition-basics',
-
             title: 'Adobe Audition Basics',
             duration: '2–3 classes',
             summary: 'Destructive vs. non-destructive editing, normalize, hard limit, and audio cleanup tools.',
@@ -738,6 +761,19 @@ const LESSONS = {
                 'Use on your FX sound clip to fit it into your imaging piece',
               ]},
               { type: 'video', youtube: '8xopxZ_zvUU', label: 'Adobe Audition Stretch in the Multitrack', note: 'Covers the Stretch tool — watch before using it on your FX clip.' },
+              { type: 'list', title: 'Advanced Remix — Edit Length', items: [
+                '<strong>Short</strong> — Creates shorter segments with more edit transitions. Best for songs with a lot of dynamic changes.',
+                '<strong>Long</strong> — Finds the longest possible passages with the fewest transitions. Results in smoother, more seamless loops.',
+                'Look for the wavy lines on the audio clip — those are the edit points Remix created.',
+              ], sideImg: 'images/remix-edit-length.png', sideImgCap: 'Edit Length controls how aggressively Remix cuts the music. Short = more cuts, Long = fewer cuts.' },
+              { type: 'keyterms', title: 'Advanced Remix — Features', terms: [
+                { term: 'Timbre', def: 'Remix focuses on matching the beats and rhythm of the song. Use this for high-energy, tempo-driven music.' },
+                { term: 'Harmonic', def: 'Remix focuses on melody and harmony to find the smoothest edit points. Use this for melodic or slower songs.' },
+              ], sideImg: 'images/remix-advanced-panel.png', sideImgCap: 'The Remix properties panel — Features slider moves between Timbre (rhythm) and Harmonic (melody).' },
+              { type: 'keyterms', title: 'Advanced Remix — Loop Settings', terms: [
+                { term: 'Minimum Loop', def: 'The shortest segment Audition will use, in beats. Segments won\'t be cut shorter than this.' },
+                { term: 'Maximum Slack', def: 'Wiggle room around your target duration. Set to 5 seconds with a 30-second target and the output could be anywhere from 25–35 seconds — Audition picks the cleanest edit point in that range.' },
+              ]},
             ]
           },
           {
@@ -773,6 +809,36 @@ const LESSONS = {
                 'This balances all your clips to the same volume before mixdown',
                 'Always do this before your final export',
               ], sideImg: 'images/match-clip-loudness.png', sideImgCap: 'Right-click → Match Clip Loudness. Run this on all clips before your final mixdown.' },
+            ]
+          },
+          {
+            id: 'spectral-display',
+            title: 'Spectral Frequency Display',
+            duration: '1 class',
+            summary: 'Use the spectral view to visually identify and remove problem sounds — beeps, hisses, and artifacts.',
+            sections: [
+              { type: 'intro', content: 'The Spectral Frequency Display shows your audio as a heat map — frequency over time, with color representing loudness. It\'s the fastest way to spot and fix problem sounds like beeps, mic hisses, and audio artifacts that are hard to find in a normal waveform view.' },
+              { type: 'text', title: 'How to Open It', content: 'The Spectral Display is <strong>not open by default</strong>. Find it in the toolbar at the top of Audition and click to toggle it on. It opens inside the Waveform Editor below your regular waveform view.',
+                sideImg: 'images/spectral-display.png', sideImgCap: 'The Spectral Frequency Display — frequency runs along the vertical axis, time runs left to right.' },
+              { type: 'keyterms', title: 'Reading the Colors', terms: [
+                { term: 'Dark Blue', def: 'Low amplitude — quiet sounds in that frequency range' },
+                { term: 'Purple / Red', def: 'Medium amplitude — present but not dominant' },
+                { term: 'Orange / Yellow', def: 'High amplitude — the loudest sounds in the display. Bright yellow = maximum intensity.' },
+                { term: 'Frequency (vertical)', def: 'Low frequencies at the bottom, high frequencies at the top' },
+                { term: 'Time (horizontal)', def: 'The display moves left to right, just like the waveform' },
+              ], sideImg: 'images/spectral-display-labeled.png', sideImgCap: 'Bright yellow = loud. Dark blue = quiet. A loud beep shows as a sudden bright vertical stripe.' },
+              { type: 'list', title: 'What to Look For', items: [
+                '<strong>Beep or tone:</strong> A bright vertical stripe at one frequency — select it with the lasso tool and delete',
+                '<strong>Mic hiss:</strong> A consistent band of color across the high frequencies — use Noise Reduction instead',
+                '<strong>Click or pop:</strong> A sudden bright flash across all frequencies — zoom in and delete',
+                '<strong>Room rumble:</strong> A persistent glow at the very bottom — use a high-pass filter to cut it',
+              ]},
+              { type: 'callout', label: 'Spectral + Noise Reduction', items: [
+                'The Spectral Display helps you SEE problems — Noise Reduction removes them',
+                'Effects → Noise Reduction / Restoration → Noise Reduction',
+                'Capture a noise print from a section of silence, then apply to the full clip',
+                'This is a destructive effect — do it in the Waveform Editor, on a copy of your file',
+              ]},
             ]
           },
         ]

@@ -1541,8 +1541,9 @@ const LESSON_ICONS = {
   'ap-intro': '🎤', 'front-load': '⏩', 'first-break': '🎛️',
   'radio-pairs': '👥',
   'show-structure': '🎭',
+  'destructive-editing': '✂️',
   'audition-basics': '🎚️', 'stutter': '🔊', 'double-track': '🔁',
-  'remix-stretch': '🎵', 'reverb': '🌊',
+  'remix-stretch': '🎵', 'reverb': '🌊', 'spectral-display': '🌈',
 };
 
 function renderLessons() {
