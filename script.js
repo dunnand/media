@@ -508,7 +508,7 @@ function renderLive() {
     ${navBar('live')}
     <div class="class-page">
       <div class="class-header">
-        <div class="class-header-icon">🎬</div>
+        <img src="images/logo-homestead-live.png" alt="Homestead Live" class="class-header-logo">
         <div>
           <h1>Homestead Live</h1>
           <p>Broadcasting Homestead sports and events live.</p>
@@ -841,7 +841,7 @@ function renderSports() {
     ${navBar('sports')}
     <div class="class-page">
       <div class="class-header">
-        <div class="class-header-icon">🏟️</div>
+        <img src="images/logo-sports-broadcasting.jpg" alt="Sports Broadcasting" class="class-header-logo">
         <div>
           <h1>Sports Broadcasting</h1>
           <p>Play-by-play, color commentary, and live crew for Homestead athletics.</p>
@@ -885,7 +885,7 @@ function renderInDepth() {
     ${navBar('indepth')}
     <div class="class-page">
       <div class="class-header">
-        <div class="class-header-icon">📺</div>
+        <img src="images/hhs-indepth-thumb.jpg" alt="HHS In-Depth" class="class-header-logo">
         <div>
           <h1>HHS In-Depth</h1>
           <p>TV news production — anchoring, reporting, packages, and live shots.</p>
