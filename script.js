@@ -203,7 +203,10 @@ function renderRadio() {
     ${navBar('radio')}
     <div class="class-page">
       <div class="class-header">
-        <div class="class-header-icon">📻</div>
+        <div class="radio-header-logos">
+          <img src="images/logo-wcyt-point.png" alt="The Point 91FM" class="class-header-logo">
+          <img src="images/logo-2point0.png" alt="WCYT 2.0" class="class-header-logo">
+        </div>
         <div>
           <h1>Radio Broadcasting</h1>
           <p>Your show, your voice, your audience.</p>
