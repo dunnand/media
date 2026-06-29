@@ -263,11 +263,6 @@ body {
 .live-action  .btn-primary { background: var(--live);  color: #000; }
 .ybk-action   .btn-primary { background: var(--yearbook); color: #fff; }
 
-/* ── Resources ───────────────────────────────────────────── */
-.resource-card { padding: 12px 0; border-bottom: 1px solid var(--border); }
-.resource-card:last-child { border-bottom: none; }
-.resource-title { font-weight: 600; font-size: 0.875rem; margin-bottom: 4px; }
-.resource-body  { font-size: 0.8rem; color: var(--dim); line-height: 1.55; }
 
 /* ── Planner ─────────────────────────────────────────────── */
 .planner-header { margin-bottom: 24px; }

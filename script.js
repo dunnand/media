@@ -183,12 +183,6 @@ function renderStationCard(station) {
 function renderRadio() {
   const stationCards = STATIONS.map(renderStationCard).join('');
 
-  const resources = RADIO_RESOURCES.map(r => `
-    <div class="resource-card">
-      <div class="resource-title">${r.title}</div>
-      <div class="resource-body">${r.body}</div>
-    </div>`).join('');
-
   return `
     ${navBar('radio')}
     <div class="class-page">
@@ -230,10 +224,6 @@ function renderRadio() {
             <p>Review submitted Talk Show plans.</p>
             <button class="btn-secondary" id="view-submissions">View All</button>
           </section>` : ''}
-          <section class="card">
-            <h2>Resources</h2>
-            ${resources}
-          </section>
         </div>
       </div>
     </div>`;
@@ -498,12 +488,6 @@ function renderLive() {
       </div>`;
   }).join('') || '<p class="dim">None scheduled yet.</p>';
 
-  const resources = LIVE_RESOURCES.map(r => `
-    <div class="resource-card">
-      <div class="resource-title">${r.title}</div>
-      <div class="resource-body">${r.body}</div>
-    </div>`).join('');
-
   return `
     ${navBar('live')}
     <div class="class-page">
@@ -539,10 +523,6 @@ function renderLive() {
             <div class="roles-list">
               ${LIVE_ROLES.map(r => `<div class="role-chip">${r}</div>`).join('')}
             </div>
-          </section>
-          <section class="card">
-            <h2>Resources</h2>
-            ${resources}
           </section>
         </div>
       </div>
@@ -841,12 +821,6 @@ function showEditBroadcastModal(id) {
 
 // ── YEARBOOK ──────────────────────────────────────────────────
 function renderYearbook() {
-  const resources = YEARBOOK_RESOURCES.map(r => `
-    <div class="resource-card">
-      <div class="resource-title">${r.title}</div>
-      <div class="resource-body">${r.body}</div>
-    </div>`).join('');
-
   return `
     ${navBar('yearbook')}
     <div class="class-page">
@@ -866,10 +840,6 @@ function renderYearbook() {
           </section>
         </div>
         <div class="side-col">
-          <section class="card">
-            <h2>Resources</h2>
-            ${resources}
-          </section>
         </div>
       </div>
     </div>`;
