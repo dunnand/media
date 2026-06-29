@@ -812,5 +812,17 @@ const LESSONS = {
     color: '#34d399',
     icon: '📖',
     units: []
+  },
+  sports: {
+    name: 'Sports Broadcasting',
+    color: '#f97316',
+    icon: '🏟️',
+    units: []
+  },
+  indepth: {
+    name: 'HHS In-Depth',
+    color: '#3b82f6',
+    icon: '🎧',
+    units: []
   }
 };

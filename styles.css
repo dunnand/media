@@ -14,6 +14,8 @@
   --radio: #f59e0b;
   --live: #06b6d4;
   --yearbook: #a855f7;
+  --sports: #f97316;
+  --indepth: #3b82f6;
   --success: #22c55e;
   --danger: #ef4444;
   --radius: 12px;
@@ -111,6 +113,9 @@ body {
   max-width: 960px;
   width: 100%;
 }
+@media (min-width: 801px) {
+  .class-grid { grid-template-columns: repeat(3, 1fr); }
+}
 .class-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -130,6 +135,8 @@ body {
 .radio-card::before    { background: var(--radio); }
 .live-card::before     { background: var(--live); }
 .yearbook-card::before { background: var(--yearbook); }
+.sports-card::before   { background: var(--sports); }
+.indepth-card::before  { background: var(--indepth); }
 
 .class-card:hover {
   border-color: #444;
@@ -143,6 +150,8 @@ body {
 .radio-card:hover    .class-enter { color: var(--radio); }
 .live-card:hover     .class-enter { color: var(--live); }
 .yearbook-card:hover .class-enter { color: var(--yearbook); }
+.sports-card:hover   .class-enter { color: var(--sports); }
+.indepth-card:hover  .class-enter { color: var(--indepth); }
 
 /* ── Class Pages ─────────────────────────────────────────── */
 .class-page {

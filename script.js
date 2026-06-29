@@ -92,6 +92,8 @@ function render() {
     case 'schedule':  app.innerHTML = renderSchedule();  break;
     case 'availability':  app.innerHTML = renderAvailabilityPage(); break;
     case 'yearbook':      app.innerHTML = renderYearbook();      break;
+    case 'sports':        app.innerHTML = renderSports();        break;
+    case 'indepth':       app.innerHTML = renderInDepth();       break;
     case 'iasb':          app.innerHTML = renderIASB();          break;
     case 'iasb-category': app.innerHTML = renderIASBCategory();  break;
     case 'dashboard':     app.innerHTML = renderDashboard();     break;
@@ -109,7 +111,9 @@ function navBar(active) {
       <div class="nav-links">
         <a class="${active === 'radio'    ? 'active' : ''}" data-nav="radio">📻 Radio</a>
         <a class="${active === 'live'     ? 'active' : ''}" data-nav="live">🎬 Live</a>
+        <a class="${active === 'sports'   ? 'active' : ''}" data-nav="sports">🏟️ Sports</a>
         <a class="${active === 'yearbook' ? 'active' : ''}" data-nav="yearbook">📖 Yearbook</a>
+        <a class="${active === 'indepth'  ? 'active' : ''}" data-nav="indepth">🎧 In-Depth</a>
         <a class="${active === 'lessons'  ? 'active' : ''}" data-nav="lessons">📚 Lessons</a>
         ${S.teacherMode ? `<a class="${active === 'dashboard' ? 'active' : ''}" data-nav="dashboard" style="color:var(--radio)">📊 Dashboard</a>` : ''}
         <button class="teacher-btn ${S.teacherMode ? 'active' : ''}" id="teacher-toggle">
@@ -144,6 +148,18 @@ function renderHome() {
           <div class="class-icon">📖</div>
           <div class="class-name">Yearbook</div>
           <div class="class-desc">Documenting the year — photography, design, and storytelling.</div>
+          <div class="class-enter">Enter →</div>
+        </div>
+        <div class="class-card sports-card" data-nav="sports">
+          <div class="class-icon">🏟️</div>
+          <div class="class-name">Sports Broadcasting</div>
+          <div class="class-desc">Play-by-play, color commentary, and live crew for Homestead athletics.</div>
+          <div class="class-enter">Enter →</div>
+        </div>
+        <div class="class-card indepth-card" data-nav="indepth">
+          <div class="class-icon">🎧</div>
+          <div class="class-name">HHS In-Depth</div>
+          <div class="class-desc">Audio journalism — research, interviews, and long-form storytelling.</div>
           <div class="class-enter">Enter →</div>
         </div>
       </div>
@@ -817,6 +833,88 @@ function showEditBroadcastModal(id) {
     S.broadcasts = S.broadcasts.filter(x => x.id !== b.id);
     m.remove(); render(); showToast('Deleted.');
   });
+}
+
+// ── SPORTS BROADCASTING ───────────────────────────────────────
+function renderSports() {
+  return `
+    ${navBar('sports')}
+    <div class="class-page">
+      <div class="class-header">
+        <div class="class-header-icon">🏟️</div>
+        <div>
+          <h1>Sports Broadcasting</h1>
+          <p>Play-by-play, color commentary, and live crew for Homestead athletics.</p>
+        </div>
+      </div>
+      <div class="page-grid">
+        <div class="main-col">
+          <section class="card coming-soon-card">
+            <div class="coming-soon-icon">🚧</div>
+            <h2>Coming Soon</h2>
+            <p>Sports Broadcasting content is being built out. Game schedules, crew assignments, and lessons will appear here.</p>
+          </section>
+        </div>
+        <div class="side-col">
+          <section class="card action-card" style="--ac:var(--sports)">
+            <div class="action-icon">📅</div>
+            <h3>Broadcast Schedule</h3>
+            <p>View upcoming games and who's crewing each broadcast.</p>
+            <button class="btn-primary" style="background:var(--sports);color:#000" data-nav="schedule">View Schedule →</button>
+          </section>
+          <section class="card action-card" style="--ac:var(--sports)">
+            <div class="action-icon">✋</div>
+            <h3>Sign Up for a Broadcast</h3>
+            <p>Add your name to an upcoming game crew.</p>
+            <button class="btn-primary" style="background:var(--sports);color:#000" data-nav="availability">Sign Up →</button>
+          </section>
+          <section class="card action-card" style="--ac:var(--sports)">
+            <div class="action-icon">📚</div>
+            <h3>Sports Lessons</h3>
+            <p>Play-by-play technique, color commentary, and broadcast prep.</p>
+            <button class="btn-primary" style="background:var(--sports);color:#000" data-lesson-course="sports">Go to Lessons →</button>
+          </section>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── HHS IN-DEPTH ──────────────────────────────────────────────
+function renderInDepth() {
+  return `
+    ${navBar('indepth')}
+    <div class="class-page">
+      <div class="class-header">
+        <div class="class-header-icon">🎧</div>
+        <div>
+          <h1>HHS In-Depth</h1>
+          <p>Audio journalism — research, interviews, and long-form storytelling.</p>
+        </div>
+      </div>
+      <div class="page-grid">
+        <div class="main-col">
+          <section class="card coming-soon-card">
+            <div class="coming-soon-icon">🚧</div>
+            <h2>Coming Soon</h2>
+            <p>HHS In-Depth content is being built out. Project guides, interview prep, and lessons will appear here.</p>
+          </section>
+        </div>
+        <div class="side-col">
+          <section class="card action-card" style="--ac:var(--indepth)">
+            <div class="action-icon">🏆</div>
+            <h3>IASB — Audio In-Depth</h3>
+            <p>The N2 Audio In-Depth category is your competition entry for this class.</p>
+            <button class="btn-primary" style="background:var(--indepth)" data-nav="iasb">Open IASB Hub →</button>
+          </section>
+          <section class="card action-card" style="--ac:var(--indepth)">
+            <div class="action-icon">📚</div>
+            <h3>In-Depth Lessons</h3>
+            <p>Research methods, interview technique, and audio storytelling structure.</p>
+            <button class="btn-primary" style="background:var(--indepth)" data-lesson-course="indepth">Go to Lessons →</button>
+          </section>
+        </div>
+      </div>
+    </div>`;
 }
 
 // ── YEARBOOK ──────────────────────────────────────────────────
