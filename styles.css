@@ -258,6 +258,8 @@ body {
 .action-icon { font-size: 2rem; margin-bottom: 12px; }
 .action-card p { font-size: 0.85rem; color: var(--dim); margin-bottom: 16px; line-height: 1.5; }
 .radio-action .btn-primary { background: var(--radio); color: #000; }
+.action-cred { font-size: 0.8rem !important; color: var(--dim); margin-bottom: 12px !important; }
+.action-cred code { background: #1e1e1e; border: 1px solid var(--border); border-radius: 4px; padding: 2px 7px; font-size: 0.82rem; color: var(--text); letter-spacing: 0.03em; }
 .live-action  .btn-primary { background: var(--live);  color: #000; }
 .ybk-action   .btn-primary { background: var(--yearbook); color: #fff; }
 
