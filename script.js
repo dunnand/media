@@ -803,8 +803,12 @@ function showEditBroadcastModal(id) {
       </select>
     </div>
     <div class="form-group">
+      <label>Game Time <span class="hint">(e.g. 7:30 PM)</span></label>
+      <input id="m-gametime" type="text" value="${esc(b.gameTime || '')}" placeholder="7:30 PM">
+    </div>
+    <div class="form-group">
       <label>Notes</label>
-      <input id="m-notes" type="text" value="${esc(b.notes || '')}" placeholder="Time, location, etc.">
+      <input id="m-notes" type="text" value="${esc(b.notes || '')}" placeholder="Location, etc.">
     </div>
     <div class="form-group">
       <label>Crew</label>
@@ -818,16 +822,17 @@ function showEditBroadcastModal(id) {
     </div>`, 'Delete');
 
   m.querySelector('#modal-save').addEventListener('click', async () => {
-    const title = val('m-title');
-    const date  = val('m-date');
-    const type  = val('m-type');
-    const notes = val('m-notes');
+    const title    = val('m-title');
+    const date     = val('m-date');
+    const type     = val('m-type');
+    const gameTime = val('m-gametime');
+    const notes    = val('m-notes');
     if (!title || !date) { showToast('Title and date are required.'); return; }
     const newRoles = {};
     m.querySelectorAll('.role-input').forEach(el => { newRoles[el.dataset.role] = el.value.trim(); });
-    Object.assign(b, { title, date, type, notes, roles: newRoles });
+    Object.assign(b, { title, date, type, gameTime, notes, roles: newRoles });
     const db = getDB();
-    if (db) await db.collection('hm_broadcasts').doc(b.id).update({ title, date, type, notes, roles: newRoles }).catch(() => {});
+    if (db) await db.collection('hm_broadcasts').doc(b.id).update({ title, date, type, gameTime, notes, roles: newRoles }).catch(() => {});
     m.remove(); render(); showToast('Saved!');
   });
 
@@ -1368,18 +1373,23 @@ function showAddBroadcastModal() {
       <input id="m-date" type="date">
     </div>
     <div class="form-group">
+      <label>Game Time <span class="hint">(e.g. 7:30 PM)</span></label>
+      <input id="m-gametime" type="text" placeholder="7:30 PM">
+    </div>
+    <div class="form-group">
       <label>Type</label>
       <select id="m-type">
         ${Object.entries(EVENT_TYPES).map(([k, v]) => `<option value="${k}">${v.label}</option>`).join('')}
       </select>
     </div>`);
   m.querySelector('#modal-save').addEventListener('click', async () => {
-    const title = val('m-title');
-    const date  = val('m-date');
-    const type  = val('m-type');
+    const title    = val('m-title');
+    const date     = val('m-date');
+    const type     = val('m-type');
+    const gameTime = val('m-gametime');
     if (!title || !date) { showToast('Please fill in all fields.'); return; }
     const db = getDB();
-    const doc = { title, date, type, roles: {}, checks: {} };
+    const doc = { title, date, type, gameTime, roles: {}, checks: {} };
     if (db) {
       try { const ref = await db.collection('hm_broadcasts').add(doc); doc.id = ref.id; } catch(e) {}
     }
