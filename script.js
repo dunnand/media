@@ -1370,7 +1370,7 @@ async function submitYearbookSignup() {
       studentName: name, email, eventId, eventTitle: event.title,
       eventDate: event.date, role, submittedAt: Date.now(),
     });
-    showToast('Signed up! Your teacher will confirm your assignment.');
+    showToast('Signed up! You\'re on the coverage list.');
     await loadYearbookCoverage();
   } catch(e) { showToast('Could not save — try again.'); }
 }
