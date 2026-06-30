@@ -1151,13 +1151,25 @@ function inferYbType(title) {
 }
 
 async function loadCalendarYbEvents() {
+  const db = getDB();
+  const TTL = 24 * 60 * 60 * 1000; // 24 hours
+
+  // Try Firestore shared cache first — all students benefit from one fetch
+  if (db) {
+    try {
+      const doc = await db.collection('hm_config').doc('cal_cache').get();
+      trackUsage('reads', 1);
+      if (doc.exists) {
+        const { ts, events } = doc.data();
+        if (Date.now() - ts < TTL && events) {
+          S.calendarYbEvents = events; return;
+        }
+      }
+    } catch(e) {}
+  }
+
+  // Cache is missing or stale — fetch from Apps Script and update Firestore
   if (!SYNC_SCRIPT_URL) return;
-  try {
-    const cached = JSON.parse(localStorage.getItem('hm_cal_yb') || '{}');
-    if (cached.ts && Date.now() - cached.ts < 3600000 && cached.events) {
-      S.calendarYbEvents = cached.events; return;
-    }
-  } catch(e) {}
   try {
     const resp   = await fetch(`${SYNC_SCRIPT_URL}?action=getEvents`);
     const result = await resp.json();
@@ -1167,7 +1179,10 @@ async function loadCalendarYbEvents() {
         return { ...ev, type, icon: YB_ICONS[type] || '📅' };
       });
       S.calendarYbEvents = events;
-      localStorage.setItem('hm_cal_yb', JSON.stringify({ ts: Date.now(), events }));
+      if (db) {
+        trackUsage('writes');
+        db.collection('hm_config').doc('cal_cache').set({ ts: Date.now(), events }).catch(() => {});
+      }
     }
   } catch(e) {}
 }
