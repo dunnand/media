@@ -19,12 +19,34 @@ function doGet(e) {
   const action = (e.parameter && e.parameter.action) || 'sync';
   try {
     if (action === 'sync')        return respond(syncAthletics());
+    if (action === 'getEvents')   return respond(getUpcomingEvents());
     if (action === 'addEvent')    return respond(addCalendarEvent(e.parameter));
     if (action === 'deleteEvent') return respond(deleteCalendarEvent(e.parameter.calEventId));
     return respond({ success: false, error: 'Unknown action: ' + action });
   } catch(err) {
     return respond({ success: false, error: err.toString() });
   }
+}
+
+// ── Return upcoming events from HHS Media Events calendar ─────
+function getUpcomingEvents() {
+  const cal = CalendarApp.getCalendarById(TARGET_CAL_ID);
+  if (!cal) return { success: false, error: 'Calendar not found.' };
+
+  const now = new Date();
+  const endYear = now.getMonth() >= 7 ? now.getFullYear() + 1 : now.getFullYear();
+  const end = new Date(endYear, 7, 1); // through Aug 1
+
+  const events = cal.getEvents(now, end);
+  return {
+    success: true,
+    events: events.map(ev => ({
+      id: 'cal-' + ev.getId().replace(/[^a-z0-9]/gi, '').slice(0, 20),
+      title: ev.getTitle(),
+      date:  Utilities.formatDate(ev.getStartTime(), 'America/Indiana/Indianapolis', 'yyyy-MM-dd'),
+      time:  Utilities.formatDate(ev.getStartTime(), 'America/Indiana/Indianapolis', 'h:mm a'),
+    }))
+  };
 }
 
 // ── Add a single event to the HHS Media Events calendar ──────

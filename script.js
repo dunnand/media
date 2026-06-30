@@ -45,6 +45,7 @@ const S = {
   lessonSlide: 0,
   yearbookCoverage: [],
   customYbEvents: [],
+  calendarYbEvents: [],
   ybDashView: 'event',
 };
 
@@ -934,7 +935,10 @@ function renderInDepth() {
 // ── YEARBOOK ──────────────────────────────────────────────────
 function allYbEvents() {
   const custom = (S.customYbEvents || []).map(e => ({ ...e, icon: YB_ICONS[e.type] || '📅' }));
-  return [...YEARBOOK_EVENTS, ...custom];
+  const base = [...YEARBOOK_EVENTS, ...custom];
+  const covered = new Set(base.map(e => e.type + '|' + e.date));
+  const fromCal = (S.calendarYbEvents || []).filter(e => !covered.has(e.type + '|' + e.date));
+  return [...base, ...fromCal];
 }
 
 function filterYbEvents() {
@@ -1115,6 +1119,57 @@ async function loadYearbookCoverage() {
     S.yearbookCoverage = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     if (S.view === 'yearbook' || S.view === 'dashboard') render();
   } catch(e) { console.error('yearbook coverage load failed', e); }
+}
+
+function inferYbType(title) {
+  const t = title.toLowerCase();
+  if (t.includes('football'))                              return 'football';
+  if (t.includes('basketball') && t.includes('boys'))     return 'basketball_boys';
+  if (t.includes('basketball') && t.includes('girls'))    return 'basketball_girls';
+  if (t.includes('basketball'))                           return 'basketball_boys';
+  if (t.includes('soccer') && t.includes('boys'))         return 'soccer_boys';
+  if (t.includes('soccer') && t.includes('girls'))        return 'soccer_girls';
+  if (t.includes('volleyball'))                           return 'volleyball';
+  if (t.includes('golf') && t.includes('boys'))           return 'golf_boys';
+  if (t.includes('golf') && t.includes('girls'))          return 'golf_girls';
+  if (t.includes('baseball'))                             return 'baseball';
+  if (t.includes('softball'))                             return 'softball';
+  if (t.includes('cross country'))                        return 'cross_country';
+  if (t.includes('swim') || t.includes('diving'))         return 'swimming';
+  if (t.includes('tennis') && t.includes('boys'))         return 'tennis_boys';
+  if (t.includes('tennis') && t.includes('girls'))        return 'tennis_girls';
+  if (t.includes('track'))                                return 'track';
+  if (t.includes('wrestling'))                            return 'wrestling';
+  if (t.includes('gymnastics'))                           return 'gymnastics';
+  if (t.includes('lacrosse') && t.includes('boys'))       return 'lacrosse_boys';
+  if (t.includes('lacrosse') && t.includes('girls'))      return 'lacrosse_girls';
+  if (t.includes('bowling') && t.includes('boys'))        return 'bowling_boys';
+  if (t.includes('bowling') && t.includes('girls'))       return 'bowling_girls';
+  if (t.includes('cheer'))                                return 'cheer';
+  if (t.includes('dance'))                                return 'dance_team';
+  return 'other';
+}
+
+async function loadCalendarYbEvents() {
+  if (!SYNC_SCRIPT_URL) return;
+  try {
+    const cached = JSON.parse(localStorage.getItem('hm_cal_yb') || '{}');
+    if (cached.ts && Date.now() - cached.ts < 3600000 && cached.events) {
+      S.calendarYbEvents = cached.events; return;
+    }
+  } catch(e) {}
+  try {
+    const resp   = await fetch(`${SYNC_SCRIPT_URL}?action=getEvents`);
+    const result = await resp.json();
+    if (result.success) {
+      const events = result.events.map(ev => {
+        const type = inferYbType(ev.title);
+        return { ...ev, type, icon: YB_ICONS[type] || '📅' };
+      });
+      S.calendarYbEvents = events;
+      localStorage.setItem('hm_cal_yb', JSON.stringify({ ts: Date.now(), events }));
+    }
+  } catch(e) {}
 }
 
 async function loadCustomYbEvents() {
@@ -2381,7 +2436,7 @@ async function loadFromFirebase() {
 
 // ── Init ──────────────────────────────────────────────────────
 async function init() {
-  await Promise.all([loadFromFirebase(), loadCustomYbEvents(), loadYearbookCoverage()]);
+  await Promise.all([loadFromFirebase(), loadCustomYbEvents(), loadYearbookCoverage(), loadCalendarYbEvents()]);
   render();
   document.addEventListener('keydown', e => {
     if (!S.lessonId) return;
