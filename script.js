@@ -44,6 +44,7 @@ const S = {
   lessonId: null,
   lessonSlide: 0,
   yearbookCoverage: [],
+  customYbEvents: [],
   ybDashView: 'event',
 };
 
@@ -931,6 +932,11 @@ function renderInDepth() {
 }
 
 // ── YEARBOOK ──────────────────────────────────────────────────
+function allYbEvents() {
+  const custom = (S.customYbEvents || []).map(e => ({ ...e, icon: YB_ICONS[e.type] || '📅' }));
+  return [...YEARBOOK_EVENTS, ...custom];
+}
+
 function filterYbEvents() {
   const type  = document.getElementById('yb-type')?.value;
   const group = document.getElementById('yb-event-group');
@@ -938,7 +944,7 @@ function filterYbEvents() {
   if (!group || !sel) return;
   if (!type) { group.style.display = 'none'; return; }
   const now = new Date();
-  const events = YEARBOOK_EVENTS.filter(e => e.type === type && new Date(e.date + 'T23:59:00') >= now)
+  const events = allYbEvents().filter(e => e.type === type && new Date(e.date + 'T23:59:00') >= now)
     .sort((a, b) => a.date.localeCompare(b.date));
   sel.innerHTML = events.length
     ? '<option value="">— Select an event —</option>' + events.map(e => `<option value="${e.id}">${e.icon} ${e.title} — ${fmtDate(e.date, false)}</option>`).join('')
@@ -957,14 +963,14 @@ function renderYearbook() {
 
   // Build type options — only show types that have at least one upcoming event
   const upcomingByType = {};
-  YEARBOOK_EVENTS.forEach(e => {
+  allYbEvents().forEach(e => {
     if (new Date(e.date + 'T23:59:00') >= now) {
       if (!upcomingByType[e.type]) upcomingByType[e.type] = [];
       upcomingByType[e.type].push(e);
     }
   });
-  const typeOrder = ['football', 'basketball_boys', 'basketball_girls', 'volleyball', 'showchoir', 'graduation', 'other'];
-  const typeLabels = { football: '🏈 Football', basketball_boys: '🏀 Boys Basketball', basketball_girls: '🏀 Girls Basketball', volleyball: '🏐 Volleyball', showchoir: '🎤 Show Choir', graduation: '🎓 Graduation', other: '📸 Other' };
+  const typeOrder = ['football', 'basketball_boys', 'basketball_girls', 'volleyball', 'showchoir', 'arts', 'dance', 'school', 'academic', 'club', 'graduation', 'other'];
+  const typeLabels = { football: '🏈 Football', basketball_boys: '🏀 Boys Basketball', basketball_girls: '🏀 Girls Basketball', volleyball: '🏐 Volleyball', showchoir: '🎤 Show Choir', arts: '🎭 Performing Arts', dance: '💃 Dance / Social', school: '🏫 School Event', academic: '🏆 Academic', club: '🎨 Club / Org', graduation: '🎓 Graduation', other: '📸 Other' };
   const typeOptions = typeOrder.filter(t => upcomingByType[t])
     .map(t => `<option value="${t}">${typeLabels[t]} (${upcomingByType[t].length})</option>`).join('');
 
@@ -1111,6 +1117,68 @@ async function loadYearbookCoverage() {
   } catch(e) { console.error('yearbook coverage load failed', e); }
 }
 
+async function loadCustomYbEvents() {
+  const db = getDB();
+  if (!db) return;
+  try {
+    const snap = await db.collection('hm_yearbook_events').orderBy('date').get();
+    trackUsage('reads', snap.size);
+    S.customYbEvents = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch(e) {}
+}
+
+async function saveYbEvent() {
+  const title = val('yb-new-title');
+  const date  = val('yb-new-date');
+  const time  = val('yb-new-time');
+  const type  = val('yb-new-type');
+  if (!title || !date) { showToast('Title and date are required.'); return; }
+
+  const btn = document.getElementById('yb-save-event-btn');
+  if (btn) btn.textContent = 'Saving…';
+
+  let calEventId = '';
+  if (SYNC_SCRIPT_URL) {
+    try {
+      const url = `${SYNC_SCRIPT_URL}?action=addEvent&title=${encodeURIComponent(title)}&date=${encodeURIComponent(date)}&time=${encodeURIComponent(time || '12:00 PM')}`;
+      const resp = await fetch(url);
+      const result = await resp.json();
+      if (result.success) calEventId = result.calEventId || '';
+    } catch(e) {}
+  }
+
+  const db = getDB();
+  const doc = { title, date, time, type, calEventId, createdAt: new Date().toISOString() };
+  if (db) {
+    try {
+      trackUsage('writes');
+      const ref = await db.collection('hm_yearbook_events').add(doc);
+      doc.id = ref.id;
+    } catch(e) {}
+  }
+  if (!doc.id) doc.id = Date.now().toString();
+  S.customYbEvents.push(doc);
+  showToast(calEventId ? 'Event saved and added to calendar!' : 'Event saved. (Calendar sync unavailable — check Apps Script URL.)');
+  render();
+}
+
+async function deleteYbEvent(id) {
+  const ev = (S.customYbEvents || []).find(e => e.id === id);
+  if (!ev || !confirm(`Delete "${ev.title}"?`)) return;
+
+  if (ev.calEventId && SYNC_SCRIPT_URL) {
+    try {
+      await fetch(`${SYNC_SCRIPT_URL}?action=deleteEvent&calEventId=${encodeURIComponent(ev.calEventId)}`);
+    } catch(e) {}
+  }
+
+  const db = getDB();
+  if (db) { trackUsage('writes'); await db.collection('hm_yearbook_events').doc(id).delete().catch(() => {}); }
+  S.customYbEvents = S.customYbEvents.filter(e => e.id !== id);
+  showToast('Event deleted.');
+  render();
+}
+
 async function submitYearbookSignup() {
   const name    = (document.getElementById('yb-name')?.value || '').trim();
   const email   = (document.getElementById('yb-email')?.value || '').trim();
@@ -1122,7 +1190,7 @@ async function submitYearbookSignup() {
   if (!eventId) { showToast('Please select an event.');    return; }
   if (!role)    { showToast('Please choose a role.');      return; }
 
-  const event = YEARBOOK_EVENTS.find(e => e.id === eventId);
+  const event = allYbEvents().find(e => e.id === eventId);
   if (!event) return;
 
   const already = (S.yearbookCoverage || []).find(
@@ -1857,6 +1925,24 @@ function attachListeners() {
   document.querySelectorAll('[data-yb-view]').forEach(btn =>
     btn.addEventListener('click', () => { S.ybDashView = btn.dataset.ybView; render(); }));
 
+  const ybAddBtn = document.getElementById('yb-add-event-btn');
+  if (ybAddBtn) ybAddBtn.addEventListener('click', () => {
+    const form = document.getElementById('yb-event-form');
+    if (form) form.style.display = form.style.display === 'none' ? '' : 'none';
+  });
+
+  const ybCancelBtn = document.getElementById('yb-cancel-event-btn');
+  if (ybCancelBtn) ybCancelBtn.addEventListener('click', () => {
+    const form = document.getElementById('yb-event-form');
+    if (form) form.style.display = 'none';
+  });
+
+  const ybSaveBtn = document.getElementById('yb-save-event-btn');
+  if (ybSaveBtn) ybSaveBtn.addEventListener('click', saveYbEvent);
+
+  document.querySelectorAll('.yb-delete-event-btn').forEach(btn =>
+    btn.addEventListener('click', () => deleteYbEvent(btn.dataset.ybEventId)));
+
   document.querySelectorAll('[data-lesson-course]').forEach(el =>
     el.addEventListener('click', () => {
       S.lessonCourse = el.dataset.lessonCourse;
@@ -2295,7 +2381,7 @@ async function loadFromFirebase() {
 
 // ── Init ──────────────────────────────────────────────────────
 async function init() {
-  await loadFromFirebase();
+  await Promise.all([loadFromFirebase(), loadCustomYbEvents(), loadYearbookCoverage()]);
   render();
   document.addEventListener('keydown', e => {
     if (!S.lessonId) return;
@@ -2738,6 +2824,53 @@ function renderDashboard() {
                3. Run <code>createAnnualTrigger()</code> once from the editor<br>
                4. Paste the web app URL into <code>data.js</code> → <code>SYNC_SCRIPT_URL</code>
              </div>`}
+      </section>
+
+      <section class="card db-section">
+        <div class="card-header">
+          <h2>📖 Yearbook Event Manager</h2>
+          <button class="btn-primary" id="yb-add-event-btn" style="font-size:0.8rem">+ Add Event</button>
+        </div>
+        <div id="yb-event-form" style="display:none;padding:14px 0 18px;border-bottom:1px solid var(--border);margin-bottom:16px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+            <div class="form-group" style="margin:0">
+              <label>Title</label>
+              <input id="yb-new-title" type="text" placeholder="e.g. Homecoming Dance">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label>Date</label>
+              <input id="yb-new-date" type="date">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label>Time <span class="hint">(optional)</span></label>
+              <input id="yb-new-time" type="text" placeholder="7:00 PM">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label>Type</label>
+              <select id="yb-new-type">
+                ${Object.entries(EVENT_TYPES).map(([k, v]) => `<option value="${k}">${YB_ICONS[k] || '📅'} ${v.label}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          <button class="btn-primary" id="yb-save-event-btn">Save &amp; Add to Calendar</button>
+          <button class="btn-secondary" id="yb-cancel-event-btn" style="margin-left:8px">Cancel</button>
+        </div>
+        ${(() => {
+          const custom = S.customYbEvents || [];
+          if (!custom.length) return `<p class="dim" style="font-size:0.875rem">No custom events added yet. Sports home games are managed in Homestead Live.</p>`;
+          return custom.slice().sort((a,b) => a.date.localeCompare(b.date)).map(ev => `
+            <div class="yb-db-event">
+              <div class="yb-db-event-title">
+                ${YB_ICONS[ev.type] || '📅'} ${esc(ev.title)}
+                <span class="dim" style="font-weight:400;font-size:0.8rem;margin-left:6px">${fmtDate(ev.date, false)}${ev.time ? ' · ' + esc(ev.time) : ''}</span>
+                <span style="background:var(--surface2);color:var(--dim);font-size:0.72rem;padding:2px 7px;border-radius:10px;margin-left:6px">${EVENT_TYPES[ev.type]?.label || ev.type}</span>
+                ${ev.calEventId ? '<span style="font-size:0.72rem;color:var(--success);margin-left:4px">✓ calendar</span>' : ''}
+              </div>
+              <div style="margin-top:6px">
+                <button class="btn-danger db-btn yb-delete-event-btn" data-yb-event-id="${esc(ev.id)}" style="font-size:0.75rem">Delete</button>
+              </div>
+            </div>`).join('');
+        })()}
       </section>
 
       <section class="card db-section">

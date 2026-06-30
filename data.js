@@ -11,9 +11,14 @@ const EVENT_TYPES = {
   basketball_boys: { label: 'Boys Basketball',   color: '#ef4444' },
   basketball_girls:{ label: 'Girls Basketball',  color: '#3b82f6' },
   volleyball:      { label: 'Volleyball',        color: '#8b5cf6' },
-  showchoir:  { label: 'Show Choir',    color: '#10b981' },
-  graduation: { label: 'Graduation',    color: '#f59e0b' },
-  other:      { label: 'Special Event', color: '#6b7280' }
+  showchoir:       { label: 'Show Choir',        color: '#10b981' },
+  arts:            { label: 'Performing Arts',   color: '#a855f7' },
+  dance:           { label: 'Dance / Social',    color: '#ec4899' },
+  school:          { label: 'School Event',      color: '#06b6d4' },
+  academic:        { label: 'Academic',          color: '#84cc16' },
+  club:            { label: 'Club / Org',        color: '#f97316' },
+  graduation:      { label: 'Graduation',        color: '#f59e0b' },
+  other:           { label: 'Other',             color: '#6b7280' }
 };
 
 
@@ -84,7 +89,7 @@ const SPECIAL_EVENTS = [
   { id: 'grad27-0607', title: 'Graduation',           date: '2027-06-07', type: 'graduation', gameTime: '', roles: {}, checks: {}, notes: 'TBD — time to be announced' },
 ];
 
-const YB_ICONS = { football: '🏈', basketball_boys: '🏀', basketball_girls: '🏀', showchoir: '🎤', graduation: '🎓', volleyball: '🏐', other: '📸' };
+const YB_ICONS = { football: '🏈', basketball_boys: '🏀', basketball_girls: '🏀', volleyball: '🏐', showchoir: '🎤', arts: '🎭', dance: '💃', school: '🏫', academic: '🏆', club: '🎨', graduation: '🎓', other: '📸' };
 const YEARBOOK_EVENTS = [
   ...FOOTBALL_HOME_GAMES,
   ...BASKETBALL_HOME_GAMES,

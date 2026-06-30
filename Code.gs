@@ -1,4 +1,4 @@
-// HHS Athletics Calendar Sync — Google Apps Script
+// HHS Athletics Calendar Sync + Yearbook Event Manager — Google Apps Script
 //
 // SETUP (one-time):
 // 1. Go to script.google.com → New project → paste this file
@@ -10,19 +10,65 @@
 const SOURCE_CAL_ID = 'fd9gn9o6bq5lfvsaiqkt4gs4n1gneqc6@import.calendar.google.com';
 const TARGET_CAL_ID = '2b9bdfdee65f7330d8d5d2fd1d4877c1b709289fa0b0747427f57fd62516bed5@group.calendar.google.com';
 
+function respond(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
 function doGet(e) {
+  const action = (e.parameter && e.parameter.action) || 'sync';
   try {
-    const result = syncAthletics();
-    return ContentService
-      .createTextOutput(JSON.stringify(result))
-      .setMimeType(ContentService.MimeType.JSON);
-  } catch (err) {
-    return ContentService
-      .createTextOutput(JSON.stringify({ success: false, error: err.toString() }))
-      .setMimeType(ContentService.MimeType.JSON);
+    if (action === 'sync')        return respond(syncAthletics());
+    if (action === 'addEvent')    return respond(addCalendarEvent(e.parameter));
+    if (action === 'deleteEvent') return respond(deleteCalendarEvent(e.parameter.calEventId));
+    return respond({ success: false, error: 'Unknown action: ' + action });
+  } catch(err) {
+    return respond({ success: false, error: err.toString() });
   }
 }
 
+// ── Add a single event to the HHS Media Events calendar ──────
+function addCalendarEvent(p) {
+  const cal = CalendarApp.getCalendarById(TARGET_CAL_ID);
+  if (!cal) return { success: false, error: 'Target calendar not found.' };
+
+  const start = parseDateTime(p.date, p.time || '12:00 PM');
+  const end   = new Date(start.getTime() + 2 * 60 * 60 * 1000); // 2-hour default
+  const ev    = cal.createEvent(p.title, start, end);
+
+  return { success: true, calEventId: ev.getId() };
+}
+
+// ── Delete an event from the HHS Media Events calendar ───────
+function deleteCalendarEvent(calEventId) {
+  if (!calEventId) return { success: false, error: 'No calEventId provided.' };
+  const cal = CalendarApp.getCalendarById(TARGET_CAL_ID);
+  if (!cal) return { success: false, error: 'Target calendar not found.' };
+  try {
+    const ev = cal.getEventById(calEventId);
+    if (ev) ev.deleteEvent();
+    return { success: true };
+  } catch(err) {
+    return { success: false, error: err.toString() };
+  }
+}
+
+// ── Parse "7:30 PM" + "YYYY-MM-DD" into a Date ───────────────
+function parseDateTime(dateStr, timeStr) {
+  const d = new Date(dateStr + 'T12:00:00');
+  if (!timeStr) return d;
+  const m = timeStr.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+  if (!m) return d;
+  let h = parseInt(m[1]);
+  const min = parseInt(m[2]);
+  const ampm = m[3] ? m[3].toUpperCase() : null;
+  if (ampm === 'PM' && h !== 12) h += 12;
+  if (ampm === 'AM' && h === 12) h = 0;
+  d.setHours(h, min, 0, 0);
+  return d;
+}
+
+// ── Sync all varsity athletics events for the school year ─────
 function syncAthletics() {
   const now = new Date();
   // School year starts in August
@@ -85,7 +131,7 @@ function syncAthletics() {
   return result;
 }
 
-// Runs every August 1 at 8am — call once from the editor after deploying
+// ── Annual trigger setup — call once from the editor ─────────
 function createAnnualTrigger() {
   ScriptApp.getProjectTriggers()
     .filter(t => t.getHandlerFunction() === 'maybeSync')
