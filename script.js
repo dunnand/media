@@ -1206,12 +1206,20 @@ function roleLabel(role) {
 }
 
 async function loadYearbookCoverage() {
+  // Show cached data instantly, then refresh from Firestore in background
+  try {
+    const cached = JSON.parse(localStorage.getItem('hm_yb_coverage') || 'null');
+    if (cached) { S.yearbookCoverage = cached; render(); }
+  } catch(e) {}
+
   const db = getDB();
   if (!db) return;
   try {
     const snap = await db.collection('hm_yearbook_coverage').orderBy('submittedAt', 'desc').get();
     trackUsage('reads', snap.size);
-    S.yearbookCoverage = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const fresh = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    S.yearbookCoverage = fresh;
+    localStorage.setItem('hm_yb_coverage', JSON.stringify(fresh));
     if (S.view === 'yearbook' || S.view === 'dashboard') render();
   } catch(e) { console.error('yearbook coverage load failed', e); }
 }
@@ -1368,6 +1376,7 @@ async function submitYearbookSignup() {
 
   localStorage.setItem('hm_yb_name',  name);
   localStorage.setItem('hm_yb_email', email);
+  localStorage.removeItem('hm_yb_coverage');
 
   try {
     trackUsage('writes');
@@ -1387,6 +1396,7 @@ async function unsignYearbook(docId) {
   try {
     trackUsage('writes');
     await db.collection('hm_yearbook_coverage').doc(docId).delete();
+    localStorage.removeItem('hm_yb_coverage');
     showToast('Sign-up removed.');
     await loadYearbookCoverage();
   } catch(e) { showToast('Could not remove — try again.'); }
