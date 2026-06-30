@@ -967,7 +967,7 @@ function renderYearbook() {
     { id:'d2', studentName:'Maria Garcia',  email:'maria@hhs.edu',  eventId:'fb-demo-1', eventTitle:'Football vs. Bishop Dwenger', eventDate:'2026-09-04', role:'writer' },
     { id:'d3', studentName:'Jordan Smith',  email:'jordan@hhs.edu', eventId:'fb-demo-2', eventTitle:'Football vs. Carroll',         eventDate:'2026-09-11', role:'photographer' },
     { id:'d4', studentName:'Emily Chen',    email:'emily@hhs.edu',  eventId:'bb-demo-1', eventTitle:'Boys Basketball vs. Snider',  eventDate:'2026-11-13', role:'photographer' },
-    { id:'d5', studentName:'Tyler Nguyen',  email:'tyler@hhs.edu',  eventId:'bb-demo-1', eventTitle:'Boys Basketball vs. Snider',  eventDate:'2026-11-13', role:'designer' },
+    { id:'d5', studentName:'Tyler Nguyen',  email:'tyler@hhs.edu',  eventId:'bb-demo-1', eventTitle:'Boys Basketball vs. Snider',  eventDate:'2026-11-13', role:'photographer' },
     { id:'d6', studentName:'Alex Johnson',  email:'alex@hhs.edu',   eventId:'gbb-demo1', eventTitle:'Girls Basketball vs. Carroll',eventDate:'2026-11-10', role:'photographer' },
     { id:'d7', studentName:'Priya Patel',   email:'priya@hhs.edu',  eventId:'sc-demo-1', eventTitle:'Homecoming Dance',            eventDate:'2026-10-03', role:'photographer' },
     { id:'d8', studentName:'Jordan Smith',  email:'jordan@hhs.edu', eventId:'sc-demo-1', eventTitle:'Homecoming Dance',            eventDate:'2026-10-03', role:'writer' },
@@ -1057,7 +1057,6 @@ function renderYearbook() {
               <div class="yb-role-picker">
                 <button class="yb-role-btn" data-role="photographer">📷 Photographer</button>
                 <button class="yb-role-btn" data-role="writer">✏️ Writer</button>
-                <button class="yb-role-btn" data-role="designer">🎨 Designer</button>
               </div>
               <input type="hidden" id="yb-role" value="">
             </div>
@@ -1202,7 +1201,7 @@ function renderYearbook() {
 }
 
 function roleLabel(role) {
-  return { photographer: '📷 Photographer', writer: '✏️ Writer', designer: '🎨 Designer' }[role] || role;
+  return { photographer: '📷 Photographer', writer: '✏️ Writer' }[role] || role;
 }
 
 async function loadYearbookCoverage() {
@@ -3091,9 +3090,9 @@ function renderDashboard() {
           }
 
           if (S.ybDashView === 'role') {
-            const groups = { photographer: [], writer: [], designer: [] };
+            const groups = { photographer: [], writer: [] };
             coverage.forEach(s => { if (groups[s.role]) groups[s.role].push(s); });
-            const labels = { photographer: '📷 Photographers', writer: '✏️ Writers', designer: '🎨 Designers' };
+            const labels = { photographer: '📷 Photographers', writer: '✏️ Writers' };
             return Object.entries(groups).filter(([,arr]) => arr.length).map(([role, entries]) => `
               <div class="yb-db-event">
                 <div class="yb-db-event-title">
