@@ -2584,16 +2584,15 @@ function renderIASB() {
       <div class="iasb-cat-grid">
         ${cats.map(cat => {
           const catCount = entries.filter(e => e.code === cat.code).length;
-          const full = catCount >= cat.perSchool;
           return `
-            <div class="iasb-cat-card${full ? ' at-limit' : ''}" data-iasb-cat="${cat.code}" style="border-top-color:${cat.color}">
+            <div class="iasb-cat-card" data-iasb-cat="${cat.code}" style="border-top-color:${cat.color}">
               <div class="iasb-cat-top">
                 <span class="iasb-code" style="color:${cat.color}">${cat.code}</span>
                 ${cat.tag ? `<span class="iasb-tag${cat.tag === 'LIVE Finals' ? ' live-tag' : ''}">${cat.tag}</span>` : ''}
               </div>
               <div class="iasb-cat-name">${cat.name}</div>
               <div class="iasb-cat-meta"><span>${cat.length}</span><span>${cat.fileFormat}</span></div>
-              <div class="iasb-entry-count${full ? ' full' : ''}">${catCount} / ${cat.perSchool} ${catCount === 1 ? 'entry' : 'entries'}</div>
+              <div class="iasb-entry-count">${catCount} ${catCount === 1 ? 'entry' : 'entries'}</div>
             </div>`;
         }).join('')}
       </div>`;
@@ -2647,7 +2646,7 @@ function renderIASBCategory() {
   if (!cat) return `${navBar('radio')}<div class="class-page"><button class="back-btn" data-nav="iasb">← Back</button><p>Category not found.</p></div>`;
 
   const entries = (S.iasbEntries || []).filter(e => e.code === cat.code);
-  const atLimit = entries.length >= cat.perSchool;
+  const atLimit = false;
 
   const entryCards = entries.length
     ? entries.map(entry => renderIASBEntryCard(cat, entry)).join('')
@@ -2676,7 +2675,7 @@ function renderIASBCategory() {
             <span class="iasb-division-chip" style="color:${cat.color};border-color:${cat.color}40">${cat.division}</span>
             ${cat.tag ? `<span class="iasb-tag${cat.tag === 'LIVE Finals' ? ' live-tag' : ''}">${cat.tag}</span>` : ''}
             ${cat.solo ? '<span class="iasb-tag">Solo entry</span>' : ''}
-            <span class="iasb-tag">${cat.perSchool} per school</span>
+            <span class="iasb-tag">Open entries</span>
           </div>
         </div>
       </div>
@@ -2699,7 +2698,7 @@ function renderIASBCategory() {
 
           <section class="card">
             <div class="card-header">
-              <h2>Registered Entries <span class="iasb-entry-ratio">${entries.length} / ${cat.perSchool}</span></h2>
+              <h2>Registered Entries <span class="iasb-entry-ratio">${entries.length}</span></h2>
               <button class="btn-primary" id="register-iasb-entry"
                 ${atLimit ? 'disabled' : ''}
                 style="background:${atLimit ? 'var(--surface2)' : cat.color};color:${atLimit ? 'var(--dim)' : '#000'}">
@@ -2860,7 +2859,7 @@ function renderDashboard() {
         <div class="db-cat-label">
           <span class="db-cat-code" style="color:${cat.color}">${cat.code}</span>
           <span class="db-cat-name">${cat.name}</span>
-          <span class="db-cat-count">${catEntries.length} / ${cat.perSchool}</span>
+          <span class="db-cat-count">${catEntries.length} ${catEntries.length === 1 ? 'entry' : 'entries'}</span>
         </div>
         ${catEntries.map(entry => {
           const checks = entry.checklist || {};

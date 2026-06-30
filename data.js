@@ -148,10 +148,11 @@ const IASB_DRIVE_FOLDERS = {
 };
 
 const IASB_CATEGORIES = [
+  // ── Radio ────────────────────────────────────────────────────
   {
     code: 'R1', division: 'Radio', color: '#f59e0b',
     name: 'Air Personality', tag: 'LIVE Finals',
-    perSchool: 2, solo: true,
+    perSchool: 99, solo: true,
     format: 'Scoped aircheck — music removed', length: '2–3 min', fileFormat: '.mp3',
     description: 'Solo DJ performance. Showcase your voice, personality, content, and on-air delivery. The top 6 entries compete live at the state finals on 88.7 FM WICR.',
     criteria: ['Voice quality', 'Ad-libbing', 'Content', 'Energy & pacing', 'Branding', 'Audience connection'],
@@ -166,7 +167,7 @@ const IASB_CATEGORIES = [
   {
     code: 'R2', division: 'Radio', color: '#f59e0b',
     name: 'Talk Show', tag: null,
-    perSchool: 2, solo: false,
+    perSchool: 99, solo: false,
     format: 'Scoped aircheck', length: '5–7 min', fileFormat: '.mp3',
     description: 'Spoken-word, non-music program — opinions, reviews, interviews, or discussion. Sports-themed talk shows must enter S2 Sports Talk Show instead.',
     criteria: ['Knowledge & content', 'Ad-libbing', 'Intro of topic/guest', 'Energy & interaction', 'Delivery', 'Production elements', 'Branding'],
@@ -181,7 +182,7 @@ const IASB_CATEGORIES = [
   {
     code: 'R3', division: 'Radio', color: '#f59e0b',
     name: 'Radio Show', tag: null,
-    perSchool: 2, solo: false,
+    perSchool: 99, solo: false,
     format: 'Scoped aircheck — music removed', length: '5–7 min', fileFormat: '.mp3',
     description: 'Team entertainment program in music format. Solo performers must enter R1 Air Personality. Opinion or review programs must enter R2 Talk Show.',
     criteria: ['Content', 'Announcer interaction', 'Delivery', 'Audience connection', 'Production elements', 'Branding', 'Overall impression'],
@@ -196,7 +197,7 @@ const IASB_CATEGORIES = [
   {
     code: 'R4', division: 'Radio', color: '#f59e0b',
     name: 'Spot Production', tag: null,
-    perSchool: 2, solo: true,
+    perSchool: 99, solo: true,
     format: 'Commercial, PSA, or station promo', length: ':30 or :60', fileFormat: '.mp3',
     description: 'Write and produce an original commercial, public service announcement, or station promotional spot. Exactly 30 or 60 seconds — timing is judged.',
     criteria: ['Concept', 'Production value', 'Opening hook', 'Voice & delivery', 'Script quality', 'Use of sound', 'Creativity', 'Timing'],
@@ -211,7 +212,7 @@ const IASB_CATEGORIES = [
   {
     code: 'R5', division: 'Radio', color: '#f59e0b',
     name: 'Imaging', tag: 'School-Wide',
-    perSchool: 1, solo: false,
+    perSchool: 99, solo: false,
     format: 'Collage of sweepers, drop-ins, promos, jingles', length: 'Max 2 min total', fileFormat: '.mp3',
     description: 'One entry per school. A collage of the station\'s imaging elements. Students must perform all voice work. Include multiple productions in a single file.',
     criteria: ['Branding consistency', 'Execution', 'Use of sound', 'Variety', 'Creativity', 'Production value', 'Voice performance', 'Pacing'],
@@ -226,7 +227,7 @@ const IASB_CATEGORIES = [
   {
     code: 'R6', division: 'Radio', color: '#f59e0b',
     name: 'Copywriting', tag: null,
-    perSchool: 2, solo: true,
+    perSchool: 99, solo: true,
     format: 'Written script ONLY — no audio', length: 'Per client specs', fileFormat: '.pdf',
     description: 'Write a commercial script based on the IASB client fact sheet at IASBOnline.org. Submit a word-processed script only — no recorded audio.',
     criteria: ['Strong lead', 'Holding audience attention', 'Interest & desire', 'Delivering client\'s message', 'Call to action', 'Creativity', 'Timing'],
@@ -242,7 +243,7 @@ const IASB_CATEGORIES = [
   {
     code: 'R7', division: 'Radio', color: '#f59e0b',
     name: 'Interview', tag: null,
-    perSchool: 2, solo: true,
+    perSchool: 99, solo: true,
     format: 'Audio interview', length: '2+ min', fileFormat: '.mp3',
     description: 'Conduct and record a real interview with a real person. No fictional characters. Audio from this entry cannot be re-entered as a Podcast (M3).',
     criteria: ['Introduction', 'Question order', 'Question quality & depth', 'Delivery & style', 'Conclusion'],
@@ -257,7 +258,7 @@ const IASB_CATEGORIES = [
   {
     code: 'R8', division: 'Radio', color: '#f59e0b',
     name: 'Adapted Drama', tag: null,
-    perSchool: 2, solo: false,
+    perSchool: 99, solo: false,
     format: 'Audio drama from existing script', length: '5–15 min', fileFormat: '.mp3',
     description: 'Produce an audio drama based on an existing, non-student-written script. Two entries in this category must use two different scripts.',
     criteria: ['Opening', 'Delivery', 'Scene transitions', 'Vocal performance', 'Music & sound effects', 'Conclusion'],
@@ -272,7 +273,7 @@ const IASB_CATEGORIES = [
   {
     code: 'R9', division: 'Radio', color: '#f59e0b',
     name: 'Original Drama', tag: null,
-    perSchool: 2, solo: false,
+    perSchool: 99, solo: false,
     format: 'Audio drama from student-written script', length: '5–15 min', fileFormat: '.mp3',
     description: 'Write and produce an original audio drama. Students must write the script. Two entries must use two different original scripts.',
     criteria: ['Script quality', 'Opening', 'Delivery', 'Scene transitions', 'Vocal performance', 'Music & sound effects', 'Conclusion'],
@@ -287,7 +288,7 @@ const IASB_CATEGORIES = [
   {
     code: 'N2', division: 'News', color: '#ef4444',
     name: 'Radio In-Depth', tag: null,
-    perSchool: 2, solo: true,
+    perSchool: 99, solo: true,
     format: 'Audio news or feature story', length: '2+ min', fileFormat: '.mp3',
     description: 'In-depth audio coverage of a single news or feature topic. This is NOT a podcast — podcast entries must use M3. No fictional content.',
     criteria: ['Opening', 'Content', 'Delivery', 'Audio quality', 'Creativity', 'Credibility', 'Writing', 'Pacing', 'Closing'],
@@ -302,7 +303,7 @@ const IASB_CATEGORIES = [
   {
     code: 'M3', division: 'Emerging Media', color: '#8b5cf6',
     name: 'Podcast', tag: null,
-    perSchool: 2, solo: false,
+    perSchool: 99, solo: false,
     format: 'Single episode from a series', length: '5–15 min', fileFormat: '.mp3 + .jpg',
     description: 'Submit one episode from an ongoing podcast series. Must also upload the show\'s cover art as a .jpg. Audio cannot be reused from a Vodcast (M4) entry.',
     criteria: ['Pre-planning', 'Opening', 'Storytelling', 'Creativity & originality', 'Production quality', 'Vocal performance', 'Closing'],
@@ -313,6 +314,518 @@ const IASB_CATEGORIES = [
       'Prepare show thumbnail / cover art as a .jpg file (required)',
       'Export audio as .mp3',
       'Upload BOTH the .mp3 audio AND the .jpg cover art',
+    ]
+  },
+
+  // ── News ─────────────────────────────────────────────────────
+  {
+    code: 'N1', division: 'News', color: '#ef4444',
+    name: 'Radio News Anchor', tag: 'LIVE Finals',
+    perSchool: 99, solo: true,
+    format: 'Scoped radio newscast', length: '2–3 min', fileFormat: '.mp3',
+    description: 'Solo on-air anchor delivering a radio newscast. Showcase your delivery, credibility, and news judgment. Top entries compete live at the state finals.',
+    criteria: ['Delivery & pacing', 'Writing quality', 'News judgment', 'Credibility', 'Broadcast style', 'Professionalism'],
+    checklist: [
+      'Solo performance only',
+      'Real news content — no fictional stories',
+      'Scope your aircheck — remove music beds',
+      'Length: 2 to 3 minutes',
+      'Export and upload as .mp3',
+    ]
+  },
+  {
+    code: 'N2', division: 'News', color: '#ef4444',
+    name: 'Radio In-Depth', tag: null,
+    perSchool: 99, solo: true,
+    format: 'Audio news or feature story', length: '2+ min', fileFormat: '.mp3',
+    description: 'In-depth audio coverage of a single news or feature topic. This is NOT a podcast — podcast entries must use M3. No fictional content.',
+    criteria: ['Opening', 'Content', 'Delivery', 'Audio quality', 'Creativity', 'Credibility', 'Writing', 'Pacing', 'Closing'],
+    checklist: [
+      'Single-topic news or feature story — not a podcast format',
+      'Cannot be re-entered as a Podcast (M3)',
+      'Minimum length: 2 minutes',
+      'Strong opening that establishes the story and its importance',
+      'Export and upload as .mp3',
+    ]
+  },
+  {
+    code: 'N3', division: 'News', color: '#ef4444',
+    name: 'TV News Anchor', tag: 'LIVE Finals',
+    perSchool: 99, solo: true,
+    format: 'Video newscast performance', length: '2–3 min', fileFormat: '.mp4',
+    description: 'Solo on-camera anchor delivering a television newscast. Top entries compete live at the state finals. Showcase delivery, presence, and professionalism.',
+    criteria: ['Delivery & presence', 'Writing quality', 'News judgment', 'On-camera appearance', 'Credibility', 'Eye contact & teleprompter use'],
+    checklist: [
+      'Solo anchor performance only',
+      'Real news content — no fictional stories',
+      'Clean, professional on-camera setup',
+      'Length: 2 to 3 minutes',
+      'Export and upload as .mp4',
+    ]
+  },
+  {
+    code: 'N4', division: 'News', color: '#ef4444',
+    name: 'School Video Newscast', tag: null,
+    perSchool: 99, solo: false,
+    format: 'Full school video newscast', length: '5–15 min', fileFormat: '.mp4',
+    description: 'A complete school video newscast produced and performed by students. Must include multiple news segments with anchors, reporters, and production elements.',
+    criteria: ['Opening', 'News judgment', 'Anchor delivery', 'Technical quality', 'Production value', 'Story variety', 'Closing'],
+    checklist: [
+      'Multiple anchors or reporters involved',
+      'Complete newscast format with intro, stories, and close',
+      'At least 3 different news stories covered',
+      'Length: 5 to 15 minutes',
+      'Export and upload as .mp4',
+    ]
+  },
+  {
+    code: 'N5', division: 'News', color: '#ef4444',
+    name: 'Video News Package', tag: null,
+    perSchool: 99, solo: true,
+    format: 'Edited video news story', length: '1:30–3 min', fileFormat: '.mp4',
+    description: 'A self-contained video news story with reporter stand-up, interviews, and natural sound. Covers a single topic with strong journalistic structure.',
+    criteria: ['News judgment', 'Stand-up delivery', 'Interview quality', 'Story structure', 'Writing & narration', 'Editing', 'Audio quality'],
+    checklist: [
+      'Single focused news topic',
+      'Includes at least one stand-up',
+      'At least one on-camera interview',
+      'Natural/ambient sound present',
+      'Length: 1:30 to 3 minutes',
+      'Export and upload as .mp4',
+    ]
+  },
+  {
+    code: 'N6', division: 'News', color: '#ef4444',
+    name: 'Video In-Depth', tag: null,
+    perSchool: 99, solo: false,
+    format: 'Long-form video news or feature', length: '3–10 min', fileFormat: '.mp4',
+    description: 'In-depth video coverage of a single topic — investigative report or feature story. More comprehensive than a news package, with multiple sources and perspectives.',
+    criteria: ['Research depth', 'Story importance', 'Interview quality', 'Editing', 'Narration', 'Production value', 'Multiple viewpoints'],
+    checklist: [
+      'Single in-depth topic — more thorough than a standard package',
+      'Multiple sources or interviews required',
+      'Strong narration and story structure',
+      'Length: 3 to 10 minutes',
+      'Export and upload as .mp4',
+    ]
+  },
+  {
+    code: 'N7', division: 'News', color: '#ef4444',
+    name: 'Photojournalism', tag: null,
+    perSchool: 99, solo: true,
+    format: 'Single photo + 25-word caption', length: '1 image', fileFormat: '.jpg + .pdf',
+    description: 'A single photojournalism image with a factual caption. Must be shot by the student. Judges on news value, composition, and the story the image tells.',
+    criteria: ['News value', 'Composition', 'Technical quality', 'Caption accuracy & clarity', 'Story told in a single image'],
+    checklist: [
+      'Photo must be taken by the student',
+      'No digital manipulation beyond basic exposure and cropping',
+      'Write a factual 25-word caption identifying who, what, when, where',
+      'Submit .jpg image AND .pdf caption document',
+      'Upload BOTH files',
+    ]
+  },
+  {
+    code: 'N8', division: 'News', color: '#ef4444',
+    name: 'Video Field Reporter', tag: null,
+    perSchool: 99, solo: true,
+    format: 'On-location reporter package', length: '1:30–3 min', fileFormat: '.mp4',
+    description: 'On-location reporting with stand-up, interviews, and natural sound from the field. Focuses on the reporter\'s presence and storytelling ability on location.',
+    criteria: ['Reporter presence', 'Stand-up quality', 'Interview depth', 'Natural sound use', 'Story structure', 'Editing'],
+    checklist: [
+      'Must be shot on location — not in a studio',
+      'Includes at least one stand-up on location',
+      'Natural/ambient sound present throughout',
+      'At least one interview',
+      'Length: 1:30 to 3 minutes',
+      'Export and upload as .mp4',
+    ]
+  },
+
+  // ── Sports ───────────────────────────────────────────────────
+  {
+    code: 'S1', division: 'Sports', color: '#10b981',
+    name: 'Radio Sports Update', tag: null,
+    perSchool: 99, solo: true,
+    format: 'Short radio sports report', length: ':30–1:30', fileFormat: '.mp3',
+    description: 'A concise radio sports update delivering scores, highlights, and sports news. Tight, factual, and well-delivered — like a real sportscast break.',
+    criteria: ['Delivery', 'Content accuracy', 'Pacing', 'Organization', 'Credibility', 'Broadcast style'],
+    checklist: [
+      'Factual sports content — scores, highlights, upcoming events',
+      'Concise and tightly written',
+      'Length: :30 to 1:30',
+      'Export and upload as .mp3',
+    ]
+  },
+  {
+    code: 'S2', division: 'Sports', color: '#10b981',
+    name: 'Sports Talk Radio Show', tag: null,
+    perSchool: 99, solo: false,
+    format: 'Scoped sports talk aircheck', length: '5–7 min', fileFormat: '.mp3',
+    description: 'A sports-themed talk show featuring analysis, opinion, discussion, or debate. Sports-focused content only — general talk shows enter R2 Talk Show.',
+    criteria: ['Knowledge of subject', 'Delivery', 'Discussion quality', 'Production elements', 'Energy & interaction', 'Branding'],
+    checklist: [
+      'Sports-specific content only',
+      'Scope your aircheck — remove music beds',
+      'Length: 5 to 7 minutes',
+      'Demonstrates knowledge of the sport or topic discussed',
+      'Export and upload as .mp3',
+    ]
+  },
+  {
+    code: 'S3', division: 'Sports', color: '#10b981',
+    name: 'Basketball Play-By-Play', tag: null,
+    perSchool: 99, solo: false,
+    format: 'Live audio broadcast excerpt', length: '5–10 min', fileFormat: '.mp3',
+    description: 'Audio play-by-play and color commentary from a live basketball game. Judged on accuracy, energy, stat use, and the chemistry between partners.',
+    criteria: ['Play-by-play accuracy', 'Color commentary', 'Energy & pace', 'Stat & context use', 'Flow between partners', 'Knowledge of game'],
+    checklist: [
+      'Must be from a real, live basketball game',
+      'Continuous unedited excerpt — no jump cuts',
+      'Includes both play-by-play and color commentary',
+      'Length: 5 to 10 minutes',
+      'Export and upload as .mp3',
+    ]
+  },
+  {
+    code: 'S4', division: 'Sports', color: '#10b981',
+    name: 'Football Play-By-Play', tag: null,
+    perSchool: 99, solo: false,
+    format: 'Live audio broadcast excerpt', length: '5–10 min', fileFormat: '.mp3',
+    description: 'Audio play-by-play and color commentary from a live football game. Judged on accuracy, energy, stat use, and the chemistry between partners.',
+    criteria: ['Play-by-play accuracy', 'Color commentary', 'Energy & pace', 'Stat & context use', 'Flow between partners', 'Knowledge of game'],
+    checklist: [
+      'Must be from a real, live football game',
+      'Continuous unedited excerpt — no jump cuts',
+      'Includes both play-by-play and color commentary',
+      'Length: 5 to 10 minutes',
+      'Export and upload as .mp3',
+    ]
+  },
+  {
+    code: 'S5', division: 'Sports', color: '#10b981',
+    name: 'Sporting Event Broadcast', tag: null,
+    perSchool: 99, solo: false,
+    format: 'Live audio broadcast excerpt', length: '5–10 min', fileFormat: '.mp3',
+    description: 'Audio play-by-play and commentary from any sport other than football or basketball. Those sports enter S4 and S3 respectively.',
+    criteria: ['Play-by-play accuracy', 'Knowledge of sport', 'Energy & pace', 'Stat & context use', 'Commentary quality'],
+    checklist: [
+      'Any sport except football (S4) or basketball (S3)',
+      'Must be from a real, live sporting event',
+      'Continuous unedited excerpt — no jump cuts',
+      'Length: 5 to 10 minutes',
+      'Export and upload as .mp3',
+    ]
+  },
+  {
+    code: 'S6', division: 'Sports', color: '#10b981',
+    name: 'Video Live Sports — Football & Basketball', tag: null,
+    perSchool: 99, solo: false,
+    format: 'Edited video from live game broadcast', length: '5–15 min', fileFormat: '.mp4',
+    description: 'Edited video broadcast from a live football or basketball game. Multi-camera coverage encouraged. For all other sports, enter S7.',
+    criteria: ['Camera work', 'Production value', 'Commentary', 'Graphics & lower thirds', 'Editing', 'Audio quality', 'Multi-camera use'],
+    checklist: [
+      'Football or basketball only — other sports enter S7',
+      'Must be from a real, live game',
+      'Multi-camera angles strongly encouraged',
+      'Length: 5 to 15 minutes',
+      'Export and upload as .mp4',
+    ]
+  },
+  {
+    code: 'S7', division: 'Sports', color: '#10b981',
+    name: 'Video Live Sports — All Other Sports', tag: null,
+    perSchool: 99, solo: false,
+    format: 'Edited video from live game broadcast', length: '5–15 min', fileFormat: '.mp4',
+    description: 'Edited video broadcast from any live sport except football or basketball. Those sports enter S6. Multi-camera coverage encouraged.',
+    criteria: ['Camera work', 'Production value', 'Commentary', 'Graphics & lower thirds', 'Editing', 'Audio quality', 'Multi-camera use'],
+    checklist: [
+      'Any sport except football or basketball (those enter S6)',
+      'Must be from a real, live sporting event',
+      'Multi-camera angles strongly encouraged',
+      'Length: 5 to 15 minutes',
+      'Export and upload as .mp4',
+    ]
+  },
+  {
+    code: 'S8', division: 'Sports', color: '#10b981',
+    name: 'Video Sports Program', tag: null,
+    perSchool: 99, solo: false,
+    format: 'Studio sports program', length: '5–15 min', fileFormat: '.mp4',
+    description: 'A produced studio sports program — not a live game broadcast. May include highlights, analysis, scores, and athlete interviews.',
+    criteria: ['Production value', 'Anchor delivery', 'Content & sports knowledge', 'Graphics', 'Editing', 'Variety of elements'],
+    checklist: [
+      'Studio or produced format — not a live broadcast (those enter S6/S7)',
+      'Multiple segments or elements required',
+      'Can include highlights, interviews, and analysis',
+      'Length: 5 to 15 minutes',
+      'Export and upload as .mp4',
+    ]
+  },
+  {
+    code: 'S9', division: 'Sports', color: '#10b981',
+    name: 'Video Sports Package', tag: null,
+    perSchool: 99, solo: true,
+    format: 'Edited sports feature story', length: '1:30–3 min', fileFormat: '.mp4',
+    description: 'A focused video feature story on a sports topic — athlete profile, game recap, or sports news story. Strong reporter presence and storytelling required.',
+    criteria: ['Story structure', 'Interview quality', 'Editing', 'Natural sound', 'Reporter presence', 'Production value'],
+    checklist: [
+      'Single focused sports story',
+      'Includes at least one interview',
+      'Natural/game sound present',
+      'Length: 1:30 to 3 minutes',
+      'Export and upload as .mp4',
+    ]
+  },
+
+  // ── Video ────────────────────────────────────────────────────
+  {
+    code: 'V1', division: 'Video', color: '#3b82f6',
+    name: 'Video Spot Production', tag: null,
+    perSchool: 99, solo: true,
+    format: 'Video commercial, PSA, or promo', length: ':30 or :60', fileFormat: '.mp4',
+    description: 'Write and produce an original video commercial, PSA, or station promo. Exactly 30 or 60 seconds — timing is judged. Strong concept and production required.',
+    criteria: ['Concept', 'Production value', 'Opening hook', 'Visual delivery', 'Script quality', 'Creativity', 'Timing'],
+    checklist: [
+      'Original commercial, PSA, or station promo',
+      'Choose one length exactly: :30 (:29.0–:30.0) OR :60 (:59.0–:60.0)',
+      'All talent and production done by students',
+      'Verify exact timing before exporting',
+      'Export and upload as .mp4',
+    ]
+  },
+  {
+    code: 'V2', division: 'Video', color: '#3b82f6',
+    name: 'Music Video', tag: null,
+    perSchool: 99, solo: false,
+    format: 'Original music video', length: 'Full song length', fileFormat: '.mp4',
+    description: 'Produce a music video for a song. Student-produced music is preferred but not required. Creative vision, editing, and production quality are the focus.',
+    criteria: ['Concept & vision', 'Camera work', 'Editing rhythm & music sync', 'Performance', 'Production value', 'Creativity & originality'],
+    checklist: [
+      'Must have proper music rights or use original student-produced music',
+      'Cannot be re-entered in another video category',
+      'Strong creative concept required — not just a live performance recording',
+      'Export and upload as .mp4',
+    ]
+  },
+  {
+    code: 'V3', division: 'Video', color: '#3b82f6',
+    name: 'Video Magazine', tag: null,
+    perSchool: 99, solo: false,
+    format: 'Multi-segment video magazine show', length: '5–15 min', fileFormat: '.mp4',
+    description: 'A magazine-style video program covering multiple topics — lifestyle, entertainment, school features, and reviews. Not a newscast.',
+    criteria: ['Variety of content', 'Production value', 'Host presence', 'Transitions', 'Editing', 'Segment quality', 'Overall flow'],
+    checklist: [
+      'At least 3 different segments on different topics',
+      'Magazine/feature format — not a news program (those enter N4)',
+      'Length: 5 to 15 minutes',
+      'Export and upload as .mp4',
+    ]
+  },
+  {
+    code: 'V4', division: 'Video', color: '#3b82f6',
+    name: 'Corporate Video', tag: null,
+    perSchool: 99, solo: false,
+    format: 'Promotional or informational video', length: '2–5 min', fileFormat: '.mp4',
+    description: 'A professionally produced video for a real client — school organization, business, or community group. Must serve an actual communication purpose for the client.',
+    criteria: ['Client message clarity', 'Production value', 'Script quality', 'Visual storytelling', 'Graphics', 'Call to action'],
+    checklist: [
+      'Must be produced for a real client with a real communication goal',
+      'Clearly delivers the client\'s message',
+      'Professional tone and production quality required',
+      'Length: 2 to 5 minutes',
+      'Export and upload as .mp4',
+    ]
+  },
+  {
+    code: 'V5', division: 'Video', color: '#3b82f6',
+    name: 'Cinematography', tag: null,
+    perSchool: 99, solo: true,
+    format: 'Visually driven cinematic piece', length: '2–5 min', fileFormat: '.mp4',
+    description: 'A visually driven piece focused on camera work, lighting, and composition. Minimal or no dialogue. Judged primarily on visual storytelling and technical mastery.',
+    criteria: ['Shot composition', 'Lighting', 'Camera movement', 'Visual storytelling', 'Editing', 'Originality'],
+    checklist: [
+      'Primarily visual — minimal or no dialogue required',
+      'Demonstrates a range of shot types and lighting setups',
+      'Movement and composition are the story',
+      'Length: 2 to 5 minutes',
+      'Export and upload as .mp4',
+    ]
+  },
+  {
+    code: 'V6', division: 'Video', color: '#3b82f6',
+    name: 'Short Film', tag: null,
+    perSchool: 99, solo: false,
+    format: 'Original narrative fiction film', length: '3–10 min', fileFormat: '.mp4',
+    description: 'An original fictional narrative with a clear beginning, middle, and end. Script must be written by students. Acting, directing, and production all judged.',
+    criteria: ['Script quality', 'Acting', 'Directing', 'Editing', 'Audio quality', 'Production value', 'Story arc'],
+    checklist: [
+      'Original fictional narrative — not a documentary',
+      'Student-written script required',
+      'Clear three-act structure: setup, conflict, resolution',
+      'Length: 3 to 10 minutes',
+      'Export and upload as .mp4',
+    ]
+  },
+  {
+    code: 'V7', division: 'Video', color: '#3b82f6',
+    name: 'Video Copywriting', tag: null,
+    perSchool: 99, solo: true,
+    format: 'Written script ONLY — no video', length: 'Per client specs', fileFormat: '.pdf',
+    description: 'Write a video commercial script based on the IASB client fact sheet at IASBOnline.org. Script only — no video production required.',
+    criteria: ['Strong lead', 'Client message delivery', 'Visual direction notes', 'Call to action', 'Creativity', 'Timing'],
+    checklist: [
+      'Download the client fact sheet from IASBOnline.org',
+      'Write at the client-specified length',
+      'Include shot descriptions and audio/music notes',
+      'Submit script ONLY — no video production',
+      'Export as .pdf and upload',
+    ]
+  },
+  {
+    code: 'V8', division: 'Video', color: '#3b82f6',
+    name: 'Live Event', tag: null,
+    perSchool: 99, solo: false,
+    format: 'Edited video from a live produced event', length: '5–15 min', fileFormat: '.mp4',
+    description: 'Multi-camera video coverage of a live event — concert, ceremony, school production, or broadcast. Judged on live production decisions and technical execution.',
+    criteria: ['Multi-camera switching', 'Production flow', 'Graphics & lower thirds', 'Audio mix', 'Directing decisions', 'Overall execution'],
+    checklist: [
+      'Must be from a real, live event',
+      'Multi-camera coverage required',
+      'Can include pre/post-event segments',
+      'Length: 5 to 15 minutes',
+      'Export and upload as .mp4',
+    ]
+  },
+  {
+    code: 'V9', division: 'Video', color: '#3b82f6',
+    name: 'Video Show Open', tag: null,
+    perSchool: 99, solo: false,
+    format: 'Produced opening title sequence', length: ':15–:60', fileFormat: '.mp4',
+    description: 'A produced opening animation or title sequence for a real school show or production. Must include music and motion graphics. Judged on creativity and production quality.',
+    criteria: ['Visual creativity', 'Music sync', 'Motion design', 'Branding clarity', 'Production value', 'Length appropriateness'],
+    checklist: [
+      'Must function as an actual show open for a real school production',
+      'Includes music and motion graphics — not just a still title card',
+      'Length: :15 to :60 seconds',
+      'Export and upload as .mp4',
+    ]
+  },
+
+  // ── Emerging Media ───────────────────────────────────────────
+  {
+    code: 'M1', division: 'Emerging Media', color: '#8b5cf6',
+    name: 'Student Media Website', tag: 'School-Wide',
+    perSchool: 99, solo: false,
+    format: 'Live website URL + screenshots', length: 'N/A', fileFormat: 'URL + .pdf',
+    description: 'The school\'s student media website. Judged on design, content quality, navigation, and overall media presence. One entry per school program.',
+    criteria: ['Design & layout', 'Content quality & depth', 'Navigation', 'Multimedia use', 'Frequency of updates', 'Overall impression'],
+    checklist: [
+      'Live, publicly accessible website URL required',
+      'Submit screenshots of key pages as a .pdf',
+      'Must represent the school\'s student media program',
+      'Include evidence of regular content updates',
+      'Submit URL and .pdf screenshots',
+    ]
+  },
+  {
+    code: 'M2', division: 'Emerging Media', color: '#8b5cf6',
+    name: 'Social Media Presence', tag: 'School-Wide',
+    perSchool: 99, solo: false,
+    format: 'Screenshots across platforms', length: 'N/A', fileFormat: '.pdf',
+    description: 'The school media program\'s social media presence across platforms. Judged on branding consistency, content quality, posting frequency, and audience engagement.',
+    criteria: ['Branding consistency', 'Content variety', 'Posting frequency', 'Visual quality', 'Engagement strategy', 'Multi-platform use'],
+    checklist: [
+      'Submit handles for all active platforms',
+      'Include screenshots of recent posts showing variety',
+      'Show evidence of consistent posting schedule',
+      'Demonstrate cross-platform branding',
+      'Export screenshots as .pdf and upload',
+    ]
+  },
+  {
+    code: 'M4', division: 'Emerging Media', color: '#8b5cf6',
+    name: 'Vodcast', tag: null,
+    perSchool: 99, solo: false,
+    format: 'Single video podcast episode', length: '5–15 min', fileFormat: '.mp4',
+    description: 'A video podcast episode from an ongoing series. Video cannot reuse audio from a Podcast (M3) entry. Judged on content, production quality, and host performance.',
+    criteria: ['Pre-planning', 'Opening', 'Storytelling', 'Production quality', 'Host chemistry', 'Visual elements', 'Closing'],
+    checklist: [
+      'Episode must come from an ongoing vodcast series',
+      'Cannot reuse audio from an M3 Podcast entry',
+      'Length: 5 to 15 minutes',
+      'Export and upload as .mp4',
+    ]
+  },
+  {
+    code: 'M5', division: 'Emerging Media', color: '#8b5cf6',
+    name: 'Video Comedy', tag: null,
+    perSchool: 99, solo: false,
+    format: 'Original comedy or parody video', length: '2–5 min', fileFormat: '.mp4',
+    description: 'An original comedy or parody video — sketch, mockumentary, parody ad, or other comedic format. Content must be school-appropriate.',
+    criteria: ['Humor & wit', 'Concept originality', 'Editing', 'Performance', 'Production value', 'Script quality'],
+    checklist: [
+      'Original comedy concept — parody of real people requires consent',
+      'School-appropriate content required',
+      'Length: 2 to 5 minutes',
+      'Export and upload as .mp4',
+    ]
+  },
+  {
+    code: 'M6', division: 'Emerging Media', color: '#8b5cf6',
+    name: 'Sound Design', tag: null,
+    perSchool: 99, solo: true,
+    format: 'Original audio design piece', length: '1–3 min', fileFormat: '.mp3',
+    description: 'An original piece showcasing creative sound design — not a song, not a news story. The focus is on crafting a sonic experience through layers, effects, and editing.',
+    criteria: ['Creativity', 'Technical execution', 'Originality', 'Listener experience', 'Complexity', 'Use of sound elements'],
+    checklist: [
+      'Original audio composition — not a song, podcast, or news report',
+      'Demonstrates layering and creative use of sound effects and audio',
+      'Length: 1 to 3 minutes',
+      'Export and upload as .mp3',
+    ]
+  },
+  {
+    code: 'M7', division: 'Emerging Media', color: '#8b5cf6',
+    name: 'Animated Story', tag: null,
+    perSchool: 99, solo: false,
+    format: 'Original animated video', length: '1–5 min', fileFormat: '.mp4',
+    description: 'An original animation in any style — stop motion, digital, hand-drawn, or mixed media. Must tell a story or convey a concept. Audio or music required.',
+    criteria: ['Animation quality', 'Story or concept', 'Creativity', 'Audio quality', 'Technical skill', 'Originality'],
+    checklist: [
+      'Entirely student-produced animation',
+      'Any animation style accepted: stop motion, digital, hand-drawn, etc.',
+      'Must include audio, narration, or music',
+      'Length: 1 to 5 minutes',
+      'Export and upload as .mp4',
+    ]
+  },
+  {
+    code: 'M8', division: 'Emerging Media', color: '#8b5cf6',
+    name: 'Motion Graphics', tag: null,
+    perSchool: 99, solo: false,
+    format: 'Original motion graphics piece', length: ':30–2 min', fileFormat: '.mp4',
+    description: 'An original piece primarily using motion graphics, kinetic typography, or animated infographics. Focus is on graphic design in motion — not an animated story.',
+    criteria: ['Design quality', 'Animation smoothness', 'Concept clarity', 'Typography use', 'Music sync', 'Originality'],
+    checklist: [
+      'Primarily motion graphics — not an animated story (that is M7)',
+      'Includes kinetic typography, animated infographics, or motion design',
+      'Length: :30 to 2 minutes',
+      'Export and upload as .mp4',
+    ]
+  },
+  {
+    code: 'M9', division: 'Emerging Media', color: '#8b5cf6',
+    name: 'Branded Hype Video', tag: null,
+    perSchool: 99, solo: false,
+    format: 'High-energy promotional video', length: ':30–2 min', fileFormat: '.mp4',
+    description: 'A high-energy promotional video for a real school program, team, club, or event. Combines footage, music, and graphics for maximum visual impact.',
+    criteria: ['Energy & impact', 'Editing rhythm', 'Music sync', 'Visual quality', 'Branding effectiveness', 'Creativity'],
+    checklist: [
+      'Must promote a real school entity — team, club, program, or event',
+      'High-energy editing and music required',
+      'Combines footage, graphics, and music',
+      'Length: :30 to 2 minutes',
+      'Export and upload as .mp4',
     ]
   },
 ];
