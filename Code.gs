@@ -42,12 +42,21 @@ function syncAthletics() {
   const varsityRe = /\(V\)|\(Boys V\)|\(Girls V\)|Varsity|\(V & JV\)/;
   const excludeRe = /\(JV\)|JV Only|JV only|JV Invite|JV invite|JV invitational|Snider JV|Riley JV|West Noble.*JV|Canterbury.*JV for HHS|Penn.*JV Only|Practice|Flag Football|Special Events/i;
 
-  const toAdd = allSource.filter(ev => {
+  const filtered = allSource.filter(ev => {
     const t = ev.getTitle();
     return varsityRe.test(t) && !excludeRe.test(t);
   });
 
-  // Deduplicate against what's already in the target calendar
+  // Step 1: Deduplicate within the source itself (source calendar can have duplicate entries)
+  const sourceKeys = new Set();
+  const toAdd = filtered.filter(ev => {
+    const key = ev.getTitle() + '|' + ev.getStartTime().getTime();
+    if (sourceKeys.has(key)) return false;
+    sourceKeys.add(key);
+    return true;
+  });
+
+  // Step 2: Deduplicate against what's already in the target calendar
   const existing = targetCal.getEvents(start, end);
   const existingKeys = new Set(
     existing.map(ev => ev.getTitle() + '|' + ev.getStartTime().getTime())
@@ -58,6 +67,7 @@ function syncAthletics() {
     const key = ev.getTitle() + '|' + ev.getStartTime().getTime();
     if (existingKeys.has(key)) { skipped++; return; }
     targetCal.createEvent(ev.getTitle(), ev.getStartTime(), ev.getEndTime());
+    existingKeys.add(key); // prevent re-adding if script is called mid-run
     added++;
     Utilities.sleep(100); // avoid API quota bursts
   });
@@ -67,6 +77,7 @@ function syncAthletics() {
     schoolYear: startYear + '-' + (startYear + 1),
     scanned: allSource.length,
     varsity: toAdd.length,
+    sourceDuplicatesDropped: filtered.length - toAdd.length,
     added,
     skipped
   };
