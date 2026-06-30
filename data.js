@@ -62,15 +62,7 @@ const FOOTBALL_HOME_GAMES = [
   { id: 'fb26-1002', title: 'Football vs. Carroll High School',     date: '2026-10-02', type: 'football', gameTime: '7:00 PM', roles: {}, checks: {}, notes: 'Spartan Stadium' },
 ];
 
-// ── Yearbook Coverage Events ──────────────────────────────────
-const YEARBOOK_EVENTS = [
-  { id: 'yb-fb-0814', title: 'Football Scrimmage vs. Snider',      date: '2026-08-14', type: 'football',  icon: '🏈' },
-  { id: 'yb-fb-0821', title: 'Football vs. Westfield High School', date: '2026-08-21', type: 'football',  icon: '🏈' },
-  { id: 'yb-fb-0828', title: 'Football vs. Noblesville',           date: '2026-08-28', type: 'football',  icon: '🏈' },
-  { id: 'yb-fb-0904', title: 'Football vs. South Side',            date: '2026-09-04', type: 'football',  icon: '🏈' },
-  { id: 'yb-fb-0918', title: 'Football vs. Bishop Dwenger',        date: '2026-09-18', type: 'football',  icon: '🏈' },
-  { id: 'yb-fb-1002', title: 'Football vs. Carroll High School',   date: '2026-10-02', type: 'football',  icon: '🏈' },
-];
+// ── Yearbook Coverage Events (derived from all home game arrays) ─
 
 // ── Girls Varsity Basketball Home Games 2026–2027 ─────────────
 const GIRLS_BASKETBALL_HOME_GAMES = [
@@ -91,6 +83,14 @@ const SPECIAL_EVENTS = [
   { id: 'sc27-0220',   title: 'Show Choir Showcase', date: '2027-02-20', type: 'showchoir',  gameTime: '', roles: {}, checks: {}, notes: 'TBD — time to be announced' },
   { id: 'grad27-0607', title: 'Graduation',           date: '2027-06-07', type: 'graduation', gameTime: '', roles: {}, checks: {}, notes: 'TBD — time to be announced' },
 ];
+
+const YB_ICONS = { football: '🏈', basketball_boys: '🏀', basketball_girls: '🏀', showchoir: '🎤', graduation: '🎓', volleyball: '🏐', other: '📸' };
+const YEARBOOK_EVENTS = [
+  ...FOOTBALL_HOME_GAMES,
+  ...BASKETBALL_HOME_GAMES,
+  ...GIRLS_BASKETBALL_HOME_GAMES,
+  ...SPECIAL_EVENTS,
+].map(e => ({ ...e, icon: YB_ICONS[e.type] || '📅' }));
 
 // ── IASB Competition ──────────────────────────────────────────
 const IASB_SEASON   = '2026–2027';

@@ -931,20 +931,42 @@ function renderInDepth() {
 }
 
 // ── YEARBOOK ──────────────────────────────────────────────────
+function filterYbEvents() {
+  const type  = document.getElementById('yb-type')?.value;
+  const group = document.getElementById('yb-event-group');
+  const sel   = document.getElementById('yb-event');
+  if (!group || !sel) return;
+  if (!type) { group.style.display = 'none'; return; }
+  const now = new Date();
+  const events = YEARBOOK_EVENTS.filter(e => e.type === type && new Date(e.date + 'T23:59:00') >= now)
+    .sort((a, b) => a.date.localeCompare(b.date));
+  sel.innerHTML = events.length
+    ? '<option value="">— Select an event —</option>' + events.map(e => `<option value="${e.id}">${e.icon} ${e.title} — ${fmtDate(e.date, false)}</option>`).join('')
+    : '<option value="">No upcoming events of this type</option>';
+  group.style.display = '';
+}
+
 function renderYearbook() {
   const myName  = localStorage.getItem('hm_yb_name')  || '';
   const myEmail = localStorage.getItem('hm_yb_email') || '';
   const now     = new Date();
 
-  const upcomingEvents = YEARBOOK_EVENTS.filter(e => new Date(e.date + 'T23:59:00') >= now);
-
   const mySignups = (S.yearbookCoverage || []).filter(
     s => s.studentName.toLowerCase() === myName.toLowerCase()
   );
 
-  const eventOptions = upcomingEvents.map(e =>
-    `<option value="${e.id}">${e.icon} ${e.title} — ${fmtDate(e.date, false)}</option>`
-  ).join('');
+  // Build type options — only show types that have at least one upcoming event
+  const upcomingByType = {};
+  YEARBOOK_EVENTS.forEach(e => {
+    if (new Date(e.date + 'T23:59:00') >= now) {
+      if (!upcomingByType[e.type]) upcomingByType[e.type] = [];
+      upcomingByType[e.type].push(e);
+    }
+  });
+  const typeOrder = ['football', 'basketball_boys', 'basketball_girls', 'volleyball', 'showchoir', 'graduation', 'other'];
+  const typeLabels = { football: '🏈 Football', basketball_boys: '🏀 Boys Basketball', basketball_girls: '🏀 Girls Basketball', volleyball: '🏐 Volleyball', showchoir: '🎤 Show Choir', graduation: '🎓 Graduation', other: '📸 Other' };
+  const typeOptions = typeOrder.filter(t => upcomingByType[t])
+    .map(t => `<option value="${t}">${typeLabels[t]} (${upcomingByType[t].length})</option>`).join('');
 
   const mySignupRows = mySignups.length
     ? mySignups.map(s => `
@@ -992,10 +1014,17 @@ function renderYearbook() {
             </div>
 
             <div class="form-group">
+              <label>Sport / Event Type</label>
+              <select id="yb-type" onchange="filterYbEvents()">
+                <option value="">— Select a type —</option>
+                ${typeOptions}
+              </select>
+            </div>
+
+            <div class="form-group" id="yb-event-group" style="display:none">
               <label>Event</label>
               <select id="yb-event">
                 <option value="">— Select an event —</option>
-                ${eventOptions}
               </select>
             </div>
 
