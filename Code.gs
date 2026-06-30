@@ -165,12 +165,12 @@ function createAnnualTrigger() {
     .atHour(8)
     .create();
 
-  Logger.log('Annual trigger set: runs on the 1st of each month at 8am, syncs only in August.');
+  Logger.log('Annual trigger set: runs on the 1st of each month at 8am, syncs only in July.');
 }
 
-// Wrapper called by the monthly trigger — only syncs in August
+// Wrapper called by the monthly trigger — only syncs in July
 function maybeSync() {
-  if (new Date().getMonth() === 7) {
+  if (new Date().getMonth() === 6) {
     syncAthletics();
   }
 }
