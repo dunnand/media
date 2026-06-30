@@ -34,7 +34,7 @@ const EVENT_TYPES = {
   // Non-sports
   showchoir:       { label: 'Show Choir',        color: '#10b981' },
   arts:            { label: 'Performing Arts',   color: '#a855f7' },
-  dance:           { label: 'Dance / Social',    color: '#ec4899' },
+  dance:           { label: 'Dance',             color: '#ec4899' },
   school:          { label: 'School Event',      color: '#06b6d4' },
   academic:        { label: 'Academic',          color: '#84cc16' },
   club:            { label: 'Club / Org',        color: '#f97316' },
