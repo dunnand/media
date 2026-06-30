@@ -1068,36 +1068,87 @@ function renderYearbook() {
           </section>
 
           <section class="card">
-            <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px">📷 Shot List Tips</h3>
-            <div class="yb-shot-list">
-              <div class="yb-shot-type">
-                <div class="yb-shot-label">🏈 Football</div>
-                <ul>
-                  <li>Line of scrimmage action</li>
-                  <li>Touchdown celebrations</li>
-                  <li>Sideline + coaches</li>
-                  <li>Crowd &amp; student section</li>
-                  <li>Band &amp; cheerleaders</li>
-                </ul>
-              </div>
-              <div class="yb-shot-type">
-                <div class="yb-shot-label">🏀 Basketball</div>
-                <ul>
-                  <li>Layups &amp; dunks</li>
-                  <li>Free throw focus</li>
-                  <li>Bench reactions</li>
-                  <li>Halftime &amp; timeouts</li>
-                </ul>
-              </div>
-              <div class="yb-shot-type">
-                <div class="yb-shot-label">🏫 On Campus</div>
-                <ul>
-                  <li>Candid classroom moments</li>
-                  <li>Club &amp; org group photos</li>
-                  <li>Hallway between classes</li>
-                  <li>Events &amp; assemblies</li>
-                </ul>
-              </div>
+            <h3 style="font-size:1rem;font-weight:700;margin-bottom:4px">📷 Shot List Tips</h3>
+            <p style="font-size:0.8rem;color:var(--dim);margin-bottom:14px">Click a category to expand. Every event needs a wide, medium, and close-up shot.</p>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              ${[
+                { label:'🏈 Field Sports', sub:'Football · Soccer · Lacrosse · Baseball · Softball', tips:[
+                  'Shoot from end zone or corner — you need depth, not flat sideline width',
+                  'Watch the ball, not the player — anticipate the play before it happens',
+                  'Burst mode on every action sequence; the winning frame is rarely the first',
+                  'Pre-game tells a story: warm-ups, team huddles, coin toss, tunnel entrances',
+                  'Bench and coaches react as strongly as the field — don\'t ignore them',
+                  'Post-game handshake line, quiet locker walk, or celebration are all yearbookworthy',
+                  'Include the student section — crowd energy makes sports photos feel alive',
+                ]},
+                { label:'🏀 Court & Indoor Sports', sub:'Basketball · Volleyball · Wrestling · Gymnastics · Bowling', tips:[
+                  'Position at baseline corner — you get action AND scoreboard in one frame',
+                  'Shoot at the peak: ball at the rim, spike at the net, pin on the mat',
+                  'Get low for wrestling and gymnastics — shooting up makes athletes look powerful',
+                  'Bench huddles and timeout circles are genuine emotional moments',
+                  'Include the scoreboard in wide shots to give photos context',
+                  'Bowling: look for the release and follow-through, plus reaction after a strike',
+                ]},
+                { label:'🏃 Cross Country, Track & Swimming', sub:'Cross Country · Track · Swimming & Diving', tips:[
+                  'Cross Country: start line chaos, runners isolated in nature, finish line emotion — shoot all three',
+                  'Track: capture starting blocks tension, mid-race pack, and the lean at the finish',
+                  'Relay handoffs are dramatic and rarely captured — position yourself there',
+                  'Swimming: the dive start is a signature shot; lean over the lane or shoot through glass',
+                  'The moment right after finishing is when emotion peaks — be ready',
+                ]},
+                { label:'🎾 Tennis & Golf', sub:'Boys/Girls Tennis · Boys/Girls Golf', tips:[
+                  'Tennis: catch the serve at the top of the toss, not the follow-through swing',
+                  'Between-point moments show character — use them to tell the personality story',
+                  'Doubles: look for non-verbal communication and coordination between partners',
+                  'Golf: the follow-through is cleaner and easier to catch than the swing itself',
+                  'Golf courses have natural backgrounds — use the landscape, not just the player',
+                  'Putting green focus shots and walking the fairway give variety',
+                ]},
+                { label:'🎭 Arts & Performance', sub:'Show Choir · Fine Arts · Dance Team · Cheer · Dance Events', tips:[
+                  'Start with a wide establishing shot of the full group on stage — give context first',
+                  'Work in to faces during the most emotional or intense moments',
+                  'Shoot the director watching from the house — it\'s a perspective students forget',
+                  'Backstage before the show: nerves, costumes, group warmups — all yearbook content',
+                  'Audience reactions (parents, teachers) tell the story from another angle',
+                  'Cheer and dance: catch the peak of the stunt, not the build or the landing',
+                  'Post-show curtain call, cast hugging, teacher congratulating — don\'t pack up early',
+                ]},
+                { label:'🏫 Campus & Daily Life', sub:'Clubs · Academics · NHS · School Life · Candids', tips:[
+                  'Genuine unposed moments are worth more than any posed group photo',
+                  'Lab work, hands-on projects, art studios, shop class — learning in action',
+                  'Lunchroom social energy: friend groups, conversations, the full-room wide shot',
+                  'Hallway between classes: lockers, social moments, the daily rhythm of school',
+                  'Club meetings — catch the discussion and debate, not just the group shot at the end',
+                  'Spirit week, hallway decorations, homecoming posters — school culture is visual',
+                  'NHS: induction candle ceremony, pin moments, community service in action',
+                  'Ask before entering a classroom — most teachers will say yes if you\'re quick',
+                ]},
+                { label:'🎓 Special Events', sub:'Graduation · Prom · Homecoming · Dances', tips:[
+                  'Graduation cap toss: set burst mode, shoot from slightly below, catch all caps mid-air',
+                  'Diploma handshake: shoot from the audience side so you see both faces clearly',
+                  'Family reunions after ceremony — organic, emotional, never posed, always genuine',
+                  'Prom grand march: position at the entrance so you catch the reveal moment',
+                  'Inside the dance: a few crowd-on-the-floor wides, DJ booth, and decoration details',
+                  'Corsages, honor cords, class rings, diplomas — details complete the story',
+                  'The quiet wind-down after the event is over is almost always overlooked',
+                ]},
+                { label:'📐 Universal Rules', sub:'Applies to every single event you shoot', tips:[
+                  'Every event needs three shots: wide (context), medium (story), close-up (emotion)',
+                  'The before and after are as important as the event itself — arrive early, leave late',
+                  'Candid beats posed for authentic yearbook content every time',
+                  'Ask yourself: will someone who wasn\'t there understand this story from just this photo?',
+                  'Shoot more than you think you need — you can always delete, never re-create',
+                  'Light matters: find good window light inside, avoid harsh overhead gymnasium lights',
+                  'Get names as you shoot — a great photo with no caption is half a story',
+                ]},
+              ].map(cat => `
+                <details class="shot-cat">
+                  <summary class="shot-cat-summary">
+                    <span class="shot-cat-label">${cat.label}</span>
+                    <span class="shot-cat-sub">${cat.sub}</span>
+                  </summary>
+                  <ul class="shot-cat-list">${cat.tips.map(t => `<li>${t}</li>`).join('')}</ul>
+                </details>`).join('')}
             </div>
           </section>
 
@@ -2940,6 +2991,43 @@ function renderDashboard() {
                 <button class="btn-danger db-btn yb-delete-event-btn" data-yb-event-id="${esc(ev.id)}" style="font-size:0.75rem">Delete</button>
               </div>
             </div>`).join('');
+        })()}
+      </section>
+
+      <section class="card db-section">
+        ${(() => {
+          const now = new Date();
+          const dow = now.getDay();
+          const mon = new Date(now); mon.setDate(now.getDate() - (dow === 0 ? 6 : dow - 1)); mon.setHours(0,0,0,0);
+          const sun = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23,59,59,999);
+          const fmt = d => new Date(d + 'T12:00:00').toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+          const weekLabel = `${mon.toLocaleDateString('en-US',{month:'short',day:'numeric'})} – ${sun.toLocaleDateString('en-US',{month:'short',day:'numeric'})}`;
+          const weekEvents = allYbEvents()
+            .filter(e => { const d = new Date(e.date + 'T00:00:00'); return d >= mon && d <= sun; })
+            .sort((a,b) => a.date.localeCompare(b.date) || (a.time||'').localeCompare(b.time||''));
+          const coverage = S.yearbookCoverage || [];
+          const rows = weekEvents.length
+            ? weekEvents.map(ev => {
+                const signups = coverage.filter(s => s.eventId === ev.id || (s.eventDate === ev.date && s.eventTitle === ev.title));
+                return `<div class="week-event-row">
+                  <div class="week-event-info">
+                    <span style="font-size:1.1rem">${ev.icon||'📅'}</span>
+                    <div>
+                      <div style="font-weight:600;font-size:0.88rem">${esc(ev.title)}</div>
+                      <div style="font-size:0.76rem;color:var(--dim)">${fmt(ev.date)}${ev.time ? ' · ' + esc(ev.time) : ''}</div>
+                    </div>
+                  </div>
+                  <div class="week-event-signups">
+                    ${signups.length
+                      ? signups.map(s => `<span class="week-tag"><strong>${esc(s.studentName)}</strong> <span class="dim">· ${roleLabel(s.role)}</span></span>`).join('')
+                      : `<span style="font-size:0.8rem;color:#f59e0b">⚠️ No coverage assigned</span>`}
+                  </div>
+                </div>`;
+              }).join('')
+            : `<p class="dim" style="font-size:0.875rem;padding:4px 0">No events scheduled this week.</p>`;
+          return `
+            <div class="card-header"><h2>📅 Coverage This Week <span style="font-weight:400;font-size:0.82rem;color:var(--dim);margin-left:6px">${weekLabel}</span></h2></div>
+            <div style="display:flex;flex-direction:column;gap:10px">${rows}</div>`;
         })()}
       </section>
 
