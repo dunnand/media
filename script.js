@@ -2570,7 +2570,7 @@ function renderIASB() {
   const submitted = entries.filter(e => e.submittedToPortal).length;
   const days = iasbDeadlineDays();
 
-  const divisions = ['Radio', 'News', 'Emerging Media'];
+  const divisions = ['Radio', 'News', 'Sports', 'Video', 'Emerging Media'];
   const byDivision = {};
   IASB_CATEGORIES.forEach(cat => {
     if (!byDivision[cat.division]) byDivision[cat.division] = [];
