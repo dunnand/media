@@ -44,6 +44,7 @@ const S = {
   lessonId: null,
   lessonSlide: 0,
   yearbookCoverage: [],
+  ybDashView: 'event',
 };
 
 // ── Timing Helpers ────────────────────────────────────────────
@@ -1803,6 +1804,9 @@ function attachListeners() {
   const ybDash = document.getElementById('yb-dash-refresh');
   if (ybDash) ybDash.addEventListener('click', loadYearbookCoverage);
 
+  document.querySelectorAll('[data-yb-view]').forEach(btn =>
+    btn.addEventListener('click', () => { S.ybDashView = btn.dataset.ybView; render(); }));
+
   document.querySelectorAll('[data-lesson-course]').forEach(el =>
     el.addEventListener('click', () => {
       S.lessonCourse = el.dataset.lessonCourse;
@@ -2646,13 +2650,69 @@ function renderDashboard() {
       </section>
 
       <section class="card db-section">
-        <div class="card-header">
+        <div class="card-header" style="flex-wrap:wrap;gap:8px">
           <h2>📖 Yearbook Coverage Sign-Ups</h2>
-          <button class="btn-secondary" id="yb-dash-refresh" style="font-size:0.8rem">Refresh</button>
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+            <button class="btn-secondary${S.ybDashView==='event'?' yb-view-active':''}" data-yb-view="event" style="font-size:0.75rem">By Event</button>
+            <button class="btn-secondary${S.ybDashView==='student'?' yb-view-active':''}" data-yb-view="student" style="font-size:0.75rem">By Student</button>
+            <button class="btn-secondary${S.ybDashView==='role'?' yb-view-active':''}" data-yb-view="role" style="font-size:0.75rem">By Role</button>
+            <button class="btn-secondary" id="yb-dash-refresh" style="font-size:0.75rem">↻ Refresh</button>
+          </div>
         </div>
         ${(() => {
           const coverage = S.yearbookCoverage || [];
           if (!coverage.length) return `<p class="dim" style="padding:16px 0;font-size:0.875rem">No sign-ups yet.</p>`;
+          const badge = n => `<span style="background:var(--surface2);color:var(--dim);font-size:0.72rem;padding:2px 7px;border-radius:10px;margin-left:6px">${n}</span>`;
+
+          if (S.ybDashView === 'student') {
+            const byStudent = {};
+            coverage.forEach(s => {
+              const key = s.studentName.toLowerCase();
+              if (!byStudent[key]) byStudent[key] = { name: s.studentName, email: s.email, events: [] };
+              byStudent[key].events.push(s);
+            });
+            return Object.values(byStudent)
+              .sort((a,b) => b.events.length - a.events.length || a.name.localeCompare(b.name))
+              .map(st => `
+                <div class="yb-db-event">
+                  <div class="yb-db-event-title">
+                    ${esc(st.name)}
+                    <span class="dim" style="font-weight:400;font-size:0.78rem;margin-left:6px">${esc(st.email)}</span>
+                    ${badge(st.events.length + ' event' + (st.events.length !== 1 ? 's' : ''))}
+                  </div>
+                  <div class="yb-db-signups">
+                    ${st.events.slice().sort((a,b) => a.eventDate.localeCompare(b.eventDate)).map(ev => `
+                      <div class="yb-db-row">
+                        <span class="yb-db-name" style="font-weight:400">${esc(ev.eventTitle)}</span>
+                        <span class="dim" style="font-size:0.75rem">${fmtDate(ev.eventDate, false)}</span>
+                        <span class="yb-my-role yb-role-${ev.role}">${roleLabel(ev.role)}</span>
+                      </div>`).join('')}
+                  </div>
+                </div>`).join('');
+          }
+
+          if (S.ybDashView === 'role') {
+            const groups = { photographer: [], writer: [], designer: [] };
+            coverage.forEach(s => { if (groups[s.role]) groups[s.role].push(s); });
+            const labels = { photographer: '📷 Photographers', writer: '✏️ Writers', designer: '🎨 Designers' };
+            return Object.entries(groups).filter(([,arr]) => arr.length).map(([role, entries]) => `
+              <div class="yb-db-event">
+                <div class="yb-db-event-title">
+                  ${labels[role]}
+                  ${badge(entries.length)}
+                </div>
+                <div class="yb-db-signups">
+                  ${entries.slice().sort((a,b) => a.eventDate.localeCompare(b.eventDate)).map(e => `
+                    <div class="yb-db-row">
+                      <span class="yb-db-name">${esc(e.studentName)}</span>
+                      <span class="dim" style="font-weight:400;font-size:0.8rem;flex:1">${esc(e.eventTitle)}</span>
+                      <span class="dim" style="font-size:0.75rem">${fmtDate(e.eventDate, false)}</span>
+                    </div>`).join('')}
+                </div>
+              </div>`).join('');
+          }
+
+          // Default: By Event
           const byEvent = {};
           coverage.forEach(s => {
             if (!byEvent[s.eventId]) byEvent[s.eventId] = { title: s.eventTitle, date: s.eventDate, signups: [] };
@@ -2660,7 +2720,11 @@ function renderDashboard() {
           });
           return Object.values(byEvent).sort((a,b) => a.date.localeCompare(b.date)).map(ev => `
             <div class="yb-db-event">
-              <div class="yb-db-event-title">${esc(ev.title)} <span class="dim" style="font-weight:400;font-size:0.8rem">${fmtDate(ev.date, false)}</span></div>
+              <div class="yb-db-event-title">
+                ${esc(ev.title)}
+                <span class="dim" style="font-weight:400;font-size:0.8rem;margin-left:4px">${fmtDate(ev.date, false)}</span>
+                ${badge(ev.signups.length)}
+              </div>
               <div class="yb-db-signups">
                 ${ev.signups.map(s => `
                   <div class="yb-db-row">

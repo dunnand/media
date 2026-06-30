@@ -256,6 +256,7 @@ body {
   transition: border-color 0.15s; font-family: inherit;
 }
 .btn-secondary:hover { border-color: #555; }
+.btn-secondary.yb-view-active { border-color: var(--yearbook); color: var(--yearbook); }
 .btn-sm {
   background: var(--surface2); color: var(--text);
   border: 1px solid var(--border); padding: 5px 12px; border-radius: 6px;
