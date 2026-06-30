@@ -62,7 +62,7 @@ function syncAthletics() {
     Utilities.sleep(100); // avoid API quota bursts
   });
 
-  return {
+  const result = {
     success: true,
     schoolYear: startYear + '-' + (startYear + 1),
     scanned: allSource.length,
@@ -70,6 +70,8 @@ function syncAthletics() {
     added,
     skipped
   };
+  Logger.log(JSON.stringify(result));
+  return result;
 }
 
 // Runs every August 1 at 8am — call once from the editor after deploying
