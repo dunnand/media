@@ -99,6 +99,9 @@ const IASB_DEADLINE = '2027-02-05'; // update if IASB announces a different date
 // Change this to whatever PIN you want — students should not know it
 const TEACHER_PIN = '2027';
 
+// Paste the deployed Apps Script web app URL here (see Code.gs for setup instructions)
+const SYNC_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxkK9Xqlofe_79mw69K1Z9pUMH0JsQSyBZPQYc9mf4-IisQNGvjS7FgWx6_czNc0ARbTA/exec';
+
 // Google Drive folder links — Dropbox 2027 in Audio Broadcasting shared drive
 const IASB_DROPBOX_URL = 'https://drive.google.com/drive/folders/1Kg4UYcKzOLNYYqoEOG3fo2xbwNQtZCIY';
 

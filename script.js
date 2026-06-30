@@ -1741,6 +1741,25 @@ function attachListeners() {
   const dbRefresh = document.getElementById('db-refresh-plans');
   if (dbRefresh) dbRefresh.addEventListener('click', dashboardLoadPlans);
 
+  const syncBtn = document.getElementById('sync-cal-btn');
+  if (syncBtn) syncBtn.addEventListener('click', () => {
+    const status = document.getElementById('sync-cal-status');
+    syncBtn.disabled = true;
+    syncBtn.textContent = 'Syncing…';
+    if (status) status.textContent = '';
+    fetch(SYNC_SCRIPT_URL, { mode: 'no-cors' })
+      .then(() => {
+        syncBtn.textContent = '↻ Sync Athletics Calendar Now';
+        syncBtn.disabled = false;
+        if (status) status.textContent = 'Sync triggered — check the HHS Media Events calendar in a minute.';
+      })
+      .catch(() => {
+        syncBtn.textContent = '↻ Sync Athletics Calendar Now';
+        syncBtn.disabled = false;
+        if (status) status.textContent = 'Could not reach sync script — check the URL in data.js.';
+      });
+  });
+
   document.querySelectorAll('.db-view-btn').forEach(btn =>
     btn.addEventListener('click', () => {
       S.iasbCategory = btn.dataset.iasbCat;
@@ -2595,6 +2614,25 @@ function renderDashboard() {
           <button class="btn-secondary" id="db-refresh-plans" style="font-size:0.8rem">Refresh</button>
         </div>
         <div class="db-plans-list" id="db-plans-list">${plansSection}</div>
+      </section>
+
+      <section class="card db-section">
+        <div class="card-header">
+          <h2>📅 Athletics Calendar Sync</h2>
+        </div>
+        <p style="font-size:0.875rem;color:var(--dim);margin-bottom:14px;line-height:1.6">
+          Syncs all varsity events from the HHS athletics source calendar into the HHS Media Events calendar for the current school year. Runs automatically every August 1 — use this button for a manual re-sync anytime.
+        </p>
+        ${SYNC_SCRIPT_URL
+          ? `<button class="btn-primary" id="sync-cal-btn" style="background:var(--success);color:#000">↻ Sync Athletics Calendar Now</button>
+             <span id="sync-cal-status" style="font-size:0.8rem;color:var(--dim);margin-left:12px"></span>`
+          : `<div style="font-size:0.85rem;color:var(--dim);background:var(--surface2);border-radius:8px;padding:12px 14px;line-height:1.7">
+               <strong style="color:var(--text)">One-time setup required:</strong><br>
+               1. Open <code>Code.gs</code> from the project folder and paste it into <a href="https://script.google.com" target="_blank" style="color:var(--radio)">script.google.com</a><br>
+               2. Deploy → Web app · Execute as: <em>Me</em> · Access: <em>Anyone with the link</em><br>
+               3. Run <code>createAnnualTrigger()</code> once from the editor<br>
+               4. Paste the web app URL into <code>data.js</code> → <code>SYNC_SCRIPT_URL</code>
+             </div>`}
       </section>
 
       <section class="card db-section">
