@@ -997,7 +997,21 @@ function renderYearbook() {
   const myEmail = localStorage.getItem('hm_yb_email') || '';
   const now     = new Date();
 
-  const mySignups = (S.yearbookCoverage || []).filter(
+  // TEMP DEMO — remove before students use
+  const DEMO = [
+    { id:'d1', studentName:'Alex Johnson',  email:'alex@hhs.edu',   eventId:'fb-demo-1', eventTitle:'Football vs. Bishop Dwenger', eventDate:'2026-09-04', role:'photographer' },
+    { id:'d2', studentName:'Maria Garcia',  email:'maria@hhs.edu',  eventId:'fb-demo-1', eventTitle:'Football vs. Bishop Dwenger', eventDate:'2026-09-04', role:'writer' },
+    { id:'d3', studentName:'Jordan Smith',  email:'jordan@hhs.edu', eventId:'fb-demo-2', eventTitle:'Football vs. Carroll',         eventDate:'2026-09-11', role:'photographer' },
+    { id:'d4', studentName:'Emily Chen',    email:'emily@hhs.edu',  eventId:'bb-demo-1', eventTitle:'Boys Basketball vs. Snider',  eventDate:'2026-11-13', role:'photographer' },
+    { id:'d5', studentName:'Tyler Nguyen',  email:'tyler@hhs.edu',  eventId:'bb-demo-1', eventTitle:'Boys Basketball vs. Snider',  eventDate:'2026-11-13', role:'designer' },
+    { id:'d6', studentName:'Alex Johnson',  email:'alex@hhs.edu',   eventId:'gbb-demo1', eventTitle:'Girls Basketball vs. Carroll',eventDate:'2026-11-10', role:'photographer' },
+    { id:'d7', studentName:'Priya Patel',   email:'priya@hhs.edu',  eventId:'sc-demo-1', eventTitle:'Homecoming Dance',            eventDate:'2026-10-03', role:'photographer' },
+    { id:'d8', studentName:'Jordan Smith',  email:'jordan@hhs.edu', eventId:'sc-demo-1', eventTitle:'Homecoming Dance',            eventDate:'2026-10-03', role:'writer' },
+    { id:'d9', studentName:'Emily Chen',    email:'emily@hhs.edu',  eventId:'vb-demo-1', eventTitle:'Volleyball vs. Warsaw',       eventDate:'2026-09-22', role:'photographer' },
+  ];
+  const allCoverage = [...DEMO, ...(S.yearbookCoverage || [])];
+
+  const mySignups = allCoverage.filter(
     s => s.studentName.toLowerCase() === myName.toLowerCase()
   );
 
@@ -1092,6 +1106,36 @@ function renderYearbook() {
             <h2 class="cal-section-title">My Sign-Ups</h2>
             <div id="yb-my-signups">${mySignupRows}</div>
           </section>` : ''}
+
+          <section class="card">
+            <h2 class="cal-section-title">📋 Event Coverage</h2>
+            <p class="cal-section-sub">Students signed up to cover upcoming events.</p>
+            ${(() => {
+              const byEvent = {};
+              allCoverage.forEach(s => {
+                const key = s.eventId || (s.eventDate + s.eventTitle);
+                if (!byEvent[key]) byEvent[key] = { title: s.eventTitle, date: s.eventDate, signups: [] };
+                byEvent[key].signups.push(s);
+              });
+              const rows = Object.values(byEvent)
+                .filter(ev => new Date(ev.date + 'T23:59:00') >= now)
+                .sort((a,b) => a.date.localeCompare(b.date));
+              if (!rows.length) return `<p class="dim" style="font-size:0.875rem">No sign-ups yet — be the first!</p>`;
+              return rows.map(ev => `
+                <div class="yb-cov-event">
+                  <div class="yb-cov-header">
+                    <span class="yb-cov-title">${esc(ev.title)}</span>
+                    <span class="yb-cov-date dim">${fmtDate(ev.date, false)}</span>
+                  </div>
+                  <div class="yb-cov-tags">
+                    ${ev.signups.map(s => `
+                      <span class="yb-cov-tag yb-role-${s.role}">
+                        ${esc(s.studentName)} · ${roleLabel(s.role)}
+                      </span>`).join('')}
+                  </div>
+                </div>`).join('');
+            })()}
+          </section>
 
         </div>
         <div class="side-col">
