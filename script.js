@@ -179,8 +179,7 @@ function renderHome() {
           .filter(e => { const d = new Date(e.date + 'T00:00:00'); return d >= mon && d <= sun; })
           .sort((a,b) => a.date.localeCompare(b.date) || (a.time||'').localeCompare(b.time||''));
         const coverage = S.yearbookCoverage || [];
-        if (!weekEvents.length) return '';
-        const rows = weekEvents.map(ev => {
+        const rows = weekEvents.length ? weekEvents.map(ev => {
           const signups = coverage.filter(s => s.eventId === ev.id || (s.eventDate === ev.date && s.eventTitle === ev.title));
           return `<div class="week-event-row">
             <div class="week-event-info">
@@ -196,7 +195,7 @@ function renderHome() {
                 : `<span style="font-size:0.8rem;color:var(--dim)">No coverage assigned yet</span>`}
             </div>
           </div>`;
-        }).join('');
+        }).join('') : `<p style="font-size:0.875rem;color:var(--dim);padding:4px 0">No events scheduled this week.</p>`;
         return `<div class="home-week-card">
           <div class="home-week-header">
             <span>📅 Coverage This Week</span>
