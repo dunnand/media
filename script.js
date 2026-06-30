@@ -833,14 +833,14 @@ function showEditBroadcastModal(id) {
     m.querySelectorAll('.role-input').forEach(el => { newRoles[el.dataset.role] = el.value.trim(); });
     Object.assign(b, { title, date, type, gameTime, notes, roles: newRoles });
     const db = getDB();
-    if (db) await db.collection('hm_broadcasts').doc(b.id).update({ title, date, type, gameTime, notes, roles: newRoles }).catch(() => {});
+    if (db) { trackUsage('writes'); await db.collection('hm_broadcasts').doc(b.id).update({ title, date, type, gameTime, notes, roles: newRoles }).catch(() => {}); }
     m.remove(); render(); showToast('Saved!');
   });
 
   m.querySelector('#modal-extra').addEventListener('click', async () => {
     if (!confirm(`Delete "${b.title}"?`)) return;
     const db = getDB();
-    if (db) await db.collection('hm_broadcasts').doc(b.id).delete().catch(() => {});
+    if (db) { trackUsage('writes'); await db.collection('hm_broadcasts').doc(b.id).delete().catch(() => {}); }
     S.broadcasts = S.broadcasts.filter(x => x.id !== b.id);
     m.remove(); render(); showToast('Deleted.');
   });
@@ -1076,6 +1076,7 @@ async function loadYearbookCoverage() {
   if (!db) return;
   try {
     const snap = await db.collection('hm_yearbook_coverage').orderBy('submittedAt', 'desc').get();
+    trackUsage('reads', snap.size);
     S.yearbookCoverage = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     if (S.view === 'yearbook' || S.view === 'dashboard') render();
   } catch(e) { console.error('yearbook coverage load failed', e); }
@@ -1107,6 +1108,7 @@ async function submitYearbookSignup() {
   localStorage.setItem('hm_yb_email', email);
 
   try {
+    trackUsage('writes');
     await db.collection('hm_yearbook_coverage').add({
       studentName: name, email, eventId, eventTitle: event.title,
       eventDate: event.date, role, submittedAt: Date.now(),
@@ -1121,6 +1123,7 @@ async function unsignYearbook(docId) {
   const db = getDB();
   if (!db) return;
   try {
+    trackUsage('writes');
     await db.collection('hm_yearbook_coverage').doc(docId).delete();
     showToast('Sign-up removed.');
     await loadYearbookCoverage();
@@ -1259,7 +1262,7 @@ async function submitPlan() {
   const submission = { ...p, submittedAt: new Date().toISOString() };
   const db = getDB();
   if (db) {
-    try { await db.collection('hm_radio_plans').add(submission); }
+    try { trackUsage('writes'); await db.collection('hm_radio_plans').add(submission); }
     catch(e) {}
   }
   localStorage.setItem('hm_plan_' + p.studentName, JSON.stringify(submission));
@@ -1350,7 +1353,7 @@ function showEditStationSlot(stationId, dayIdx) {
     if (!S.stationSchedule[stationId]) S.stationSchedule[stationId] = DAYS.map(() => ({ show: '', djs: [] }));
     S.stationSchedule[stationId][dayIdx] = { show, djs };
     const db = getDB();
-    if (db) await db.collection('hm_radio').doc('station_schedule').set(S.stationSchedule).catch(() => {});
+    if (db) { trackUsage('writes'); await db.collection('hm_radio').doc('station_schedule').set(S.stationSchedule).catch(() => {}); }
     m.remove(); render();
   };
 
@@ -1392,7 +1395,7 @@ function showAddBroadcastModal() {
     const db = getDB();
     const doc = { title, date, type, gameTime, roles: {}, checks: {} };
     if (db) {
-      try { const ref = await db.collection('hm_broadcasts').add(doc); doc.id = ref.id; } catch(e) {}
+      try { trackUsage('writes'); const ref = await db.collection('hm_broadcasts').add(doc); doc.id = ref.id; } catch(e) {}
     }
     if (!doc.id) doc.id = Date.now().toString();
     S.broadcasts.push(doc);
@@ -1407,7 +1410,7 @@ async function saveRoleAssignments() {
   document.querySelectorAll('.role-input').forEach(el => { roles[el.dataset.role] = el.value.trim(); });
   b.roles = roles;
   const db = getDB();
-  if (db) await db.collection('hm_broadcasts').doc(b.id).update({ roles }).catch(() => {});
+  if (db) { trackUsage('writes'); await db.collection('hm_broadcasts').doc(b.id).update({ roles }).catch(() => {}); }
   showToast('Roles saved!');
   render();
 }
@@ -1417,7 +1420,7 @@ async function saveBroadcastNotes() {
   if (!b) return;
   b.notes = val('broadcast-notes');
   const db = getDB();
-  if (db) await db.collection('hm_broadcasts').doc(b.id).update({ notes: b.notes }).catch(() => {});
+  if (db) { trackUsage('writes'); await db.collection('hm_broadcasts').doc(b.id).update({ notes: b.notes }).catch(() => {}); }
   showToast('Notes saved!');
   render();
 }
@@ -1429,7 +1432,7 @@ async function saveChecklist() {
   document.querySelectorAll('.check-item').forEach((cb, i) => { checks[i] = cb.checked; });
   b.checks = checks;
   const db = getDB();
-  if (db) await db.collection('hm_broadcasts').doc(b.id).update({ checks }).catch(() => {});
+  if (db) { trackUsage('writes'); await db.collection('hm_broadcasts').doc(b.id).update({ checks }).catch(() => {}); }
 }
 
 // ── Availability ──────────────────────────────────────────────
@@ -1448,6 +1451,7 @@ async function toggleBroadcastAvailability(broadcastId, available) {
     const db = getDB();
     if (db) {
       try {
+        trackUsage('writes');
         const ref = await db.collection('hm_availability').add(entry);
         S.availabilities.push({ id: ref.id, ...entry });
       } catch(e) { showToast('Could not save. Try again.'); return; }
@@ -1457,7 +1461,7 @@ async function toggleBroadcastAvailability(broadcastId, available) {
   } else if (!available && existing) {
     S.availabilities = S.availabilities.filter(a => a.id !== existing.id);
     const db = getDB();
-    if (db) await db.collection('hm_availability').doc(existing.id).delete().catch(() => {});
+    if (db) { trackUsage('writes'); await db.collection('hm_availability').doc(existing.id).delete().catch(() => {}); }
   }
   render();
 }
@@ -1477,13 +1481,14 @@ async function toggleAvailabilityRole(broadcastId, role, checked) {
     existing.interestedRoles = checked
       ? [...new Set([...roles, role])]
       : roles.filter(r => r !== role);
-    if (db) await db.collection('hm_availability').doc(existing.id)
-      .update({ interestedRoles: existing.interestedRoles }).catch(() => {});
+    if (db) { trackUsage('writes'); await db.collection('hm_availability').doc(existing.id)
+      .update({ interestedRoles: existing.interestedRoles }).catch(() => {}); }
   } else {
     const myEmail = localStorage.getItem('hm_student_email') || '';
     const entry = { broadcastId, studentName: myName, email: myEmail, interestedRoles: checked ? [role] : [], submittedAt: new Date().toISOString() };
     if (db) {
       try {
+        trackUsage('writes');
         const ref = await db.collection('hm_availability').add(entry);
         S.availabilities.push({ id: ref.id, ...entry });
       } catch(e) { showToast('Could not save. Try again.'); }
@@ -1496,7 +1501,7 @@ async function toggleAvailabilityRole(broadcastId, role, checked) {
 async function removeAvailability(availId) {
   S.availabilities = (S.availabilities || []).filter(a => a.id !== availId);
   const db = getDB();
-  if (db) await db.collection('hm_availability').doc(availId).delete().catch(() => {});
+  if (db) { trackUsage('writes'); await db.collection('hm_availability').doc(availId).delete().catch(() => {}); }
   render();
 }
 
@@ -1507,6 +1512,7 @@ async function showSubmissions() {
   if (db) {
     try {
       const snap = await db.collection('hm_radio_plans').get();
+      trackUsage('reads', snap.size);
       snap.forEach(doc => subs.push({ id: doc.id, ...doc.data() }));
     } catch(e) {}
   }
@@ -1560,6 +1566,21 @@ function showSubmissionDetail(sub, parentModal) {
         </div>
       </div>
     </div>`);
+}
+
+// ── Firebase Usage Tracking ───────────────────────────────────
+function getUsage() {
+  const today = new Date().toISOString().slice(0, 10);
+  try {
+    const u = JSON.parse(localStorage.getItem('hm_usage') || '{}');
+    if (u.date !== today) return { date: today, reads: 0, writes: 0 };
+    return u;
+  } catch(e) { return { date: today, reads: 0, writes: 0 }; }
+}
+function trackUsage(type, n = 1) {
+  const u = getUsage();
+  u[type] = (u[type] || 0) + n;
+  try { localStorage.setItem('hm_usage', JSON.stringify(u)); } catch(e) {}
 }
 
 // ── Helpers ───────────────────────────────────────────────────
@@ -2177,6 +2198,7 @@ async function loadFromFirebase() {
       db.collection('hm_iasb_entries').get(),
       db.collection('hm_availability').get()
     ]);
+    trackUsage('reads', 1 + bcastSnap.size + iasbSnap.size + availSnap.size);
     if (schedSnap.exists) {
       const data = schedSnap.data() || {};
       const blank = () => DAYS.map(() => ({ show: '', djs: [] }));
@@ -2190,6 +2212,7 @@ async function loadFromFirebase() {
     // One-time migration: fix old generic 'basketball' type
     const toMigrate = broadcasts.filter(b => b.type === 'basketball');
     if (toMigrate.length) {
+      trackUsage('writes', toMigrate.length);
       await Promise.all(toMigrate.map(b => {
         const newType = b.id.startsWith('gb') ? 'basketball_girls' : 'basketball_boys';
         b.type = newType;
@@ -2204,6 +2227,7 @@ async function loadFromFirebase() {
       return seed && seed.gameTime !== undefined && b.gameTime === undefined;
     });
     if (needsGameTime.length) {
+      trackUsage('writes', needsGameTime.length);
       await Promise.all(needsGameTime.map(b => {
         const seed = ALL_SEED_GAMES.find(g => g.id === b.id);
         b.gameTime = seed.gameTime;
@@ -2213,6 +2237,7 @@ async function loadFromFirebase() {
     }
 
     if (broadcasts.length === 0 && ALL_SEED_GAMES.length) {
+      trackUsage('writes', ALL_SEED_GAMES.length);
       await Promise.all(ALL_SEED_GAMES.map(g =>
         db.collection('hm_broadcasts').doc(g.id).set(g).catch(() => {})
       ));
@@ -2221,6 +2246,7 @@ async function loadFromFirebase() {
       const existingIds = new Set(broadcasts.map(b => b.id));
       const missing = ALL_SEED_GAMES.filter(g => !existingIds.has(g.id));
       if (missing.length) {
+        trackUsage('writes', missing.length);
         await Promise.all(missing.map(g =>
           db.collection('hm_broadcasts').doc(g.id).set(g).catch(() => {})
         ));
@@ -2481,6 +2507,7 @@ async function saveIASBEntry(data) {
   const entry = { ...data, createdAt: new Date().toISOString() };
   if (db) {
     try {
+      trackUsage('writes');
       const ref = await db.collection('hm_iasb_entries').add(entry);
       S.iasbEntries.push({ id: ref.id, ...entry });
       showToast('Entry registered!');
@@ -2498,6 +2525,7 @@ async function updateIASBCheckItem(entryId, idx, checked) {
   entry.checklist[idx] = checked;
   const db = getDB();
   if (db) {
+    trackUsage('writes');
     const update = {};
     update[`checklist.${idx}`] = checked;
     await db.collection('hm_iasb_entries').doc(entryId).update(update).catch(() => {});
@@ -2521,7 +2549,7 @@ async function markIASBSubmitted(entryId, submitted) {
   if (!entry) return;
   entry.submittedToPortal = submitted;
   const db = getDB();
-  if (db) await db.collection('hm_iasb_entries').doc(entryId).update({ submittedToPortal: submitted }).catch(() => {});
+  if (db) { trackUsage('writes'); await db.collection('hm_iasb_entries').doc(entryId).update({ submittedToPortal: submitted }).catch(() => {}); }
   showToast(submitted ? 'Marked as submitted!' : 'Submission mark removed.');
   render();
 }
@@ -2529,7 +2557,7 @@ async function markIASBSubmitted(entryId, submitted) {
 async function deleteIASBEntry(entryId) {
   S.iasbEntries = S.iasbEntries.filter(e => e.id !== entryId);
   const db = getDB();
-  if (db) await db.collection('hm_iasb_entries').doc(entryId).delete().catch(() => {});
+  if (db) { trackUsage('writes'); await db.collection('hm_iasb_entries').doc(entryId).delete().catch(() => {}); }
   render();
 }
 
@@ -2602,6 +2630,12 @@ function renderDashboard() {
         </div>`).join('')
     : `<p class="dim" style="padding:16px 0;font-size:0.875rem">No plans submitted yet.</p>`;
 
+  const usage = getUsage();
+  const READ_LIMIT = 50000, WRITE_LIMIT = 20000;
+  const readPct  = Math.min(100, Math.round(usage.reads  / READ_LIMIT  * 100));
+  const writePct = Math.min(100, Math.round(usage.writes / WRITE_LIMIT * 100));
+  const barColor = pct => pct >= 80 ? 'var(--error)' : pct >= 50 ? '#f59e0b' : 'var(--success)';
+
   return `
     ${navBar('dashboard')}
     <div class="class-page">
@@ -2613,6 +2647,34 @@ function renderDashboard() {
           <div class="db-stat"><span class="db-stat-num" style="color:var(--radio)">${plans.length}</span><span>talk show plans</span></div>
         </div>
       </div>
+
+      <section class="card db-section" style="padding:16px 20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <h3 style="margin:0;font-size:0.95rem">Firebase Usage <span style="font-weight:400;font-size:0.78rem;color:var(--dim)">— today, this browser</span></h3>
+          <a href="https://console.firebase.google.com/project/audioaficionados-21ba0/firestore" target="_blank" style="font-size:0.78rem;color:var(--accent);text-decoration:none">Full usage ↗</a>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:4px">
+              <span>Reads</span>
+              <span style="color:${barColor(readPct)}">${usage.reads.toLocaleString()} / ${READ_LIMIT.toLocaleString()} <span class="dim">(${readPct}%)</span></span>
+            </div>
+            <div style="background:var(--surface2);border-radius:4px;height:8px;overflow:hidden">
+              <div style="width:${readPct}%;height:100%;background:${barColor(readPct)};border-radius:4px;transition:width 0.3s"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:4px">
+              <span>Writes</span>
+              <span style="color:${barColor(writePct)}">${usage.writes.toLocaleString()} / ${WRITE_LIMIT.toLocaleString()} <span class="dim">(${writePct}%)</span></span>
+            </div>
+            <div style="background:var(--surface2);border-radius:4px;height:8px;overflow:hidden">
+              <div style="width:${writePct}%;height:100%;background:${barColor(writePct)};border-radius:4px;transition:width 0.3s"></div>
+            </div>
+          </div>
+        </div>
+        ${readPct >= 80 || writePct >= 80 ? `<p style="margin:10px 0 0;font-size:0.8rem;color:var(--error)">⚠️ Approaching daily limit — consider upgrading to Firebase Blaze plan.</p>` : ''}
+      </section>
 
       <section class="card db-section">
         <div class="card-header">
