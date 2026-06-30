@@ -154,6 +154,26 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
   max-width: 960px;
   width: 100%;
 }
+.home-week-card {
+  margin-top: 32px;
+  width: 100%;
+  max-width: 960px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 22px;
+}
+.home-week-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.home-week-range { font-weight: 400; font-size: 0.8rem; color: var(--dim); }
 @media (min-width: 801px) {
   .class-grid { grid-template-columns: repeat(3, 1fr); }
 }

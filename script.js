@@ -168,6 +168,43 @@ function renderHome() {
           <div class="class-enter">Enter →</div>
         </div>
       </div>
+      ${(() => {
+        const now = new Date();
+        const dow = now.getDay();
+        const mon = new Date(now); mon.setDate(now.getDate() - (dow === 0 ? 6 : dow - 1)); mon.setHours(0,0,0,0);
+        const sun = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23,59,59,999);
+        const fmt = d => new Date(d + 'T12:00:00').toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+        const weekLabel = `${mon.toLocaleDateString('en-US',{month:'short',day:'numeric'})} – ${sun.toLocaleDateString('en-US',{month:'short',day:'numeric'})}`;
+        const weekEvents = allYbEvents()
+          .filter(e => { const d = new Date(e.date + 'T00:00:00'); return d >= mon && d <= sun; })
+          .sort((a,b) => a.date.localeCompare(b.date) || (a.time||'').localeCompare(b.time||''));
+        const coverage = S.yearbookCoverage || [];
+        if (!weekEvents.length) return '';
+        const rows = weekEvents.map(ev => {
+          const signups = coverage.filter(s => s.eventId === ev.id || (s.eventDate === ev.date && s.eventTitle === ev.title));
+          return `<div class="week-event-row">
+            <div class="week-event-info">
+              <span style="font-size:1.1rem">${ev.icon||'📅'}</span>
+              <div>
+                <div style="font-weight:600;font-size:0.88rem">${esc(ev.title)}</div>
+                <div style="font-size:0.76rem;color:var(--dim)">${fmt(ev.date)}${ev.time ? ' · ' + esc(ev.time) : ''}</div>
+              </div>
+            </div>
+            <div class="week-event-signups">
+              ${signups.length
+                ? signups.map(s => `<span class="week-tag"><strong>${esc(s.studentName)}</strong> <span class="dim">· ${roleLabel(s.role)}</span></span>`).join('')
+                : `<span style="font-size:0.8rem;color:var(--dim)">No coverage assigned yet</span>`}
+            </div>
+          </div>`;
+        }).join('');
+        return `<div class="home-week-card">
+          <div class="home-week-header">
+            <span>📅 Coverage This Week</span>
+            <span class="home-week-range">${weekLabel}</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:2px">${rows}</div>
+        </div>`;
+      })()}
     </div>`;
 }
 
@@ -2991,43 +3028,6 @@ function renderDashboard() {
                 <button class="btn-danger db-btn yb-delete-event-btn" data-yb-event-id="${esc(ev.id)}" style="font-size:0.75rem">Delete</button>
               </div>
             </div>`).join('');
-        })()}
-      </section>
-
-      <section class="card db-section">
-        ${(() => {
-          const now = new Date();
-          const dow = now.getDay();
-          const mon = new Date(now); mon.setDate(now.getDate() - (dow === 0 ? 6 : dow - 1)); mon.setHours(0,0,0,0);
-          const sun = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23,59,59,999);
-          const fmt = d => new Date(d + 'T12:00:00').toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
-          const weekLabel = `${mon.toLocaleDateString('en-US',{month:'short',day:'numeric'})} – ${sun.toLocaleDateString('en-US',{month:'short',day:'numeric'})}`;
-          const weekEvents = allYbEvents()
-            .filter(e => { const d = new Date(e.date + 'T00:00:00'); return d >= mon && d <= sun; })
-            .sort((a,b) => a.date.localeCompare(b.date) || (a.time||'').localeCompare(b.time||''));
-          const coverage = S.yearbookCoverage || [];
-          const rows = weekEvents.length
-            ? weekEvents.map(ev => {
-                const signups = coverage.filter(s => s.eventId === ev.id || (s.eventDate === ev.date && s.eventTitle === ev.title));
-                return `<div class="week-event-row">
-                  <div class="week-event-info">
-                    <span style="font-size:1.1rem">${ev.icon||'📅'}</span>
-                    <div>
-                      <div style="font-weight:600;font-size:0.88rem">${esc(ev.title)}</div>
-                      <div style="font-size:0.76rem;color:var(--dim)">${fmt(ev.date)}${ev.time ? ' · ' + esc(ev.time) : ''}</div>
-                    </div>
-                  </div>
-                  <div class="week-event-signups">
-                    ${signups.length
-                      ? signups.map(s => `<span class="week-tag"><strong>${esc(s.studentName)}</strong> <span class="dim">· ${roleLabel(s.role)}</span></span>`).join('')
-                      : `<span style="font-size:0.8rem;color:#f59e0b">⚠️ No coverage assigned</span>`}
-                  </div>
-                </div>`;
-              }).join('')
-            : `<p class="dim" style="font-size:0.875rem;padding:4px 0">No events scheduled this week.</p>`;
-          return `
-            <div class="card-header"><h2>📅 Coverage This Week <span style="font-weight:400;font-size:0.82rem;color:var(--dim);margin-left:6px">${weekLabel}</span></h2></div>
-            <div style="display:flex;flex-direction:column;gap:10px">${rows}</div>`;
         })()}
       </section>
 
