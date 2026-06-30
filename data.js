@@ -7,10 +7,24 @@ const LIVE_ROLES = [
 ];
 
 const EVENT_TYPES = {
+  // Sports
   football:        { label: 'Football',          color: '#f59e0b' },
   basketball_boys: { label: 'Boys Basketball',   color: '#ef4444' },
   basketball_girls:{ label: 'Girls Basketball',  color: '#3b82f6' },
   volleyball:      { label: 'Volleyball',        color: '#8b5cf6' },
+  soccer_boys:     { label: 'Boys Soccer',       color: '#10b981' },
+  soccer_girls:    { label: 'Girls Soccer',      color: '#34d399' },
+  golf_boys:       { label: 'Boys Golf',         color: '#84cc16' },
+  golf_girls:      { label: 'Girls Golf',        color: '#a3e635' },
+  baseball:        { label: 'Baseball',          color: '#f97316' },
+  softball:        { label: 'Softball',          color: '#fb923c' },
+  cross_country:   { label: 'Cross Country',     color: '#06b6d4' },
+  swimming:        { label: 'Swimming',          color: '#0ea5e9' },
+  tennis_boys:     { label: 'Boys Tennis',       color: '#a855f7' },
+  tennis_girls:    { label: 'Girls Tennis',      color: '#c084fc' },
+  track:           { label: 'Track & Field',     color: '#ec4899' },
+  wrestling:       { label: 'Wrestling',         color: '#f43f5e' },
+  // Non-sports
   showchoir:       { label: 'Show Choir',        color: '#10b981' },
   arts:            { label: 'Performing Arts',   color: '#a855f7' },
   dance:           { label: 'Dance / Social',    color: '#ec4899' },
@@ -89,7 +103,7 @@ const SPECIAL_EVENTS = [
   { id: 'grad27-0607', title: 'Graduation',           date: '2027-06-07', type: 'graduation', gameTime: '', roles: {}, checks: {}, notes: 'TBD — time to be announced' },
 ];
 
-const YB_ICONS = { football: '🏈', basketball_boys: '🏀', basketball_girls: '🏀', volleyball: '🏐', showchoir: '🎤', arts: '🎭', dance: '💃', school: '🏫', academic: '🏆', club: '🎨', graduation: '🎓', other: '📸' };
+const YB_ICONS = { football: '🏈', basketball_boys: '🏀', basketball_girls: '🏀', volleyball: '🏐', soccer_boys: '⚽', soccer_girls: '⚽', golf_boys: '⛳', golf_girls: '⛳', baseball: '⚾', softball: '🥎', cross_country: '🏃', swimming: '🏊', tennis_boys: '🎾', tennis_girls: '🎾', track: '🏃', wrestling: '🤼', showchoir: '🎤', arts: '🎭', dance: '💃', school: '🏫', academic: '🏆', club: '🎨', graduation: '🎓', other: '📸' };
 const YEARBOOK_EVENTS = [
   ...FOOTBALL_HOME_GAMES,
   ...BASKETBALL_HOME_GAMES,

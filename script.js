@@ -969,8 +969,8 @@ function renderYearbook() {
       upcomingByType[e.type].push(e);
     }
   });
-  const typeOrder = ['football', 'basketball_boys', 'basketball_girls', 'volleyball', 'showchoir', 'arts', 'dance', 'school', 'academic', 'club', 'graduation', 'other'];
-  const typeLabels = { football: '🏈 Football', basketball_boys: '🏀 Boys Basketball', basketball_girls: '🏀 Girls Basketball', volleyball: '🏐 Volleyball', showchoir: '🎤 Show Choir', arts: '🎭 Performing Arts', dance: '💃 Dance / Social', school: '🏫 School Event', academic: '🏆 Academic', club: '🎨 Club / Org', graduation: '🎓 Graduation', other: '📸 Other' };
+  const typeOrder = ['football','basketball_boys','basketball_girls','volleyball','soccer_boys','soccer_girls','golf_boys','golf_girls','baseball','softball','cross_country','swimming','tennis_boys','tennis_girls','track','wrestling','showchoir','arts','dance','school','academic','club','graduation','other'];
+  const typeLabels = { football:'🏈 Football', basketball_boys:'🏀 Boys Basketball', basketball_girls:'🏀 Girls Basketball', volleyball:'🏐 Volleyball', soccer_boys:'⚽ Boys Soccer', soccer_girls:'⚽ Girls Soccer', golf_boys:'⛳ Boys Golf', golf_girls:'⛳ Girls Golf', baseball:'⚾ Baseball', softball:'🥎 Softball', cross_country:'🏃 Cross Country', swimming:'🏊 Swimming', tennis_boys:'🎾 Boys Tennis', tennis_girls:'🎾 Girls Tennis', track:'🏃 Track & Field', wrestling:'🤼 Wrestling', showchoir:'🎤 Show Choir', arts:'🎭 Performing Arts', dance:'💃 Dance / Social', school:'🏫 School Event', academic:'🏆 Academic', club:'🎨 Club / Org', graduation:'🎓 Graduation', other:'📸 Other' };
   const typeOptions = typeOrder.filter(t => upcomingByType[t])
     .map(t => `<option value="${t}">${typeLabels[t]} (${upcomingByType[t].length})</option>`).join('');
 
