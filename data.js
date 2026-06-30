@@ -134,6 +134,7 @@ const SYNC_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwH9agFB6OR5nPB
 const IASB_DROPBOX_URL = 'https://drive.google.com/drive/folders/1Kg4UYcKzOLNYYqoEOG3fo2xbwNQtZCIY';
 
 const IASB_DRIVE_FOLDERS = {
+  // Radio
   R1: 'https://drive.google.com/drive/folders/1hbQe5g66WZdA8yGVZLv4UsU319rKsU0_',
   R2: 'https://drive.google.com/drive/folders/1lfZdA9ZWW4B-Dh9rymSHmATpVG-xS3i1',
   R3: 'https://drive.google.com/drive/folders/1Chda-yLZFyUwd6h7ftyeRFfl7wlaTIdR',
@@ -143,8 +144,45 @@ const IASB_DRIVE_FOLDERS = {
   R7: 'https://drive.google.com/drive/folders/1MBicWR2Y-UulSdkIqttdqB_EkTwl2Xpm',
   R8: 'https://drive.google.com/drive/folders/1fR3WoNs5VfiY6jBorian4eORBbyGBwcW',
   R9: 'https://drive.google.com/drive/folders/1TbYun0vlO3-E1-ZKGVbqO8woy419RRM_',
+  // News
+  N1: 'https://drive.google.com/drive/folders/1I99LTA5bs-1ziPLSnlYYWzUA4VsoXXrJ',
   N2: 'https://drive.google.com/drive/folders/1xR9lcWruFXP55vzsIMDGrS4mz2pFLRWR',
+  N3: 'https://drive.google.com/drive/folders/1Qhbbp4u3FTUD3HOGiQU7KaA2MininOrl',
+  N4: 'https://drive.google.com/drive/folders/18rOtbPAC75tauOKJH9nQyyUsftFxUUC9',
+  N5: 'https://drive.google.com/drive/folders/1U2Fx9YXrxNNDjjN0v4F4UA2o8bbTkQVr',
+  N6: 'https://drive.google.com/drive/folders/1cSHJiZMvX1o5PmMownlHBrE5Q1-Pna7c',
+  N7: 'https://drive.google.com/drive/folders/1J7_LsMHZPWTbVRjj6nAM64lkB2i1SzM2',
+  N8: 'https://drive.google.com/drive/folders/1OXer9j04zzv1SN5CKS1-Q5pCfEUKQBLt',
+  // Sports
+  S1: 'https://drive.google.com/drive/folders/1fW1Dg0n6v2m2KFBs28s-LSsHeY8eRYAd',
+  S2: 'https://drive.google.com/drive/folders/1Kww8NYoTAcwapQYo96EoZO8fjS3WPOca',
+  S3: 'https://drive.google.com/drive/folders/1p-Ec5m8U1w2Z0yVCVjr3yniYZ9M8NLhI',
+  S4: 'https://drive.google.com/drive/folders/1sY7FyennEVlFXotKaWCK7-nqmWDHUXr0',
+  S5: 'https://drive.google.com/drive/folders/1WuwAps6tIXegvs2ixSi5kZQH_3amEORI',
+  S6: 'https://drive.google.com/drive/folders/1sfVup-YAOtHYkm48WfOjI5Q7NxREFM-O',
+  S7: 'https://drive.google.com/drive/folders/1RzEPnl7Ew35qF1PHHor66JT8hMno_JB9',
+  S8: 'https://drive.google.com/drive/folders/1tFVweCwJ_CBbvzdk6AgPteDvJekacsDs',
+  S9: 'https://drive.google.com/drive/folders/14kc_uRpNZbbu96Su6cuQPx68hhTakHby',
+  // Video
+  V1: 'https://drive.google.com/drive/folders/1V4xPfsejx5HNJrLnFCVbQVfUD_NVby0w',
+  V2: 'https://drive.google.com/drive/folders/13fp8Sts3hfiaLJR4QzfYReiQlscKoHTH',
+  V3: 'https://drive.google.com/drive/folders/1YnuSnprA0kAJkwuEOu88ZBIlrteDiOT8',
+  V4: 'https://drive.google.com/drive/folders/1-F3n-pmzySpyDY3eB2GiTxZfNero6v4G',
+  V5: 'https://drive.google.com/drive/folders/1IUR-p16lYRxJc7Ie9VoJ0l0_37IUgVq4',
+  V6: 'https://drive.google.com/drive/folders/1iy8fewFAzOe-Zag7xv_nwyvVA9ZLNBxF',
+  V7: 'https://drive.google.com/drive/folders/1wXIKhiDh49fcxR13RJM03ECW2sDPudCq',
+  V8: 'https://drive.google.com/drive/folders/1phxJAxJGqv2dg-SzavV1Go6b3pVzQQVz',
+  V9: 'https://drive.google.com/drive/folders/19nFKUgqKxwXm8TccSGBfIfaxM7bl3ENI',
+  // Emerging Media
+  M1: 'https://drive.google.com/drive/folders/1494gueNc4L0l7yIQlvPE0qkIFwXjsO78',
+  M2: 'https://drive.google.com/drive/folders/15EAddetFwuyODzHRRkSO4JGa5souZhAQ',
   M3: 'https://drive.google.com/drive/folders/1K20xhwUEAmbCdIodrYRdcfUIROey1GOZ',
+  M4: 'https://drive.google.com/drive/folders/17jzYthFMtSxo92bm0eUmRUVsTzRwMFGv',
+  M5: 'https://drive.google.com/drive/folders/1dx5UHAXtGct7DYwk0OIqoPc17EyXg7Tq',
+  M6: 'https://drive.google.com/drive/folders/1MD2v5hBFikJCgZe3fgRuMJ5TQMf_iny_',
+  M7: 'https://drive.google.com/drive/folders/1ggz6IV_RzRH-kV7cbllWN9ER-4wRPifw',
+  M8: 'https://drive.google.com/drive/folders/1Al7h9YX9onmhCZoIx-aenWejf9BrcOax',
+  M9: 'https://drive.google.com/drive/folders/1jddduuMlCr2fLm6_RDVxf45KDgaXG8Kx',
 };
 
 const IASB_CATEGORIES = [
