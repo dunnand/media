@@ -48,6 +48,7 @@ const S = {
   calendarYbEvents: [],
   ybDashView: 'event',
   beatId: null,
+  expandedBeat: null,
   beatAssignments: {},
 };
 
@@ -898,33 +899,36 @@ function renderSports() {
 
 // ── HHS IN-DEPTH ──────────────────────────────────────────────
 function renderInDepth() {
-  const seasonLabel = { fall: '🍂 Fall', winter: '❄️ Winter', spring: '🌸 Spring' };
-  const seasonClass = { fall: 'beat-s-fall', winter: 'beat-s-winter', spring: 'beat-s-spring' };
-  const ALL_SEASONS = ['fall', 'winter', 'spring'];
+  const seasonEmoji = { fall: '🍂', winter: '❄️', spring: '🌸' };
 
-  const beatCards = INDEPTH_BEATS.map(b => {
-    const assign = S.beatAssignments[b.id] || {};
-    const pairText = (assign.student1 || assign.student2)
-      ? [assign.student1, assign.student2].filter(Boolean).join(' & ')
-      : '<span class="beat-unassigned">Unassigned</span>';
-    const visibleTopics = b.covers.slice(0, 4);
-    const extra = b.covers.length - visibleTopics.length;
-    const seasonTags = ALL_SEASONS.map(s =>
-      `<span class="beat-season-tag ${seasonClass[s]} ${b.seasons.includes(s) ? 'active' : 'dim'}">${seasonLabel[s]}</span>`
-    ).join('');
+  const beatRows = INDEPTH_BEATS.map(b => {
+    const assign  = S.beatAssignments[b.id] || {};
+    const pair    = [assign.student1, assign.student2].filter(Boolean).join(' & ') || '';
+    const seasons = b.seasons.map(s => seasonEmoji[s]).join('');
+    const open    = S.expandedBeat === b.id;
+
+    const expandedBody = open ? `
+      <div class="beat-expanded">
+        <div class="beat-expanded-topics">${b.covers.join('  ·  ')}</div>
+        ${b.contacts.length ? `<div class="beat-expanded-contacts">${b.contacts.join('  ·  ')}</div>` : ''}
+        ${S.teacherMode ? `
+          <div class="beat-assign-inline">
+            <input class="form-input beat-s1-input" data-beat-id="${b.id}" placeholder="Student 1" value="${assign.student1 || ''}">
+            <input class="form-input beat-s2-input" data-beat-id="${b.id}" placeholder="Student 2" value="${assign.student2 || ''}">
+            <button class="btn-sm beat-save-btn" data-beat-id="${b.id}">Save</button>
+          </div>` : ''}
+      </div>` : '';
+
     return `
-      <div class="beat-card" data-beat="${b.id}" style="border-top-color:${b.color}">
-        <div class="beat-card-top">
-          <span class="beat-num" style="color:${b.color}">${String(b.id).padStart(2,'0')}</span>
-          <span class="beat-icon-lg">${b.icon}</span>
+      <div class="beat-row ${open ? 'open' : ''}" data-beat-toggle="${b.id}">
+        <div class="beat-row-main">
+          <span class="beat-row-num">${String(b.id).padStart(2,'0')}</span>
+          <span class="beat-row-name">${b.name}</span>
+          <span class="beat-row-seasons">${seasons}</span>
+          <span class="beat-row-pair">${pair || '<span class="beat-row-empty">Unassigned</span>'}</span>
+          <span class="beat-row-chevron">${open ? '▾' : '▸'}</span>
         </div>
-        <div class="beat-name">${b.name}</div>
-        <div class="beat-seasons-row">${seasonTags}</div>
-        <div class="beat-topics-row">
-          ${visibleTopics.map(t => `<span class="beat-topic-chip">${t}</span>`).join('')}
-          ${extra > 0 ? `<span class="beat-topic-chip beat-topic-more">+${extra} more</span>` : ''}
-        </div>
-        <div class="beat-pair-row">${pairText}</div>
+        ${expandedBody}
       </div>`;
   }).join('');
 
@@ -939,15 +943,17 @@ function renderInDepth() {
         </div>
       </div>
 
-      <div class="beats-section-header">
-        <h2>📋 Coverage Beats</h2>
-        <p class="beats-section-sub">15 beats — each pair covers one beat all year. Click a beat for full details and story ideas.</p>
-      </div>
-      <div class="beats-grid">${beatCards}</div>
-
-      <div class="page-grid" style="margin-top:32px">
+      <div class="page-grid">
         <div class="main-col">
           <section class="card">
+            <div class="beat-list-header">
+              <h2 style="font-size:1rem;font-weight:700">Coverage Beats</h2>
+              <span class="beat-list-sub">15 beats · pairs assigned each year</span>
+            </div>
+            <div class="beat-list">${beatRows}</div>
+          </section>
+
+          <section class="card" style="margin-top:20px">
             <h2 class="cal-section-title">📅 Coverage Calendar</h2>
             <p class="cal-section-sub">Upcoming events that need to be covered by the In-Depth team.</p>
             <div class="cal-embed-wrap">
@@ -967,99 +973,6 @@ function renderInDepth() {
             <h3>In-Depth Lessons</h3>
             <p>Anchoring, reporting, script writing, and package production.</p>
             <button class="btn-primary" style="background:var(--indepth)" data-lesson-course="indepth">Go to Lessons →</button>
-          </section>
-        </div>
-      </div>
-    </div>`;
-}
-
-function renderBeatDetail() {
-  const beat = INDEPTH_BEATS.find(b => b.id === S.beatId);
-  if (!beat) return `${navBar('indepth')}<div class="class-page"><button class="back-btn" data-nav="indepth">← Back</button><p>Beat not found.</p></div>`;
-
-  const assign = S.beatAssignments[beat.id] || {};
-  const seasonLabel = { fall: '🍂 Fall', winter: '❄️ Winter', spring: '🌸 Spring' };
-  const seasonDesc  = { fall: 'Aug – Oct', winter: 'Nov – Feb', spring: 'Mar – Jun' };
-  const ALL_SEASONS = ['fall', 'winter', 'spring'];
-
-  const seasonBadges = ALL_SEASONS.map(s => {
-    const active = beat.seasons.includes(s);
-    return `<div class="beat-detail-season ${active ? 'active' : 'inactive'}">
-      <div class="bds-label">${seasonLabel[s]}</div>
-      <div class="bds-range">${seasonDesc[s]}</div>
-    </div>`;
-  }).join('');
-
-  const topicChips = beat.covers.map(t => `<span class="beat-topic-chip">${t}</span>`).join('');
-
-  const contactList = beat.contacts.length
-    ? beat.contacts.map(c => `<div class="beat-contact-row">📧 ${c}</div>`).join('')
-    : `<div class="beat-contact-row dim">No key contacts recorded yet.</div>`;
-
-  const pairSection = S.teacherMode ? `
-    <section class="card" style="margin-top:20px">
-      <h3 style="margin-bottom:14px">👥 Assign Student Pair</h3>
-      <div class="beat-assign-form">
-        <div class="beat-assign-field">
-          <label class="form-label">Student 1</label>
-          <input class="form-input" id="beat-s1" placeholder="First Last" value="${assign.student1 || ''}">
-        </div>
-        <div class="beat-assign-field">
-          <label class="form-label">Student 2</label>
-          <input class="form-input" id="beat-s2" placeholder="First Last" value="${assign.student2 || ''}">
-        </div>
-      </div>
-      <button class="btn-primary" id="save-beat-assign" style="background:${beat.color};margin-top:14px">Save Assignment</button>
-    </section>` : `
-    <section class="card" style="margin-top:20px">
-      <h3 style="margin-bottom:10px">👥 Assigned Pair</h3>
-      ${(assign.student1 || assign.student2)
-        ? `<div class="beat-assigned-names">${[assign.student1, assign.student2].filter(Boolean).join(' & ')}</div>`
-        : `<div class="dim" style="font-size:0.9rem">No students assigned yet.</div>`}
-    </section>`;
-
-  return `
-    ${navBar('indepth')}
-    <div class="class-page">
-      <button class="back-btn" data-nav="indepth">← Back to In-Depth</button>
-
-      <div class="beat-detail-header" style="border-left: 5px solid ${beat.color}">
-        <div class="beat-detail-num" style="color:${beat.color}">${String(beat.id).padStart(2,'0')}</div>
-        <div class="beat-detail-icon">${beat.icon}</div>
-        <div class="beat-detail-info">
-          <h1>${beat.name}</h1>
-          <div class="beat-detail-tag" style="background:${beat.color}22;color:${beat.color}">Beat ${beat.id} of 15</div>
-        </div>
-      </div>
-
-      <div class="page-grid" style="margin-top:24px">
-        <div class="main-col">
-          <section class="card">
-            <h3 style="margin-bottom:14px">📅 Season Coverage</h3>
-            <div class="beat-detail-seasons">${seasonBadges}</div>
-          </section>
-
-          <section class="card" style="margin-top:20px">
-            <h3 style="margin-bottom:14px">📌 What You'll Cover</h3>
-            <div class="beat-topics-row" style="gap:8px">${topicChips}</div>
-          </section>
-
-          <section class="card" style="margin-top:20px">
-            <h3 style="margin-bottom:14px">📞 Key Contacts</h3>
-            ${contactList}
-          </section>
-        </div>
-        <div class="side-col">
-          ${pairSection}
-          <section class="card" style="margin-top:20px">
-            <h3 style="margin-bottom:10px">💡 Story Ideas</h3>
-            <ul class="beat-story-ideas">
-              <li>Profile the most interesting person on this beat</li>
-              <li>Cover a key event or milestone this season</li>
-              <li>Find an untold story — what does most of the school not know?</li>
-              <li>Track a trend or change happening this year</li>
-              <li>Follow up on something from last year</li>
-            </ul>
           </section>
         </div>
       </div>
@@ -2109,18 +2022,23 @@ function attachListeners() {
   const oi = document.getElementById('open-iasb');
   if (oi) oi.addEventListener('click', () => go('iasb'));
 
-  document.querySelectorAll('[data-beat]').forEach(el =>
-    el.addEventListener('click', () => {
-      S.beatId = parseInt(el.dataset.beat);
-      go('beat');
+  document.querySelectorAll('[data-beat-toggle]').forEach(el =>
+    el.addEventListener('click', e => {
+      if (e.target.closest('.beat-assign-inline')) return;
+      const id = parseInt(el.dataset.beatToggle);
+      S.expandedBeat = S.expandedBeat === id ? null : id;
+      render();
     }));
 
-  const sba = document.getElementById('save-beat-assign');
-  if (sba) sba.addEventListener('click', () => {
-    const s1 = document.getElementById('beat-s1')?.value || '';
-    const s2 = document.getElementById('beat-s2')?.value || '';
-    saveBeatAssignment(S.beatId, s1, s2);
-  });
+  document.querySelectorAll('.beat-save-btn').forEach(btn =>
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const id = parseInt(btn.dataset.beatId);
+      const row = btn.closest('.beat-row');
+      const s1  = row.querySelector('.beat-s1-input')?.value || '';
+      const s2  = row.querySelector('.beat-s2-input')?.value || '';
+      saveBeatAssignment(id, s1, s2);
+    }));
 
   document.querySelectorAll('[data-iasb-cat]').forEach(el =>
     el.addEventListener('click', () => {
