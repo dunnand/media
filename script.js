@@ -3461,7 +3461,7 @@ function renderDashboard() {
           <button class="btn-secondary${S.ybDashView==='role'?' yb-view-active':''}" data-yb-view="role" style="font-size:0.75rem">By Role</button>
           <button class="btn-secondary" id="yb-dash-refresh" style="font-size:0.75rem">↻ Refresh</button>
         </div>`,
-        ${(() => {
+        `${(() => {
           const coverage = S.yearbookCoverage || [];
           if (!coverage.length) return `<p class="dim" style="padding:16px 0;font-size:0.875rem">No sign-ups yet.</p>`;
           const badge = n => `<span style="background:var(--surface2);color:var(--dim);font-size:0.72rem;padding:2px 7px;border-radius:10px;margin-left:6px">${n}</span>`;
@@ -3536,8 +3536,8 @@ function renderDashboard() {
                   </div>`).join('')}
               </div>
             </div>`).join('');
-        })()}
-      `)}
+        })()}`
+      )}
     </div>`;
 }
 
