@@ -51,6 +51,7 @@ const S = {
   expandedBeat: null,
   beatAssignments: {},
   rundownData: {},
+  showSchedule: [],
 };
 
 // ── Timing Helpers ────────────────────────────────────────────
@@ -84,7 +85,7 @@ function go(view, extra) {
   if (extra) Object.assign(S, extra);
   render();
   window.scrollTo(0, 0);
-  if (view === 'dashboard') { dashboardLoadPlans(); loadYearbookCoverage(); }
+  if (view === 'dashboard') { dashboardLoadPlans(); loadYearbookCoverage(); loadShowSchedule(); }
   if (view === 'yearbook')  loadYearbookCoverage();
   if (view === 'beats')   loadBeatAssignments();
   if (view === 'indepth') loadRundownData();
@@ -909,6 +910,19 @@ const RUNDOWN_ROLES = [
   { key: 'sports_btc', label: 'Sports / BTC' },
 ];
 
+function getSchoolYearFridays() {
+  const now = new Date();
+  const startYear = now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1;
+  const start = new Date(startYear, 7, 21);
+  while (start.getDay() !== 5) start.setDate(start.getDate() + 1);
+  const end = new Date(startYear + 1, 4, 31);
+  while (end.getDay() !== 5) end.setDate(end.getDate() - 1);
+  const fridays = [];
+  const d = new Date(start);
+  while (d <= end) { fridays.push(new Date(d)); d.setDate(d.getDate() + 7); }
+  return { fridays, startYear };
+}
+
 function getRundownWeeks() {
   const now = new Date();
   const day = now.getDay();
@@ -1076,6 +1090,31 @@ async function saveRundownCell(weekKey, roleKey, value) {
   try {
     await db.collection('hm_indepth_rundown').doc(weekKey).set(S.rundownData[weekKey], { merge: true });
   } catch(e) { console.error('rundown save failed', e); }
+}
+
+async function loadShowSchedule() {
+  const db = getDB();
+  if (!db) return;
+  try {
+    const doc = await db.collection('hm_config').doc('show_schedule').get();
+    S.showSchedule = (doc.exists && Array.isArray(doc.data().skipped)) ? doc.data().skipped : [];
+    render();
+  } catch(e) { console.error('show schedule load failed', e); }
+}
+
+async function toggleShowDate(dateStr) {
+  const skipped = [...(S.showSchedule || [])];
+  const idx = skipped.indexOf(dateStr);
+  if (idx >= 0) skipped.splice(idx, 1);
+  else skipped.push(dateStr);
+  S.showSchedule = skipped;
+  render();
+  const db = getDB();
+  if (db) {
+    try {
+      await db.collection('hm_config').doc('show_schedule').set({ skipped });
+    } catch(e) { console.error('show schedule save failed', e); }
+  }
 }
 
 async function loadBeatAssignments() {
@@ -2124,6 +2163,9 @@ function attachListeners() {
   document.querySelectorAll('.rd-input').forEach(ta =>
     ta.addEventListener('blur', () => saveRundownCell(ta.dataset.week, ta.dataset.role, ta.value)));
 
+  document.querySelectorAll('[data-show-date]').forEach(btn =>
+    btn.addEventListener('click', () => toggleShowDate(btn.dataset.showDate)));
+
   document.querySelectorAll('[data-beat-toggle]').forEach(el =>
     el.addEventListener('click', e => {
       if (e.target.closest('.beat-assign-inline')) return;
@@ -3140,6 +3182,44 @@ function renderDashboard() {
         </div>
         ${readPct >= 80 || writePct >= 80 ? `<p style="margin:10px 0 0;font-size:0.8rem;color:var(--error)">⚠️ Approaching daily limit — consider upgrading to Firebase Blaze plan.</p>` : ''}
       </section>
+
+      ${(() => {
+        const { fridays, startYear } = getSchoolYearFridays();
+        const skipped  = S.showSchedule || [];
+        const showDays = fridays.length - skipped.length;
+        const today    = weekKey(new Date());
+
+        // Group by "Month YYYY"
+        const byMonth = {};
+        fridays.forEach(f => {
+          const label = f.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+          (byMonth[label] = byMonth[label] || []).push(f);
+        });
+
+        const calHtml = Object.entries(byMonth).map(([month, dates]) => `
+          <div class="ss-month">
+            <div class="ss-month-label">${month}</div>
+            <div class="ss-chips">
+              ${dates.map(d => {
+                const key      = weekKey(d);
+                const isSkip   = skipped.includes(key);
+                const isPast   = key < today;
+                const label    = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                return `<button class="ss-chip ${isSkip ? 'ss-skipped' : 'ss-on'}${isPast ? ' ss-past' : ''}" data-show-date="${key}" title="${isSkip ? 'Click to restore show' : 'Click to skip this show'}">${label}</button>`;
+              }).join('')}
+            </div>
+          </div>`).join('');
+
+        return `
+        <section class="card db-section">
+          <div class="card-header" style="flex-wrap:wrap;gap:8px">
+            <h2>📺 In-Depth Show Schedule — ${startYear}–${startYear+1}</h2>
+            <span style="font-size:0.8rem;color:var(--dim)">${showDays} of ${fridays.length} Fridays scheduled</span>
+          </div>
+          <p style="font-size:0.8rem;color:var(--dim);margin:0 0 16px">All shows air on Fridays. Click any date to toggle it off (no show) or back on.</p>
+          <div class="ss-grid">${calHtml}</div>
+        </section>`;
+      })()}
 
       <section class="card db-section">
         <div class="card-header">

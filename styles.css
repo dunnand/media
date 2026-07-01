@@ -797,6 +797,21 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 }
 .iasb-check-static.done .iasb-check-icon { color: var(--success); }
 
+/* ── Show Schedule Calendar ─────────────────────────────────── */
+.ss-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+.ss-month-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--dim); margin-bottom: 8px; }
+.ss-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.ss-chip {
+  font-size: 0.78rem; font-weight: 600; padding: 4px 9px;
+  border-radius: 7px; border: 1px solid; cursor: pointer;
+  transition: all 0.12s; line-height: 1.4;
+}
+.ss-chip.ss-on { background: rgba(59,130,246,0.15); color: #60a5fa; border-color: rgba(59,130,246,0.3); }
+.ss-chip.ss-on:hover { background: rgba(59,130,246,0.25); }
+.ss-chip.ss-on.ss-past { opacity: 0.45; }
+.ss-chip.ss-skipped { background: transparent; color: var(--border); border-color: var(--border); text-decoration: line-through; }
+.ss-chip.ss-skipped:hover { color: var(--dim); border-color: var(--dim); }
+
 /* ── In-Depth Rundown Table ─────────────────────────────────── */
 .rd-table {
   width: 100%; border-collapse: collapse;
