@@ -2638,37 +2638,6 @@ function attachListeners() {
     render();
   });
 
-  const ybCreateFoldersBtn = document.getElementById('yb-create-folders-btn');
-  if (ybCreateFoldersBtn) ybCreateFoldersBtn.addEventListener('click', async () => {
-    ybCreateFoldersBtn.disabled = true;
-    ybCreateFoldersBtn.textContent = 'Creating…';
-    const types = [...new Set(allYbEvents().map(e => e.type))]
-      .filter(t => t && EVENT_TYPES[t])
-      .map(t => `${t}:${EVENT_TYPES[t].label}`)
-      .join(',');
-    try {
-      const result = await fetchJsonp(`${SYNC_SCRIPT_URL}?action=createFolders&types=${encodeURIComponent(types)}`);
-      if (result.success) {
-        const db = getDB();
-        if (db) {
-          trackUsage('writes');
-          await db.collection('hm_config').doc('dropbox_folders').set({ folders: result.folders });
-        }
-        S.dropboxFolders = result.folders;
-        showToast('Sport folders created in Google Drive!');
-        render();
-      } else {
-        showToast('Error: ' + (result.error || 'Unknown'));
-        ybCreateFoldersBtn.disabled = false;
-        ybCreateFoldersBtn.textContent = '📁 Create Sport Folders';
-      }
-    } catch(e) {
-      showToast('Failed — check Apps Script deployment.');
-      ybCreateFoldersBtn.disabled = false;
-      ybCreateFoldersBtn.textContent = '📁 Create Sport Folders';
-    }
-  });
-
   document.querySelectorAll('[data-lesson-course]').forEach(el =>
     el.addEventListener('click', () => {
       S.lessonCourse = el.dataset.lessonCourse;
@@ -3116,8 +3085,27 @@ async function loadDropboxFolders() {
   } catch(e) {}
 }
 
+async function autoCreateDropboxFolders() {
+  if (!SYNC_SCRIPT_URL) return;
+  const types = [...new Set(allYbEvents().map(e => e.type))]
+    .filter(t => t && EVENT_TYPES[t])
+    .map(t => `${t}:${EVENT_TYPES[t].label}`)
+    .join(',');
+  if (!types) return;
+  try {
+    const result = await fetchJsonp(`${SYNC_SCRIPT_URL}?action=createFolders&types=${encodeURIComponent(types)}`);
+    if (result.success && result.folders) {
+      S.dropboxFolders = result.folders;
+      const db = getDB();
+      if (db) db.collection('hm_config').doc('dropbox_folders').set({ folders: result.folders }).catch(() => {});
+      if (S.view === 'yearbook') render();
+    }
+  } catch(e) {}
+}
+
 async function init() {
   await Promise.all([loadFromFirebase(), loadCustomYbEvents(), loadYearbookCoverage(), loadCalendarYbEvents(), loadDropboxFolders()]);
+  if (!Object.keys(S.dropboxFolders).length) autoCreateDropboxFolders();
   render();
   document.addEventListener('keydown', e => {
     if (!S.lessonId) return;
@@ -3587,7 +3575,6 @@ function renderDashboard() {
         `<div style="display:flex;gap:6px;flex-wrap:wrap">
           <button class="btn-primary" id="yb-add-event-btn" style="font-size:0.8rem">+ Add Event</button>
           <button class="btn-secondary" id="yb-refresh-cal-btn" style="font-size:0.8rem">↻ Refresh Calendar Events</button>
-          <button class="btn-secondary" id="yb-create-folders-btn" style="font-size:0.8rem">📁 Create Sport Folders</button>
         </div>`,
         `<div id="yb-event-form" style="display:none;padding:14px 0 18px;border-bottom:1px solid var(--border);margin-bottom:16px">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
