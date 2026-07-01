@@ -904,9 +904,8 @@ function renderSports() {
 // ── HHS IN-DEPTH ──────────────────────────────────────────────
 const RUNDOWN_ROLES = [
   { key: 'anchors',    label: 'Anchors',     pair: true },
-  { key: 'packages',   label: 'Packages',   structured: true },
-  { key: 'vos',        label: 'VOs',         structured: true },
-  { key: 'vosots',     label: 'VOSOTs' },
+  { key: 'packages',   label: 'Packages',      structured: true },
+  { key: 'vo_vosot',   label: 'VOs / VOSOTs', structured: true, typeToggle: true },
   { key: 'weather',    label: 'Weather' },
   { key: 'sports_btc', label: 'Sports / BTC' },
 ];
@@ -963,14 +962,16 @@ function renderRundownCell(wk, role) {
   }
 
   if (role.structured) {
-    const items = Array.isArray(rawVal) ? rawVal : (rawVal ? [{ topic: rawVal, student: '' }] : []);
-    const slots = items.length > 0 ? [...items] : [{ topic: '', student: '' }, { topic: '', student: '' }];
+    const defaultItem = () => ({ type: 'VO', topic: '', student: '' });
+    const items = Array.isArray(rawVal) ? rawVal : (rawVal ? [{ type: 'VO', topic: rawVal, student: '' }] : []);
+    const slots = items.length > 0 ? [...items] : [defaultItem(), defaultItem()];
 
     if (!S.teacherMode) {
       const filled = slots.filter(i => i.topic || i.student);
       if (!filled.length) return `<td class="rd-cell rd-cell-ro"><span class="rd-empty">—</span></td>`;
       return `<td class="rd-cell rd-cell-ro">${filled.map(i => `
         <div class="rd-struct-ro">
+          ${role.typeToggle ? `<span class="rd-type-badge rd-type-${(i.type||'VO').toLowerCase()}">${i.type || 'VO'}</span>` : ''}
           ${i.topic   ? `<span class="rd-struct-topic">${esc(i.topic)}</span>` : ''}
           ${i.student ? `<span class="rd-struct-student">${esc(i.student)}</span>` : ''}
         </div>`).join('')}</td>`;
@@ -978,6 +979,7 @@ function renderRundownCell(wk, role) {
     return `<td class="rd-cell"><div class="rd-structured">
       ${slots.map((item, idx) => `
         <div class="rd-struct-item">
+          ${role.typeToggle ? `<button class="rd-type-toggle rd-type-${(item.type||'VO').toLowerCase()}" data-week="${wk}" data-role="${role.key}" data-idx="${idx}">${item.type || 'VO'}</button>` : ''}
           <input class="rd-struct-input rd-topic-input" data-week="${wk}" data-role="${role.key}" data-idx="${idx}" data-field="topic" placeholder="Topic" value="${esc(item.topic || '')}">
           <input class="rd-struct-input rd-student-input" data-week="${wk}" data-role="${role.key}" data-idx="${idx}" data-field="student" placeholder="Student" value="${esc(item.student || '')}">
         </div>`).join('')}
@@ -2234,13 +2236,25 @@ function attachListeners() {
       saveRundownCell(week, role, items);
     }));
 
+  document.querySelectorAll('.rd-type-toggle').forEach(btn =>
+    btn.addEventListener('click', () => {
+      const { week, role, idx } = btn.dataset;
+      const existing = (S.rundownData[week] || {})[role];
+      const items = Array.isArray(existing) ? existing.map(i => ({ ...i })) : [];
+      const i = parseInt(idx);
+      while (items.length <= i) items.push({ type: 'VO', topic: '', student: '' });
+      items[i] = { ...items[i], type: items[i].type === 'VOSOT' ? 'VO' : 'VOSOT' };
+      saveRundownCell(week, role, items);
+      render();
+    }));
+
   document.querySelectorAll('.rd-add-item').forEach(btn =>
     btn.addEventListener('click', () => {
       const { week, role } = btn.dataset;
       if (!S.rundownData[week]) S.rundownData[week] = {};
       const existing = S.rundownData[week][role];
-      const items = Array.isArray(existing) ? [...existing] : (existing ? [{ topic: existing, student: '' }] : []);
-      items.push({ topic: '', student: '' });
+      const items = Array.isArray(existing) ? [...existing] : (existing ? [{ type: 'VO', topic: existing, student: '' }] : []);
+      items.push({ type: 'VO', topic: '', student: '' });
       S.rundownData[week][role] = items;
       saveRundownCell(week, role, items);
       render();
