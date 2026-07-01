@@ -850,6 +850,13 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 }
 .rd-input:focus { background: var(--surface2); }
 
+/* Pair cells (Anchors) */
+.rd-pair-edit { display: flex; flex-direction: column; }
+.rd-pair-input { background: transparent; border: none; border-bottom: 1px solid var(--border); outline: none; color: var(--text); font-size: 0.78rem; font-family: inherit; padding: 7px 10px; width: 100%; }
+.rd-pair-input:last-child { border-bottom: none; }
+.rd-pair-input:focus { background: var(--surface2); }
+.rd-pair-ro { padding: 4px 10px; font-size: 0.78rem; }
+
 /* Structured cells (Packages, VOs) */
 .rd-structured { display: flex; flex-direction: column; padding: 4px 0; }
 .rd-struct-item { display: flex; flex-direction: column; gap: 0; padding: 5px 10px; border-bottom: 1px solid var(--border); }

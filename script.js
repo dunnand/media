@@ -903,7 +903,7 @@ function renderSports() {
 
 // ── HHS IN-DEPTH ──────────────────────────────────────────────
 const RUNDOWN_ROLES = [
-  { key: 'anchors',    label: 'Anchors' },
+  { key: 'anchors',    label: 'Anchors',     pair: true },
   { key: 'packages',   label: 'Packages',   structured: true },
   { key: 'vos',        label: 'VOs',         structured: true },
   { key: 'vosots',     label: 'VOSOTs' },
@@ -948,6 +948,19 @@ function fmtWeekRange(d) {
 
 function renderRundownCell(wk, role) {
   const rawVal = (S.rundownData[wk] || {})[role.key];
+
+  if (role.pair) {
+    const pair = Array.isArray(rawVal) ? rawVal : ['', ''];
+    if (!S.teacherMode) {
+      const filled = pair.filter(Boolean);
+      if (!filled.length) return `<td class="rd-cell rd-cell-ro"><span class="rd-empty">—</span></td>`;
+      return `<td class="rd-cell rd-cell-ro">${filled.map(n => `<div class="rd-pair-ro">${esc(n)}</div>`).join('')}</td>`;
+    }
+    return `<td class="rd-cell"><div class="rd-pair-edit">
+      <input class="rd-pair-input" data-week="${wk}" data-role="${role.key}" data-idx="0" placeholder="Anchor 1" value="${esc(pair[0] || '')}">
+      <input class="rd-pair-input" data-week="${wk}" data-role="${role.key}" data-idx="1" placeholder="Anchor 2" value="${esc(pair[1] || '')}">
+    </div></td>`;
+  }
 
   if (role.structured) {
     const items = Array.isArray(rawVal) ? rawVal : (rawVal ? [{ topic: rawVal, student: '' }] : []);
@@ -2199,6 +2212,16 @@ function attachListeners() {
 
   document.querySelectorAll('.rd-input').forEach(ta =>
     ta.addEventListener('blur', () => saveRundownCell(ta.dataset.week, ta.dataset.role, ta.value)));
+
+  document.querySelectorAll('.rd-pair-input').forEach(input =>
+    input.addEventListener('blur', () => {
+      const { week, role, idx } = input.dataset;
+      const existing = (S.rundownData[week] || {})[role];
+      const pair = Array.isArray(existing) ? [...existing] : ['', ''];
+      while (pair.length < 2) pair.push('');
+      pair[parseInt(idx)] = input.value;
+      saveRundownCell(week, role, pair);
+    }));
 
   document.querySelectorAll('.rd-struct-input').forEach(input =>
     input.addEventListener('blur', () => {
