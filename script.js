@@ -1645,9 +1645,23 @@ function inferYbType(title) {
 // Sport types that always show regardless of home/away filter
 const YB_ALWAYS_SHOW = new Set(['dance', 'nhs', 'showchoir', 'graduation', 'other']);
 
-function isHomeGame(title) {
-  const t = title.toLowerCase();
-  if (/ at /.test(t) || / @ /.test(t) || t.startsWith('@') || /\(a\)\s*$/.test(t) || /\(away\)/.test(t)) return false;
+// Detects home/away using three signals in priority order:
+// 1. Description contains "home" or "away" keyword
+// 2. Location field — if present and doesn't mention Homestead → away
+// 3. Title patterns (" at ", " @ ", "(A)") as last resort
+function isHomeGame(ev) {
+  const title = (ev.summary     || '').toLowerCase();
+  const desc  = (ev.description || '').toLowerCase();
+  const loc   = (ev.location    || '').toLowerCase();
+
+  if (/\bhome\b/.test(desc))  return true;
+  if (/\baway\b/.test(desc))  return false;
+
+  if (loc && !loc.includes('homestead')) return false;
+
+  if (/ at /.test(title) || / @ /.test(title) || /\(a\)\s*$/.test(title) || /\(away\)/.test(title)) return false;
+  if (/ vs\.? /.test(title) || /\(h\)\s*$/.test(title) || /\(home\)/.test(title)) return true;
+
   return true;
 }
 
@@ -1701,10 +1715,11 @@ async function loadCalendarYbEvents() {
           ? new Date(ev.start.dateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
           : '';
         return {
-          id:   'cal-' + ev.id.replace(/[^a-z0-9]/gi, '').slice(0, 20),
+          id:       'cal-' + ev.id.replace(/[^a-z0-9]/gi, '').slice(0, 20),
           title, date: dateStr, time: timeStr, type,
-          home: YB_ALWAYS_SHOW.has(type) ? true : isHomeGame(title),
-          icon: YB_ICONS[type] || '📅'
+          location: ev.location || '',
+          home:     YB_ALWAYS_SHOW.has(type) ? true : isHomeGame(ev),
+          icon:     YB_ICONS[type] || '📅'
         };
       }).filter(e => e.date);
       S.calendarYbEvents = events;
