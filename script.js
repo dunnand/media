@@ -903,11 +903,11 @@ function renderSports() {
 
 // ── HHS IN-DEPTH ──────────────────────────────────────────────
 const RUNDOWN_ROLES = [
-  { key: 'anchors',    label: 'Anchors',     pair: true },
-  { key: 'packages',   label: 'Packages',      structured: true },
-  { key: 'vo_vosot',   label: 'VOs / VOSOTs', structured: true, typeToggle: true },
-  { key: 'weather',    label: 'Weather' },
-  { key: 'sports_btc', label: 'Sports / BTC' },
+  { key: 'anchors',    label: 'Anchors',      pair: true,                          color: '#6366f1' },
+  { key: 'packages',   label: 'Packages',     structured: true,                    color: '#f59e0b' },
+  { key: 'vo_vosot',   label: 'VOs / VOSOTs', structured: true, typeToggle: true,  color: '#a78bfa' },
+  { key: 'weather',    label: 'Weather',                                            color: '#06b6d4' },
+  { key: 'sports_btc', label: 'Sports / BTC',                                      color: '#22c55e' },
 ];
 
 function getSchoolYearFridays() {
@@ -945,17 +945,18 @@ function fmtWeekRange(d) {
   return `${mo} – ${fr}`;
 }
 
-function renderRundownCell(wk, role) {
-  const rawVal = (S.rundownData[wk] || {})[role.key];
+function renderRundownCell(wk, role, isCurrent = false) {
+  const rawVal  = (S.rundownData[wk] || {})[role.key];
+  const colCls  = isCurrent ? ' rd-col-current' : '';
 
   if (role.pair) {
     const pair = Array.isArray(rawVal) ? rawVal : ['', ''];
     if (!S.teacherMode) {
       const filled = pair.filter(Boolean);
-      if (!filled.length) return `<td class="rd-cell rd-cell-ro"><span class="rd-empty">—</span></td>`;
-      return `<td class="rd-cell rd-cell-ro">${filled.map(n => `<div class="rd-pair-ro">${esc(n)}</div>`).join('')}</td>`;
+      if (!filled.length) return `<td class="rd-cell rd-cell-ro${colCls}"><span class="rd-empty">—</span></td>`;
+      return `<td class="rd-cell rd-cell-ro${colCls}">${filled.map(n => `<div class="rd-pair-ro">${esc(n)}</div>`).join('')}</td>`;
     }
-    return `<td class="rd-cell"><div class="rd-pair-edit">
+    return `<td class="rd-cell${colCls}"><div class="rd-pair-edit">
       <input class="rd-pair-input" data-week="${wk}" data-role="${role.key}" data-idx="0" placeholder="Anchor 1" value="${esc(pair[0] || '')}">
       <input class="rd-pair-input" data-week="${wk}" data-role="${role.key}" data-idx="1" placeholder="Anchor 2" value="${esc(pair[1] || '')}">
     </div></td>`;
@@ -968,15 +969,15 @@ function renderRundownCell(wk, role) {
 
     if (!S.teacherMode) {
       const filled = slots.filter(i => i.topic || i.student);
-      if (!filled.length) return `<td class="rd-cell rd-cell-ro"><span class="rd-empty">—</span></td>`;
-      return `<td class="rd-cell rd-cell-ro">${filled.map(i => `
+      if (!filled.length) return `<td class="rd-cell rd-cell-ro${colCls}"><span class="rd-empty">—</span></td>`;
+      return `<td class="rd-cell rd-cell-ro${colCls}">${filled.map(i => `
         <div class="rd-struct-ro">
           ${role.typeToggle ? `<span class="rd-type-badge rd-type-${(i.type||'VO').toLowerCase()}">${i.type || 'VO'}</span>` : ''}
           ${i.topic   ? `<span class="rd-struct-topic">${esc(i.topic)}</span>` : ''}
           ${i.student ? `<span class="rd-struct-student">${esc(i.student)}</span>` : ''}
         </div>`).join('')}</td>`;
     }
-    return `<td class="rd-cell"><div class="rd-structured">
+    return `<td class="rd-cell${colCls}"><div class="rd-structured">
       ${slots.map((item, idx) => `
         <div class="rd-struct-item">
           ${role.typeToggle ? `<button class="rd-type-toggle rd-type-${(item.type||'VO').toLowerCase()}" data-week="${wk}" data-role="${role.key}" data-idx="${idx}">${item.type || 'VO'}</button>` : ''}
@@ -989,9 +990,9 @@ function renderRundownCell(wk, role) {
 
   const val = rawVal || '';
   if (!S.teacherMode) {
-    return `<td class="rd-cell rd-cell-ro">${val ? esc(val).replace(/\n/g,'<br>') : '<span class="rd-empty">—</span>'}</td>`;
+    return `<td class="rd-cell rd-cell-ro${colCls}">${val ? `<span class="rd-plain-val">${esc(val).replace(/\n/g,'<br>')}</span>` : '<span class="rd-empty">—</span>'}</td>`;
   }
-  return `<td class="rd-cell"><textarea class="rd-input" data-week="${wk}" data-role="${role.key}" rows="2">${esc(val)}</textarea></td>`;
+  return `<td class="rd-cell${colCls}"><textarea class="rd-input" data-week="${wk}" data-role="${role.key}" rows="2">${esc(val)}</textarea></td>`;
 }
 
 function renderInDepth() {
@@ -1001,13 +1002,18 @@ function renderInDepth() {
   const isPast   = weekKey(weeks[0]) < todayKey;
 
   const headerCols = weeks.map(w => {
-    const wk     = weekKey(w);
-    const past   = wk < todayKey;
-    return `<th class="rd-week-head${past ? ' rd-past' : ''}">${fmtWeekRange(w)}${past ? '<br><span class="rd-past-tag">past</span>' : ''}</th>`;
+    const wk      = weekKey(w);
+    const past    = wk < todayKey;
+    const current = wk === todayKey;
+    return `<th class="rd-week-head${past ? ' rd-past' : ''}${current ? ' rd-current' : ''}">${fmtWeekRange(w)}${past ? '<br><span class="rd-past-tag">past</span>' : ''}${current ? '<br><span class="rd-past-tag" style="color:#6366f1">this week</span>' : ''}</th>`;
   }).join('');
 
   const bodyRows = RUNDOWN_ROLES.map(role =>
-    `<tr><td class="rd-role-label">${role.label}</td>${weeks.map(w => renderRundownCell(weekKey(w), role)).join('')}</tr>`
+    `<tr style="--rd-color:${role.color}"><td class="rd-role-label" style="color:${role.color}">${role.label}</td>${weeks.map(w => {
+      const wk = weekKey(w);
+      const current = wk === todayKey;
+      return renderRundownCell(wk, role, current);
+    }).join('')}</tr>`
   ).join('');
 
   return `
