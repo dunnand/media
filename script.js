@@ -966,6 +966,8 @@ const RUNDOWN_ROLES = [
   { key: 'anchors',    label: 'Anchors',      pair: true,                          color: '#6366f1' },
   { key: 'packages',   label: 'Packages',     structured: true,                    color: '#f59e0b' },
   { key: 'vo_vosot',   label: 'VOs / VOSOTs', structured: true, typeToggle: true,  color: '#a78bfa' },
+  { key: 'commercial', label: 'Commercial',                                         color: '#f97316' },
+  { key: 'psa',        label: 'PSA',                                                color: '#84cc16' },
   { key: 'weather',    label: 'Weather',                                            color: '#06b6d4' },
   { key: 'sports_btc', label: 'Sports / BTC',                                      color: '#22c55e' },
 ];
@@ -1000,9 +1002,7 @@ function weekKey(d) { return d.toISOString().slice(0, 10); }
 
 function fmtWeekRange(d) {
   const fri = new Date(d); fri.setDate(d.getDate() + 4);
-  const mo = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  const fr = fri.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  return `${mo} – ${fr}`;
+  return fri.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
 function renderRundownCell(wk, role, isCurrent = false) {
@@ -3362,10 +3362,12 @@ function renderDashboard() {
         </div>
       </div>
 
-      ${dbSec('firebase',
-        `<h2>Firebase Usage <span style="font-size:0.75rem;font-weight:400;color:var(--dim)">— today, this browser</span></h2>`,
-        `<a href="https://console.firebase.google.com/project/audioaficionados-21ba0/firestore" target="_blank" style="font-size:0.78rem;color:var(--accent);text-decoration:none">Full usage ↗</a>`,
-        `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <section class="card db-section" style="padding:14px 20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <h3 style="margin:0;font-size:0.9rem">Firebase Usage <span style="font-size:0.75rem;font-weight:400;color:var(--dim)">— today, this browser</span></h3>
+          <a href="https://console.firebase.google.com/project/audioaficionados-21ba0/firestore" target="_blank" style="font-size:0.78rem;color:var(--accent);text-decoration:none">Full usage ↗</a>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div>
             <div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:4px"><span>Reads</span><span style="color:${barColor(readPct)}">${usage.reads.toLocaleString()} / ${READ_LIMIT.toLocaleString()} <span class="dim">(${readPct}%)</span></span></div>
             <div style="background:var(--surface2);border-radius:4px;height:8px;overflow:hidden"><div style="width:${readPct}%;height:100%;background:${barColor(readPct)};border-radius:4px;transition:width 0.3s"></div></div>
@@ -3375,8 +3377,8 @@ function renderDashboard() {
             <div style="background:var(--surface2);border-radius:4px;height:8px;overflow:hidden"><div style="width:${writePct}%;height:100%;background:${barColor(writePct)};border-radius:4px;transition:width 0.3s"></div></div>
           </div>
         </div>
-        ${readPct >= 80 || writePct >= 80 ? `<p style="margin:10px 0 0;font-size:0.8rem;color:var(--error)">⚠️ Approaching daily limit — consider upgrading to Firebase Blaze plan.</p>` : ''}`
-      )}
+        ${readPct >= 80 || writePct >= 80 ? `<p style="margin:10px 0 0;font-size:0.8rem;color:var(--error)">⚠️ Approaching daily limit — consider upgrading to Firebase Blaze plan.</p>` : ''}
+      </section>
 
       ${(() => {
         const { fridays, startYear } = getSchoolYearFridays();
