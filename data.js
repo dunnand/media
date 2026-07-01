@@ -141,9 +141,30 @@ const HHS_MEDIA_CAL_ID  = '2b9bdfdee65f7330d8d5d2fd1d4877c1b709289fa0b0747427f57
 const GOOGLE_CAL_API_KEY = 'AIzaSyCy5ZKtIjrF1lgDojmYgDlxit2Te7SKyeU';
 
 // Google Drive subfolder IDs for the Photo Dropbox — one folder per sport/category.
-// To populate: run createDropboxFolders() from the Apps Script editor, then paste the
-// logged JSON here. Subfolders live inside drive.google.com/drive/folders/0AKQDvIUms2qIUk9PVA
-const YB_DROPBOX_FOLDERS = {};
+// Parent folder: drive.google.com/drive/folders/0AKQDvIUms2qIUk9PVA
+const YB_DROPBOX_FOLDERS = {
+  football:         '1G-RzKF0DFxTjbeboOROKq8wOvjbWfmCD',
+  basketball_boys:  '196vis9GdEVD-38al8Wpwl0eAVuPsTYi-',
+  basketball_girls: '1ZVpUAbiCnGkugUtQSUZYmsvb-Qrqe1Oe',
+  volleyball:       '1kfSUed7ErDdJp8k1wtoijBcukkVyug_C',
+  soccer_boys:      '14pc8mV7V5RWikLkemstD_KmSp9XuWCeN',
+  soccer_girls:     '1uuLF1oj73XMMUKg1hwoG54SvW3LLF_uU',
+  cross_country:    '1oSLEnBAQcLC29vdT9kc09y6o_uLdWmM5',
+  tennis_boys:      '1UaY6vV3jt2TZ2oy8kEC4XkwWJ7VfBZGo',
+  tennis_girls:     '13rQWyDhiHeMdmIER9iof8-5Dq5vhoYGc',
+  golf_boys:        '1wZZ-NkVLU5hAO6ynW6aKcx8zn870-QL2',
+  golf_girls:       '1YydgVjlBi4L4kLxZj2BLZOW0xdgjRxRY',
+  wrestling:        '1YW2xUL-yMWWmv5HTAdWJTSP1nsGCLYOy',
+  swimming:         '1aUP1IMy7fFSBuIOVA18oTJ5srmZaANcq',
+  gymnastics:       '1F6mTFfFr56RxTdqzRgXLzTXwUx4xBtQ9',
+  track:            '1cSjacDe4HSTPBnxb1o0ca5DSnBZX_xzV',
+  baseball:         '1IOzHhMjF20zLS5tyUkfNm9StlSRBAGwC',
+  softball:         '1iyYf4AfpONodfy0JghQ1lzRssJvVOsFX',
+  dance:            '1LtGmkaKT0l0_tpNVpy0hCIfHU6X9sug2',
+  showchoir:        '1B0YaX9NlB24iRSsda9SeGLlpLxn1XcmW',
+  nhs:              '1C4VCqa1VV5-8ZjbhAc5ylLXJ7wSgUJok',
+  graduation:       '1sevk5vhmGhVkGATimw2_dS32HXB0gOeJ',
+};
 
 // Google Drive folder links — Dropbox 2027 in Audio Broadcasting shared drive
 const IASB_DROPBOX_URL = 'https://drive.google.com/drive/folders/1Kg4UYcKzOLNYYqoEOG3fo2xbwNQtZCIY';
