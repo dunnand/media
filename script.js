@@ -1385,7 +1385,7 @@ function renderYearbook() {
           </section>` : ''}
 
           <section class="card">
-            <h2 class="cal-section-title">📋 Event Coverage</h2>
+            <h2 class="cal-section-title">📋 Upcoming Coverage</h2>
             <p class="cal-section-sub">Students signed up to cover upcoming events.</p>
             ${(() => {
               const byEvent = {};
@@ -1414,8 +1414,62 @@ function renderYearbook() {
             })()}
           </section>
 
+          <section class="card">
+            <h2 class="cal-section-title">📊 Season Coverage Tracker</h2>
+            <p class="cal-section-sub">How many photographers have covered each event this year.</p>
+            ${(() => {
+              const covCount = {};
+              allCoverage.forEach(s => {
+                const key = s.eventId || (s.eventDate + '|' + s.eventTitle);
+                covCount[key] = (covCount[key] || 0) + 1;
+              });
+              const allEvts = allYbEvents().sort((a,b) => a.date.localeCompare(b.date));
+              if (!allEvts.length) return `<p class="dim" style="font-size:0.875rem">No events found.</p>`;
+              const past   = allEvts.filter(e => new Date(e.date + 'T23:59:00') < now);
+              const future = allEvts.filter(e => new Date(e.date + 'T23:59:00') >= now);
+              const renderEvt = (ev, isPast) => {
+                const count = covCount[ev.id] || covCount[ev.date + '|' + ev.title] || 0;
+                let badge, badgeStyle;
+                if (isPast) {
+                  if (count === 0)      { badge = 'No coverage'; badgeStyle = 'background:#ef444422;color:#f87171;'; }
+                  else if (count === 1) { badge = '1 photographer'; badgeStyle = 'background:#f59e0b22;color:#fbbf24;'; }
+                  else                  { badge = `${count} photographers`; badgeStyle = 'background:#22c55e22;color:#4ade80;'; }
+                } else {
+                  badge = count ? `${count} signed up` : 'No sign-ups yet';
+                  badgeStyle = count ? 'background:#6366f122;color:#a5b4fc;' : 'background:var(--surface2);color:var(--dim);';
+                }
+                return `
+                  <div class="yb-tracker-row">
+                    <span class="yb-tracker-icon">${ev.icon || '📅'}</span>
+                    <div class="yb-tracker-info">
+                      <span class="yb-tracker-title">${esc(ev.title)}</span>
+                      <span class="yb-tracker-date dim">${fmtDate(ev.date, false)}</span>
+                    </div>
+                    <span class="yb-tracker-badge" style="${badgeStyle}">${badge}</span>
+                  </div>`;
+              };
+              let html = '';
+              if (past.length) {
+                html += `<div class="yb-tracker-group-label">Past Events</div>`;
+                html += past.map(e => renderEvt(e, true)).join('');
+              }
+              if (future.length) {
+                html += `<div class="yb-tracker-group-label" style="margin-top:16px">Upcoming Events</div>`;
+                html += future.map(e => renderEvt(e, false)).join('');
+              }
+              return html;
+            })()}
+          </section>
+
         </div>
         <div class="side-col">
+
+          <section class="card action-card">
+            <div class="action-icon">📁</div>
+            <h3>Photo Dropbox</h3>
+            <p>Upload your photos here after covering an event. Name your files with your name and the event.</p>
+            <a class="btn-primary" href="https://drive.google.com/drive/folders/0AKQDvIUms2qIUk9PVA" target="_blank" rel="noopener">Upload Photos ↗</a>
+          </section>
 
           <section class="card action-card">
             <div class="action-icon">📒</div>
