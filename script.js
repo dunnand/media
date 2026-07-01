@@ -1566,6 +1566,17 @@ function inferYbType(title) {
   return 'other';
 }
 
+function fetchJsonp(url) {
+  return new Promise((resolve, reject) => {
+    const id = '_gs_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    const s = document.createElement('script');
+    window[id] = d => { delete window[id]; s.remove(); resolve(d); };
+    s.onerror = () => { delete window[id]; s.remove(); reject(new Error('JSONP failed')); };
+    s.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + id;
+    document.head.appendChild(s);
+  });
+}
+
 async function loadCalendarYbEvents() {
   const db = getDB();
   const TTL = 24 * 60 * 60 * 1000; // 24 hours
@@ -1587,8 +1598,7 @@ async function loadCalendarYbEvents() {
   // Cache is missing or stale — fetch from Apps Script and update Firestore
   if (!SYNC_SCRIPT_URL) return;
   try {
-    const resp   = await fetch(`${SYNC_SCRIPT_URL}?action=getEvents`);
-    const result = await resp.json();
+    const result = await fetchJsonp(`${SYNC_SCRIPT_URL}?action=getEvents`);
     if (result.success) {
       const events = result.events.map(ev => {
         const type = inferYbType(ev.title);
@@ -1627,8 +1637,7 @@ async function saveYbEvent() {
   if (SYNC_SCRIPT_URL) {
     try {
       const url = `${SYNC_SCRIPT_URL}?action=addEvent&title=${encodeURIComponent(title)}&date=${encodeURIComponent(date)}&time=${encodeURIComponent(time || '12:00 PM')}`;
-      const resp = await fetch(url);
-      const result = await resp.json();
+      const result = await fetchJsonp(url);
       if (result.success) calEventId = result.calEventId || '';
     } catch(e) {}
   }
@@ -1654,7 +1663,7 @@ async function deleteYbEvent(id) {
 
   if (ev.calEventId && SYNC_SCRIPT_URL) {
     try {
-      await fetch(`${SYNC_SCRIPT_URL}?action=deleteEvent&calEventId=${encodeURIComponent(ev.calEventId)}`);
+      await fetchJsonp(`${SYNC_SCRIPT_URL}?action=deleteEvent&calEventId=${encodeURIComponent(ev.calEventId)}`);
     } catch(e) {}
   }
 
@@ -2528,6 +2537,19 @@ function attachListeners() {
 
   document.querySelectorAll('.yb-delete-event-btn').forEach(btn =>
     btn.addEventListener('click', () => deleteYbEvent(btn.dataset.ybEventId)));
+
+  const ybRefreshCalBtn = document.getElementById('yb-refresh-cal-btn');
+  if (ybRefreshCalBtn) ybRefreshCalBtn.addEventListener('click', async () => {
+    ybRefreshCalBtn.disabled = true;
+    ybRefreshCalBtn.textContent = 'Refreshing…';
+    const db = getDB();
+    if (db) {
+      try { await db.collection('hm_config').doc('cal_cache').delete(); } catch(e) {}
+    }
+    S.calendarYbEvents = [];
+    await loadCalendarYbEvents();
+    render();
+  });
 
   document.querySelectorAll('[data-lesson-course]').forEach(el =>
     el.addEventListener('click', () => {
@@ -3434,7 +3456,10 @@ function renderDashboard() {
 
       ${dbSec('yb_events',
         `<h2>📖 Yearbook Event Manager</h2>`,
-        `<button class="btn-primary" id="yb-add-event-btn" style="font-size:0.8rem">+ Add Event</button>`,
+        `<div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn-primary" id="yb-add-event-btn" style="font-size:0.8rem">+ Add Event</button>
+          <button class="btn-secondary" id="yb-refresh-cal-btn" style="font-size:0.8rem">↻ Refresh Calendar Events</button>
+        </div>`,
         `<div id="yb-event-form" style="display:none;padding:14px 0 18px;border-bottom:1px solid var(--border);margin-bottom:16px">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
             <div class="form-group" style="margin:0"><label>Title</label><input id="yb-new-title" type="text" placeholder="e.g. Homecoming Dance"></div>

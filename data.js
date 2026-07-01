@@ -106,10 +106,16 @@ const GIRLS_BASKETBALL_HOME_GAMES = [
 ];
 
 // ── Special Events ────────────────────────────────────────────
+// Dates marked TBD are estimates — update when school publishes the official calendar
 const SPECIAL_EVENTS = [
-  { id: 'sc27-0219',   title: 'Show Choir Showcase', date: '2027-02-19', type: 'showchoir',  gameTime: '', roles: {}, checks: {}, notes: 'TBD — time to be announced' },
-  { id: 'sc27-0220',   title: 'Show Choir Showcase', date: '2027-02-20', type: 'showchoir',  gameTime: '', roles: {}, checks: {}, notes: 'TBD — time to be announced' },
-  { id: 'grad27-0607', title: 'Graduation',           date: '2027-06-07', type: 'graduation', gameTime: '', roles: {}, checks: {}, notes: 'TBD — time to be announced' },
+  // Fall
+  { id: 'hc26-1003d',  title: 'Homecoming Dance',      date: '2026-10-03', type: 'dance',      gameTime: '7:00 PM',  roles: {}, checks: {}, notes: 'Date TBD — update when confirmed' },
+  { id: 'nhs26-1015',  title: 'NHS Induction',         date: '2026-10-15', type: 'nhs',        gameTime: '',         roles: {}, checks: {}, notes: 'Date TBD — update when confirmed' },
+  // Spring
+  { id: 'prom27-0501', title: 'Prom',                  date: '2027-05-01', type: 'dance',      gameTime: '7:00 PM',  roles: {}, checks: {}, notes: 'Date TBD — update when confirmed' },
+  { id: 'sc27-0219',   title: 'Show Choir Showcase',   date: '2027-02-19', type: 'showchoir',  gameTime: '',         roles: {}, checks: {}, notes: 'TBD — time to be announced' },
+  { id: 'sc27-0220',   title: 'Show Choir Showcase',   date: '2027-02-20', type: 'showchoir',  gameTime: '',         roles: {}, checks: {}, notes: 'TBD — time to be announced' },
+  { id: 'grad27-0607', title: 'Graduation',             date: '2027-06-07', type: 'graduation', gameTime: '',         roles: {}, checks: {}, notes: 'TBD — time to be announced' },
 ];
 
 const YB_ICONS = { football: '🏈', basketball_boys: '🏀', basketball_girls: '🏀', volleyball: '🏐', soccer_boys: '⚽', soccer_girls: '⚽', golf_boys: '⛳', golf_girls: '⛳', baseball: '⚾', softball: '🥎', cross_country: '🏃', swimming: '🏊', tennis_boys: '🎾', tennis_girls: '🎾', track: '🏃', wrestling: '🤼', gymnastics: '🤸', lacrosse_boys: '🥍', lacrosse_girls: '🥍', bowling_boys: '🎳', bowling_girls: '🎳', dance_team: '💃', cheer: '📣', showchoir: '🎤', arts: '🎭', fine_arts: '🎨', nhs: '🎓', dance: '🪩', school: '🏫', academic: '🏆', club: '🏅', graduation: '🎓', other: '📸' };

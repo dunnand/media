@@ -17,14 +17,19 @@ function respond(obj) {
 
 function doGet(e) {
   const action = (e.parameter && e.parameter.action) || 'sync';
+  const cb = e.parameter && e.parameter.callback;
+  function out(obj) {
+    if (cb) return ContentService.createTextOutput(cb + '(' + JSON.stringify(obj) + ')').setMimeType(ContentService.MimeType.JAVASCRIPT);
+    return respond(obj);
+  }
   try {
-    if (action === 'sync')        return respond(syncAthletics());
-    if (action === 'getEvents')   return respond(getUpcomingEvents());
-    if (action === 'addEvent')    return respond(addCalendarEvent(e.parameter));
-    if (action === 'deleteEvent') return respond(deleteCalendarEvent(e.parameter.calEventId));
-    return respond({ success: false, error: 'Unknown action: ' + action });
+    if (action === 'sync')        return out(syncAthletics());
+    if (action === 'getEvents')   return out(getUpcomingEvents());
+    if (action === 'addEvent')    return out(addCalendarEvent(e.parameter));
+    if (action === 'deleteEvent') return out(deleteCalendarEvent(e.parameter.calEventId));
+    return out({ success: false, error: 'Unknown action: ' + action });
   } catch(err) {
-    return respond({ success: false, error: err.toString() });
+    return out({ success: false, error: err.toString() });
   }
 }
 
@@ -34,8 +39,9 @@ function getUpcomingEvents() {
   if (!cal) return { success: false, error: 'Calendar not found.' };
 
   const now = new Date();
-  const endYear = now.getMonth() >= 7 ? now.getFullYear() + 1 : now.getFullYear();
-  const end = new Date(endYear, 7, 1); // through Aug 1
+  // School year runs Aug–June. July+ is pre-season for the upcoming year.
+  const startYear = now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1;
+  const end = new Date(startYear + 1, 7, 1); // through Aug 1 of school year end
 
   const events = cal.getEvents(now, end);
   return {
