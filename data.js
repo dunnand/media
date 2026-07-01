@@ -868,6 +868,100 @@ const IASB_CATEGORIES = [
   },
 ];
 
+// ── HHS In-Depth Beats ────────────────────────────────────────
+const INDEPTH_BEATS = [
+  {
+    id: 1, name: 'Academic Programs & Administration', icon: '🎓', color: '#6366f1',
+    seasons: ['fall','winter','spring'],
+    covers: ['Dual Credit','AP Programs','Graduation','Academic Awards','Counseling','Student Services','Parent Club','Student Ambassador'],
+    contacts: ['szvers@sacs.k12.in.us','jbay@sacs.k12.in.us'],
+  },
+  {
+    id: 2, name: 'Student Support & Community', icon: '🤝', color: '#8b5cf6',
+    seasons: ['fall','winter','spring'],
+    covers: ['Discipline & Student Services','Parent Club','Student Ambassador','SACS Community Events','Mrs. Flemming (Community Events)'],
+    contacts: [],
+  },
+  {
+    id: 3, name: 'Student Government & Activities', icon: '🏛️', color: '#0ea5e9',
+    seasons: ['fall','winter','spring'],
+    covers: ['Student Government','Dances & Homecoming','Student Activities','Spartan Army','Spirit Store'],
+    contacts: ['Mrs. Lorenz (Spirit Store)','Mr. Werth (Spartan Army)'],
+  },
+  {
+    id: 4, name: 'Band & Instrumental Music', icon: '🎺', color: '#d97706',
+    seasons: ['fall','winter','spring'],
+    covers: ['Marching Band','Jazz Band','Indoor Percussion','Color Guard','Winter Guard','Orchestra'],
+    contacts: [],
+  },
+  {
+    id: 5, name: 'Choral, Theater & Dance', icon: '🎭', color: '#ec4899',
+    seasons: ['fall','winter','spring'],
+    covers: ['Elite Choir','Plays','Class Royale','Anonymous Blue','Musical','Song-Writing Club','Jazz & Hip-Hop Dance','Cheer'],
+    contacts: [],
+  },
+  {
+    id: 6, name: 'Visual Arts & Media', icon: '🎨', color: '#c026d3',
+    seasons: ['fall','winter','spring'],
+    covers: ['Art Department','Art Club','Basket Weaving','Spartana','Yearbook','Film Club','Library & Technology (SETS)'],
+    contacts: [],
+  },
+  {
+    id: 7, name: 'English & History', icon: '📖', color: '#2563eb',
+    seasons: ['fall','winter','spring'],
+    covers: ['English Department','Speech & Debate','Poetry Out Loud','Creative Writing Club','History Department','Young Progressives','Young Americans for Freedom','Mock Trial','We The People'],
+    contacts: ['djames@sacs.k12.in.us','spickett@sacs.k12.in.us'],
+  },
+  {
+    id: 8, name: 'Languages & World Culture', icon: '🌍', color: '#0d9488',
+    seasons: ['fall','winter','spring'],
+    covers: ['Language Department','Spanish','Latin','ASL','French','Taste of Homestead','K-Pop Club'],
+    contacts: ['Sr. Peeper'],
+  },
+  {
+    id: 9, name: 'STEM & Innovation', icon: '🔬', color: '#16a34a',
+    seasons: ['fall','winter','spring'],
+    covers: ['Science Department','Environmental Club','Math Department','Driver\'s Education','Technology Department','Robotics','Women in STEM','Rube Goldberg'],
+    contacts: ['Mr. Elder','Dylan Kelly'],
+  },
+  {
+    id: 10, name: 'Career, Vocational & Life Skills', icon: '💼', color: '#ea580c',
+    seasons: ['fall','winter','spring'],
+    covers: ['Business Department','DECA','Internship Program','Family & Consumer Science','Culinary','FCCLA','Construction & Building Projects','Cafeteria','P.E. Department'],
+    contacts: ['Mr. Frazier','Mr. Ankenbrook','Ms. Busch'],
+  },
+  {
+    id: 11, name: 'Service & Inclusion', icon: '💛', color: '#65a30d',
+    seasons: ['fall','winter','spring'],
+    covers: ['HOSA','Key Club','Interact Club','NOW','SODA','Special Education','Best Buddies','Unified Teams','Generations United'],
+    contacts: ['Mrs. Dean','Mrs. Whitt','Mrs. Bartel','Ms. Connelly','Mrs. Radloff','Mr. Anderson'],
+  },
+  {
+    id: 12, name: 'Student Clubs & Identity', icon: '🎮', color: '#db2777',
+    seasons: ['fall','winter','spring'],
+    covers: ['Anime Club','DnD Club','Minority Student Union','Bible Club','Plush Club','Ping Pong Club','SADD','Travel Club','New & Emerging Clubs'],
+    contacts: [],
+  },
+  {
+    id: 13, name: 'Football, Basketball & Diamonds', icon: '🏈', color: '#dc2626',
+    seasons: ['fall','winter','spring'],
+    covers: ['Football (fall)','Boys Basketball (winter)','Girls Basketball (winter)','Baseball (spring)','Softball (spring)'],
+    contacts: [],
+  },
+  {
+    id: 14, name: 'Running, Soccer & Volleyball', icon: '🏃', color: '#15803d',
+    seasons: ['fall','spring'],
+    covers: ['Boys Cross Country (fall)','Girls Cross Country (fall)','Girls Soccer (fall)','Volleyball (fall)','Boys Soccer (spring)','Boys Track & Field (spring)','Girls Track & Field (spring)','Boys Volleyball (spring)'],
+    contacts: [],
+  },
+  {
+    id: 15, name: 'Winter Sports, Golf, Tennis & Lacrosse', icon: '🏒', color: '#0891b2',
+    seasons: ['fall','winter','spring'],
+    covers: ['Boys Golf (fall)','Girls Golf (fall)','Girls Tennis (fall)','Wrestling (winter)','Swim & Dive (winter)','Gymnastics (winter)','Boys Tennis (spring)','Boys Lacrosse (spring)','Girls Lacrosse (spring)'],
+    contacts: ['John Lubia','Jodi Hardwick','Jacob Allred','Mike Hower'],
+  },
+];
+
 // ── Lessons ───────────────────────────────────────────────────
 const LESSONS = {
   radio: {

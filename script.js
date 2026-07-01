@@ -47,6 +47,8 @@ const S = {
   customYbEvents: [],
   calendarYbEvents: [],
   ybDashView: 'event',
+  beatId: null,
+  beatAssignments: {},
 };
 
 // ── Timing Helpers ────────────────────────────────────────────
@@ -82,6 +84,7 @@ function go(view, extra) {
   window.scrollTo(0, 0);
   if (view === 'dashboard') { dashboardLoadPlans(); loadYearbookCoverage(); }
   if (view === 'yearbook')  loadYearbookCoverage();
+  if (view === 'indepth' || view === 'beat') loadBeatAssignments();
 }
 
 // ── Render ────────────────────────────────────────────────────
@@ -99,6 +102,7 @@ function render() {
     case 'yearbook':      app.innerHTML = renderYearbook();      break;
     case 'sports':        app.innerHTML = renderSports();        break;
     case 'indepth':       app.innerHTML = renderInDepth();       break;
+    case 'beat':          app.innerHTML = renderBeatDetail();    break;
     case 'iasb':          app.innerHTML = renderIASB();          break;
     case 'iasb-category': app.innerHTML = renderIASBCategory();  break;
     case 'dashboard':     app.innerHTML = renderDashboard();     break;
@@ -894,6 +898,36 @@ function renderSports() {
 
 // ── HHS IN-DEPTH ──────────────────────────────────────────────
 function renderInDepth() {
+  const seasonLabel = { fall: '🍂 Fall', winter: '❄️ Winter', spring: '🌸 Spring' };
+  const seasonClass = { fall: 'beat-s-fall', winter: 'beat-s-winter', spring: 'beat-s-spring' };
+  const ALL_SEASONS = ['fall', 'winter', 'spring'];
+
+  const beatCards = INDEPTH_BEATS.map(b => {
+    const assign = S.beatAssignments[b.id] || {};
+    const pairText = (assign.student1 || assign.student2)
+      ? [assign.student1, assign.student2].filter(Boolean).join(' & ')
+      : '<span class="beat-unassigned">Unassigned</span>';
+    const visibleTopics = b.covers.slice(0, 4);
+    const extra = b.covers.length - visibleTopics.length;
+    const seasonTags = ALL_SEASONS.map(s =>
+      `<span class="beat-season-tag ${seasonClass[s]} ${b.seasons.includes(s) ? 'active' : 'dim'}">${seasonLabel[s]}</span>`
+    ).join('');
+    return `
+      <div class="beat-card" data-beat="${b.id}" style="border-top-color:${b.color}">
+        <div class="beat-card-top">
+          <span class="beat-num" style="color:${b.color}">${String(b.id).padStart(2,'0')}</span>
+          <span class="beat-icon-lg">${b.icon}</span>
+        </div>
+        <div class="beat-name">${b.name}</div>
+        <div class="beat-seasons-row">${seasonTags}</div>
+        <div class="beat-topics-row">
+          ${visibleTopics.map(t => `<span class="beat-topic-chip">${t}</span>`).join('')}
+          ${extra > 0 ? `<span class="beat-topic-chip beat-topic-more">+${extra} more</span>` : ''}
+        </div>
+        <div class="beat-pair-row">${pairText}</div>
+      </div>`;
+  }).join('');
+
   return `
     ${navBar('indepth')}
     <div class="class-page">
@@ -904,7 +938,14 @@ function renderInDepth() {
           <p>TV news production — anchoring, reporting, packages, and live shots.</p>
         </div>
       </div>
-      <div class="page-grid">
+
+      <div class="beats-section-header">
+        <h2>📋 Coverage Beats</h2>
+        <p class="beats-section-sub">15 beats — each pair covers one beat all year. Click a beat for full details and story ideas.</p>
+      </div>
+      <div class="beats-grid">${beatCards}</div>
+
+      <div class="page-grid" style="margin-top:32px">
         <div class="main-col">
           <section class="card">
             <h2 class="cal-section-title">📅 Coverage Calendar</h2>
@@ -930,6 +971,122 @@ function renderInDepth() {
         </div>
       </div>
     </div>`;
+}
+
+function renderBeatDetail() {
+  const beat = INDEPTH_BEATS.find(b => b.id === S.beatId);
+  if (!beat) return `${navBar('indepth')}<div class="class-page"><button class="back-btn" data-nav="indepth">← Back</button><p>Beat not found.</p></div>`;
+
+  const assign = S.beatAssignments[beat.id] || {};
+  const seasonLabel = { fall: '🍂 Fall', winter: '❄️ Winter', spring: '🌸 Spring' };
+  const seasonDesc  = { fall: 'Aug – Oct', winter: 'Nov – Feb', spring: 'Mar – Jun' };
+  const ALL_SEASONS = ['fall', 'winter', 'spring'];
+
+  const seasonBadges = ALL_SEASONS.map(s => {
+    const active = beat.seasons.includes(s);
+    return `<div class="beat-detail-season ${active ? 'active' : 'inactive'}">
+      <div class="bds-label">${seasonLabel[s]}</div>
+      <div class="bds-range">${seasonDesc[s]}</div>
+    </div>`;
+  }).join('');
+
+  const topicChips = beat.covers.map(t => `<span class="beat-topic-chip">${t}</span>`).join('');
+
+  const contactList = beat.contacts.length
+    ? beat.contacts.map(c => `<div class="beat-contact-row">📧 ${c}</div>`).join('')
+    : `<div class="beat-contact-row dim">No key contacts recorded yet.</div>`;
+
+  const pairSection = S.teacherMode ? `
+    <section class="card" style="margin-top:20px">
+      <h3 style="margin-bottom:14px">👥 Assign Student Pair</h3>
+      <div class="beat-assign-form">
+        <div class="beat-assign-field">
+          <label class="form-label">Student 1</label>
+          <input class="form-input" id="beat-s1" placeholder="First Last" value="${assign.student1 || ''}">
+        </div>
+        <div class="beat-assign-field">
+          <label class="form-label">Student 2</label>
+          <input class="form-input" id="beat-s2" placeholder="First Last" value="${assign.student2 || ''}">
+        </div>
+      </div>
+      <button class="btn-primary" id="save-beat-assign" style="background:${beat.color};margin-top:14px">Save Assignment</button>
+    </section>` : `
+    <section class="card" style="margin-top:20px">
+      <h3 style="margin-bottom:10px">👥 Assigned Pair</h3>
+      ${(assign.student1 || assign.student2)
+        ? `<div class="beat-assigned-names">${[assign.student1, assign.student2].filter(Boolean).join(' & ')}</div>`
+        : `<div class="dim" style="font-size:0.9rem">No students assigned yet.</div>`}
+    </section>`;
+
+  return `
+    ${navBar('indepth')}
+    <div class="class-page">
+      <button class="back-btn" data-nav="indepth">← Back to In-Depth</button>
+
+      <div class="beat-detail-header" style="border-left: 5px solid ${beat.color}">
+        <div class="beat-detail-num" style="color:${beat.color}">${String(beat.id).padStart(2,'0')}</div>
+        <div class="beat-detail-icon">${beat.icon}</div>
+        <div class="beat-detail-info">
+          <h1>${beat.name}</h1>
+          <div class="beat-detail-tag" style="background:${beat.color}22;color:${beat.color}">Beat ${beat.id} of 15</div>
+        </div>
+      </div>
+
+      <div class="page-grid" style="margin-top:24px">
+        <div class="main-col">
+          <section class="card">
+            <h3 style="margin-bottom:14px">📅 Season Coverage</h3>
+            <div class="beat-detail-seasons">${seasonBadges}</div>
+          </section>
+
+          <section class="card" style="margin-top:20px">
+            <h3 style="margin-bottom:14px">📌 What You'll Cover</h3>
+            <div class="beat-topics-row" style="gap:8px">${topicChips}</div>
+          </section>
+
+          <section class="card" style="margin-top:20px">
+            <h3 style="margin-bottom:14px">📞 Key Contacts</h3>
+            ${contactList}
+          </section>
+        </div>
+        <div class="side-col">
+          ${pairSection}
+          <section class="card" style="margin-top:20px">
+            <h3 style="margin-bottom:10px">💡 Story Ideas</h3>
+            <ul class="beat-story-ideas">
+              <li>Profile the most interesting person on this beat</li>
+              <li>Cover a key event or milestone this season</li>
+              <li>Find an untold story — what does most of the school not know?</li>
+              <li>Track a trend or change happening this year</li>
+              <li>Follow up on something from last year</li>
+            </ul>
+          </section>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function loadBeatAssignments() {
+  const db = getDB();
+  if (!db) return;
+  try {
+    const snap = await db.collection('hm_indepth_beats').get();
+    const map = {};
+    snap.forEach(doc => { map[parseInt(doc.id)] = doc.data(); });
+    S.beatAssignments = map;
+    if (S.view === 'indepth' || S.view === 'beat') render();
+  } catch(e) { console.error('beat load failed', e); }
+}
+
+async function saveBeatAssignment(beatId, student1, student2) {
+  const db = getDB();
+  if (!db) return;
+  try {
+    await db.collection('hm_indepth_beats').doc(String(beatId)).set({ student1: student1.trim(), student2: student2.trim() });
+    S.beatAssignments[beatId] = { student1: student1.trim(), student2: student2.trim() };
+    showToast('Beat assignment saved.');
+    render();
+  } catch(e) { showToast('Save failed.'); console.error(e); }
 }
 
 // ── YEARBOOK ──────────────────────────────────────────────────
@@ -1951,6 +2108,19 @@ function attachListeners() {
 
   const oi = document.getElementById('open-iasb');
   if (oi) oi.addEventListener('click', () => go('iasb'));
+
+  document.querySelectorAll('[data-beat]').forEach(el =>
+    el.addEventListener('click', () => {
+      S.beatId = parseInt(el.dataset.beat);
+      go('beat');
+    }));
+
+  const sba = document.getElementById('save-beat-assign');
+  if (sba) sba.addEventListener('click', () => {
+    const s1 = document.getElementById('beat-s1')?.value || '';
+    const s2 = document.getElementById('beat-s2')?.value || '';
+    saveBeatAssignment(S.beatId, s1, s2);
+  });
 
   document.querySelectorAll('[data-iasb-cat]').forEach(el =>
     el.addEventListener('click', () => {

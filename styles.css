@@ -797,6 +797,117 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 }
 .iasb-check-static.done .iasb-check-icon { color: var(--success); }
 
+/* ── In-Depth Beats ─────────────────────────────────────────── */
+.beats-section-header { margin: 28px 0 16px; }
+.beats-section-header h2 { font-size: 1.2rem; font-weight: 800; margin-bottom: 4px; }
+.beats-section-sub { font-size: 0.85rem; color: var(--dim); }
+
+.beats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.beat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid transparent;
+  border-radius: var(--radius);
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.beat-card:hover { border-color: #444; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.35); }
+
+.beat-card-top { display: flex; align-items: center; justify-content: space-between; }
+.beat-num { font-size: 1.5rem; font-weight: 900; line-height: 1; }
+.beat-icon-lg { font-size: 1.4rem; }
+
+.beat-name { font-size: 0.82rem; font-weight: 700; line-height: 1.35; }
+
+.beat-seasons-row { display: flex; gap: 4px; flex-wrap: wrap; }
+.beat-season-tag {
+  font-size: 0.62rem; font-weight: 600;
+  padding: 2px 7px; border-radius: 10px;
+  border: 1px solid transparent;
+}
+.beat-season-tag.active.beat-s-fall   { background: #f59e0b22; color: #f59e0b; border-color: #f59e0b44; }
+.beat-season-tag.active.beat-s-winter { background: #3b82f622; color: #60a5fa; border-color: #3b82f644; }
+.beat-season-tag.active.beat-s-spring { background: #22c55e22; color: #4ade80; border-color: #22c55e44; }
+.beat-season-tag.dim { background: var(--surface2); color: var(--border); border-color: var(--border); }
+
+.beat-topics-row { display: flex; flex-wrap: wrap; gap: 5px; }
+.beat-topic-chip {
+  font-size: 0.65rem; font-weight: 500;
+  background: var(--surface2); color: var(--dim);
+  padding: 2px 8px; border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.beat-topic-more { color: var(--text); font-style: italic; }
+
+.beat-pair-row {
+  font-size: 0.72rem; font-weight: 600; color: var(--dim);
+  margin-top: auto; padding-top: 4px;
+  border-top: 1px solid var(--border);
+}
+.beat-unassigned { color: var(--border); font-style: italic; }
+
+/* Beat Detail Page */
+.beat-detail-header {
+  display: flex; align-items: center; gap: 16px;
+  background: var(--surface); border-radius: var(--radius);
+  padding: 20px 24px; margin-bottom: 4px;
+}
+.beat-detail-num  { font-size: 3rem; font-weight: 900; line-height: 1; flex-shrink: 0; }
+.beat-detail-icon { font-size: 2.2rem; flex-shrink: 0; }
+.beat-detail-info h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; line-height: 1.2; }
+.beat-detail-tag {
+  display: inline-block;
+  font-size: 0.7rem; font-weight: 700;
+  padding: 3px 10px; border-radius: 10px;
+  letter-spacing: 0.04em;
+}
+
+.beat-detail-seasons { display: flex; gap: 12px; }
+.beat-detail-season {
+  flex: 1; text-align: center;
+  padding: 14px 8px; border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.beat-detail-season.active { border-color: currentColor; }
+.beat-detail-season.active.beat-detail-season:nth-child(1) { border-color: #f59e0b; background: #f59e0b0d; }
+.beat-detail-season.active:nth-child(2) { border-color: #3b82f6; background: #3b82f60d; }
+.beat-detail-season.active:nth-child(3) { border-color: #22c55e; background: #22c55e0d; }
+.beat-detail-season.inactive { opacity: 0.35; }
+.bds-label { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+.bds-range  { font-size: 0.72rem; color: var(--dim); }
+
+.beat-contact-row { font-size: 0.82rem; padding: 5px 0; border-bottom: 1px solid var(--border); color: var(--dim); }
+.beat-contact-row:last-child { border-bottom: none; }
+
+.beat-assign-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.beat-assign-field { display: flex; flex-direction: column; gap: 5px; }
+
+.beat-assigned-names { font-size: 1rem; font-weight: 700; color: var(--text); }
+
+.beat-story-ideas { padding-left: 18px; display: flex; flex-direction: column; gap: 8px; }
+.beat-story-ideas li { font-size: 0.82rem; color: var(--dim); line-height: 1.4; }
+
+@media (max-width: 700px) {
+  .beats-grid { grid-template-columns: repeat(2, 1fr); }
+  .beat-detail-seasons { flex-direction: column; }
+  .beat-assign-form { grid-template-columns: 1fr; }
+  .beat-detail-header { flex-wrap: wrap; gap: 10px; }
+  .beat-detail-num { font-size: 2rem; }
+}
+@media (max-width: 480px) {
+  .beats-grid { grid-template-columns: 1fr; }
+}
+
 /* ── Teacher Dashboard ───────────────────────────────────────── */
 .db-header {
   display: flex; align-items: flex-start;
