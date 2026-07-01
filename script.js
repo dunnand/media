@@ -50,6 +50,7 @@ const S = {
   beatId: null,
   expandedBeat: null,
   beatAssignments: {},
+  rundownData: {},
 };
 
 // ── Timing Helpers ────────────────────────────────────────────
@@ -85,7 +86,8 @@ function go(view, extra) {
   window.scrollTo(0, 0);
   if (view === 'dashboard') { dashboardLoadPlans(); loadYearbookCoverage(); }
   if (view === 'yearbook')  loadYearbookCoverage();
-  if (view === 'indepth' || view === 'beat') loadBeatAssignments();
+  if (view === 'beats')   loadBeatAssignments();
+  if (view === 'indepth') loadRundownData();
 }
 
 // ── Render ────────────────────────────────────────────────────
@@ -103,7 +105,7 @@ function render() {
     case 'yearbook':      app.innerHTML = renderYearbook();      break;
     case 'sports':        app.innerHTML = renderSports();        break;
     case 'indepth':       app.innerHTML = renderInDepth();       break;
-    case 'beat':          app.innerHTML = renderBeatDetail();    break;
+    case 'beats':         app.innerHTML = renderBeats();         break;
     case 'iasb':          app.innerHTML = renderIASB();          break;
     case 'iasb-category': app.innerHTML = renderIASBCategory();  break;
     case 'dashboard':     app.innerHTML = renderDashboard();     break;
@@ -898,7 +900,112 @@ function renderSports() {
 }
 
 // ── HHS IN-DEPTH ──────────────────────────────────────────────
+const RUNDOWN_ROLES = [
+  { key: 'anchors',    label: 'Anchors' },
+  { key: 'packages',   label: 'Packages' },
+  { key: 'vos',        label: 'VOs' },
+  { key: 'vosots',     label: 'VOSOTs' },
+  { key: 'weather',    label: 'Weather' },
+  { key: 'sports_btc', label: 'Sports / BTC' },
+];
+
+function getRundownWeeks() {
+  const now = new Date();
+  const day = now.getDay();
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - (day === 0 ? 6 : day - 1));
+  monday.setHours(0, 0, 0, 0);
+  return Array.from({ length: 5 }, (_, i) => {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i * 7);
+    return d;
+  });
+}
+
+function weekKey(d) { return d.toISOString().slice(0, 10); }
+
+function fmtWeekRange(d) {
+  const fri = new Date(d); fri.setDate(d.getDate() + 4);
+  const mo = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const fr = fri.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return `${mo} – ${fr}`;
+}
+
 function renderInDepth() {
+  const weeks = getRundownWeeks();
+
+  const headerCols = weeks.map(w => `<th class="rd-week-head">${fmtWeekRange(w)}</th>`).join('');
+
+  const bodyRows = RUNDOWN_ROLES.map(role => {
+    const cells = weeks.map(w => {
+      const key  = weekKey(w);
+      const val  = (S.rundownData[key] || {})[role.key] || '';
+      const edit = S.teacherMode;
+      if (edit) {
+        return `<td class="rd-cell"><textarea class="rd-input" data-week="${key}" data-role="${role.key}" rows="2">${val}</textarea></td>`;
+      }
+      return `<td class="rd-cell rd-cell-ro">${val ? val.replace(/\n/g,'<br>') : '<span class="rd-empty">—</span>'}</td>`;
+    }).join('');
+    return `<tr><td class="rd-role-label">${role.label}</td>${cells}</tr>`;
+  }).join('');
+
+  return `
+    ${navBar('indepth')}
+    <div class="class-page">
+      <div class="class-header">
+        <img src="images/logo-hhs-indepth.png" alt="HHS In-Depth" class="class-header-logo">
+        <div>
+          <h1>HHS In-Depth</h1>
+          <p>TV news production — anchoring, reporting, packages, and live shots.</p>
+        </div>
+      </div>
+
+      <section class="card" style="margin-bottom:24px;overflow-x:auto">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px">
+          <h2 style="font-size:1rem;font-weight:700">5-Week Look Ahead</h2>
+          ${S.teacherMode ? '<span style="font-size:0.75rem;color:var(--dim)">Click any cell to edit · saves on blur</span>' : ''}
+        </div>
+        <table class="rd-table">
+          <thead><tr><th class="rd-role-head"></th>${headerCols}</tr></thead>
+          <tbody>${bodyRows}</tbody>
+        </table>
+      </section>
+
+      <div class="page-grid">
+        <div class="main-col">
+          <section class="card">
+            <h2 class="cal-section-title">📅 Coverage Calendar</h2>
+            <p class="cal-section-sub">Upcoming events that need to be covered by the In-Depth team.</p>
+            <div class="cal-embed-wrap">
+              <iframe src="https://calendar.google.com/calendar/embed?src=2b9bdfdee65f7330d8d5d2fd1d4877c1b709289fa0b0747427f57fd62516bed5%40group.calendar.google.com&ctz=America%2FIndiana%2FIndianapolis&bgcolor=%23111111&color=%230F9D58&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=1&showCalendars=0&showTz=0" frameborder="0" scrolling="no" class="cal-embed"></iframe>
+            </div>
+          </section>
+        </div>
+        <div class="side-col">
+          <section class="card action-card">
+            <div class="action-icon">📋</div>
+            <h3>Coverage Beats</h3>
+            <p>15 beats assigned in pairs — see who covers what.</p>
+            <button class="btn-primary" style="background:var(--indepth)" data-nav="beats">View Beats →</button>
+          </section>
+          <section class="card action-card">
+            <div class="action-icon">🏆</div>
+            <h3>IASB Competition</h3>
+            <p>Track competition entries and checklists.</p>
+            <button class="btn-primary" style="background:var(--indepth)" data-nav="iasb">Open IASB Hub →</button>
+          </section>
+          <section class="card action-card">
+            <div class="action-icon">📚</div>
+            <h3>In-Depth Lessons</h3>
+            <p>Anchoring, reporting, script writing, and package production.</p>
+            <button class="btn-primary" style="background:var(--indepth)" data-lesson-course="indepth">Go to Lessons →</button>
+          </section>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderBeats() {
   const seasonEmoji = { fall: '🍂', winter: '❄️', spring: '🌸' };
 
   const beatRows = INDEPTH_BEATS.map(b => {
@@ -935,48 +1042,40 @@ function renderInDepth() {
   return `
     ${navBar('indepth')}
     <div class="class-page">
-      <div class="class-header">
-        <img src="images/logo-hhs-indepth.png" alt="HHS In-Depth" class="class-header-logo">
+      <button class="back-btn" data-nav="indepth">← Back to In-Depth</button>
+      <div class="class-header" style="margin-top:16px">
         <div>
-          <h1>HHS In-Depth</h1>
-          <p>TV news production — anchoring, reporting, packages, and live shots.</p>
+          <h1>Coverage Beats</h1>
+          <p>15 beats — each pair covers one beat all year. ${S.teacherMode ? 'Click a row to expand and assign students.' : 'Click a row to see what\'s covered.'}</p>
         </div>
       </div>
-
-      <div class="page-grid">
-        <div class="main-col">
-          <section class="card">
-            <div class="beat-list-header">
-              <h2 style="font-size:1rem;font-weight:700">Coverage Beats</h2>
-              <span class="beat-list-sub">15 beats · pairs assigned each year</span>
-            </div>
-            <div class="beat-list">${beatRows}</div>
-          </section>
-
-          <section class="card" style="margin-top:20px">
-            <h2 class="cal-section-title">📅 Coverage Calendar</h2>
-            <p class="cal-section-sub">Upcoming events that need to be covered by the In-Depth team.</p>
-            <div class="cal-embed-wrap">
-              <iframe src="https://calendar.google.com/calendar/embed?src=2b9bdfdee65f7330d8d5d2fd1d4877c1b709289fa0b0747427f57fd62516bed5%40group.calendar.google.com&ctz=America%2FIndiana%2FIndianapolis&bgcolor=%23111111&color=%230F9D58&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=1&showCalendars=0&showTz=0" frameborder="0" scrolling="no" class="cal-embed"></iframe>
-            </div>
-          </section>
-        </div>
-        <div class="side-col">
-          <section class="card action-card">
-            <div class="action-icon">🏆</div>
-            <h3>IASB Competition</h3>
-            <p>Track your competition entries and checklists for IASB.</p>
-            <button class="btn-primary" style="background:var(--indepth)" data-nav="iasb">Open IASB Hub →</button>
-          </section>
-          <section class="card action-card">
-            <div class="action-icon">📚</div>
-            <h3>In-Depth Lessons</h3>
-            <p>Anchoring, reporting, script writing, and package production.</p>
-            <button class="btn-primary" style="background:var(--indepth)" data-lesson-course="indepth">Go to Lessons →</button>
-          </section>
-        </div>
-      </div>
+      <section class="card">
+        <div class="beat-list">${beatRows}</div>
+      </section>
     </div>`;
+}
+
+async function loadRundownData() {
+  const db = getDB();
+  if (!db) return;
+  try {
+    const weeks = getRundownWeeks().map(weekKey);
+    const snaps = await Promise.all(weeks.map(w => db.collection('hm_indepth_rundown').doc(w).get()));
+    const map = {};
+    snaps.forEach(snap => { if (snap.exists) map[snap.id] = snap.data(); });
+    S.rundownData = map;
+    if (S.view === 'indepth') render();
+  } catch(e) { console.error('rundown load failed', e); }
+}
+
+async function saveRundownCell(weekKey, roleKey, value) {
+  const db = getDB();
+  if (!db) return;
+  if (!S.rundownData[weekKey]) S.rundownData[weekKey] = {};
+  S.rundownData[weekKey][roleKey] = value;
+  try {
+    await db.collection('hm_indepth_rundown').doc(weekKey).set(S.rundownData[weekKey], { merge: true });
+  } catch(e) { console.error('rundown save failed', e); }
 }
 
 async function loadBeatAssignments() {
@@ -2021,6 +2120,9 @@ function attachListeners() {
 
   const oi = document.getElementById('open-iasb');
   if (oi) oi.addEventListener('click', () => go('iasb'));
+
+  document.querySelectorAll('.rd-input').forEach(ta =>
+    ta.addEventListener('blur', () => saveRundownCell(ta.dataset.week, ta.dataset.role, ta.value)));
 
   document.querySelectorAll('[data-beat-toggle]').forEach(el =>
     el.addEventListener('click', e => {

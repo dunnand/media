@@ -797,6 +797,44 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 }
 .iasb-check-static.done .iasb-check-icon { color: var(--success); }
 
+/* ── In-Depth Rundown Table ─────────────────────────────────── */
+.rd-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 0.82rem;
+}
+.rd-table th, .rd-table td {
+  border: 1px solid var(--border);
+  padding: 0;
+  vertical-align: top;
+}
+.rd-role-head { width: 90px; }
+.rd-week-head {
+  font-size: 0.72rem; font-weight: 600; color: var(--dim);
+  padding: 8px 10px; text-align: center;
+  background: var(--surface2);
+}
+.rd-role-label {
+  font-size: 0.72rem; font-weight: 700;
+  padding: 10px 10px; color: var(--dim);
+  background: var(--surface2);
+  white-space: nowrap;
+}
+.rd-cell { min-width: 120px; }
+.rd-cell-ro {
+  padding: 8px 10px; font-size: 0.8rem;
+  color: var(--text); line-height: 1.5;
+  min-height: 48px;
+}
+.rd-empty { color: var(--border); }
+.rd-input {
+  width: 100%; height: 100%; min-height: 52px;
+  background: transparent; border: none; outline: none;
+  color: var(--text); font-size: 0.8rem;
+  font-family: inherit; resize: none;
+  padding: 8px 10px; line-height: 1.5;
+}
+.rd-input:focus { background: var(--surface2); }
+
 /* ── In-Depth Beats ─────────────────────────────────────────── */
 .beat-list-header {
   display: flex; align-items: baseline; gap: 10px;
