@@ -54,6 +54,7 @@ const S = {
   rundownWeekOffset: 0,
   showSchedule: [],
   calMonthOffset: 0,
+  dashSections: {},
 };
 
 // ── Timing Helpers ────────────────────────────────────────────
@@ -2338,6 +2339,14 @@ function attachListeners() {
     render(); loadRundownData();
   });
 
+  document.querySelectorAll('[data-db-section]').forEach(el =>
+    el.addEventListener('click', e => {
+      if (e.target.closest('a, button, input, select')) return;
+      const id = el.dataset.dbSection;
+      S.dashSections = { ...(S.dashSections || {}), [id]: !(S.dashSections || {})[id] };
+      render();
+    }));
+
   document.getElementById('lc-prev')?.addEventListener('click', () => { S.calMonthOffset = (S.calMonthOffset || 0) - 1; render(); });
   document.getElementById('lc-next')?.addEventListener('click', () => { S.calMonthOffset = (S.calMonthOffset || 0) + 1; render(); });
   document.querySelectorAll('.lc-has-event').forEach(el =>
@@ -3252,6 +3261,21 @@ async function deleteIASBEntry(entryId) {
 }
 
 // ── Teacher Dashboard ─────────────────────────────────────────
+function dbSec(id, titleHtml, actionsHtml, bodyHtml) {
+  const open = !!(S.dashSections || {})[id];
+  return `
+    <section class="card db-section">
+      <div class="dbs-head" data-db-section="${id}">
+        <div class="dbs-title">
+          <span class="dbs-chev">${open ? '▾' : '▸'}</span>
+          ${titleHtml}
+        </div>
+        ${actionsHtml ? `<div class="dbs-actions">${actionsHtml}</div>` : ''}
+      </div>
+      ${open ? `<div class="dbs-body">${bodyHtml}</div>` : ''}
+    </section>`;
+}
+
 function renderDashboard() {
   if (!S.teacherMode) return `${navBar('dashboard')}<div class="class-page"><p class="dim">Teacher mode required.</p></div>`;
 
@@ -3338,132 +3362,82 @@ function renderDashboard() {
         </div>
       </div>
 
-      <section class="card db-section" style="padding:16px 20px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-          <h3 style="margin:0;font-size:0.95rem">Firebase Usage <span style="font-weight:400;font-size:0.78rem;color:var(--dim)">— today, this browser</span></h3>
-          <a href="https://console.firebase.google.com/project/audioaficionados-21ba0/firestore" target="_blank" style="font-size:0.78rem;color:var(--accent);text-decoration:none">Full usage ↗</a>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      ${dbSec('firebase',
+        `<h2>Firebase Usage <span style="font-size:0.75rem;font-weight:400;color:var(--dim)">— today, this browser</span></h2>`,
+        `<a href="https://console.firebase.google.com/project/audioaficionados-21ba0/firestore" target="_blank" style="font-size:0.78rem;color:var(--accent);text-decoration:none">Full usage ↗</a>`,
+        `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div>
-            <div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:4px">
-              <span>Reads</span>
-              <span style="color:${barColor(readPct)}">${usage.reads.toLocaleString()} / ${READ_LIMIT.toLocaleString()} <span class="dim">(${readPct}%)</span></span>
-            </div>
-            <div style="background:var(--surface2);border-radius:4px;height:8px;overflow:hidden">
-              <div style="width:${readPct}%;height:100%;background:${barColor(readPct)};border-radius:4px;transition:width 0.3s"></div>
-            </div>
+            <div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:4px"><span>Reads</span><span style="color:${barColor(readPct)}">${usage.reads.toLocaleString()} / ${READ_LIMIT.toLocaleString()} <span class="dim">(${readPct}%)</span></span></div>
+            <div style="background:var(--surface2);border-radius:4px;height:8px;overflow:hidden"><div style="width:${readPct}%;height:100%;background:${barColor(readPct)};border-radius:4px;transition:width 0.3s"></div></div>
           </div>
           <div>
-            <div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:4px">
-              <span>Writes</span>
-              <span style="color:${barColor(writePct)}">${usage.writes.toLocaleString()} / ${WRITE_LIMIT.toLocaleString()} <span class="dim">(${writePct}%)</span></span>
-            </div>
-            <div style="background:var(--surface2);border-radius:4px;height:8px;overflow:hidden">
-              <div style="width:${writePct}%;height:100%;background:${barColor(writePct)};border-radius:4px;transition:width 0.3s"></div>
-            </div>
+            <div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:4px"><span>Writes</span><span style="color:${barColor(writePct)}">${usage.writes.toLocaleString()} / ${WRITE_LIMIT.toLocaleString()} <span class="dim">(${writePct}%)</span></span></div>
+            <div style="background:var(--surface2);border-radius:4px;height:8px;overflow:hidden"><div style="width:${writePct}%;height:100%;background:${barColor(writePct)};border-radius:4px;transition:width 0.3s"></div></div>
           </div>
         </div>
-        ${readPct >= 80 || writePct >= 80 ? `<p style="margin:10px 0 0;font-size:0.8rem;color:var(--error)">⚠️ Approaching daily limit — consider upgrading to Firebase Blaze plan.</p>` : ''}
-      </section>
+        ${readPct >= 80 || writePct >= 80 ? `<p style="margin:10px 0 0;font-size:0.8rem;color:var(--error)">⚠️ Approaching daily limit — consider upgrading to Firebase Blaze plan.</p>` : ''}`
+      )}
 
       ${(() => {
         const { fridays, startYear } = getSchoolYearFridays();
         const skipped  = S.showSchedule || [];
         const showDays = fridays.length - skipped.length;
         const today    = weekKey(new Date());
-
-        // Group by "Month YYYY"
-        const byMonth = {};
+        const byMonth  = {};
         fridays.forEach(f => {
           const label = f.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
           (byMonth[label] = byMonth[label] || []).push(f);
         });
-
         const calHtml = Object.entries(byMonth).map(([month, dates]) => `
           <div class="ss-month">
             <div class="ss-month-label">${month}</div>
             <div class="ss-chips">
               ${dates.map(d => {
-                const key      = weekKey(d);
-                const isSkip   = skipped.includes(key);
-                const isPast   = key < today;
-                const label    = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const key   = weekKey(d);
+                const isSkip = skipped.includes(key);
+                const isPast = key < today;
+                const label  = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                 return `<button class="ss-chip ${isSkip ? 'ss-skipped' : 'ss-on'}${isPast ? ' ss-past' : ''}" data-show-date="${key}" title="${isSkip ? 'Click to restore show' : 'Click to skip this show'}">${label}</button>`;
               }).join('')}
             </div>
           </div>`).join('');
-
-        return `
-        <section class="card db-section">
-          <div class="card-header" style="flex-wrap:wrap;gap:8px">
-            <h2>📺 In-Depth Show Schedule — ${startYear}–${startYear+1}</h2>
-            <span style="font-size:0.8rem;color:var(--dim)">${showDays} of ${fridays.length} Fridays scheduled</span>
-          </div>
-          <p style="font-size:0.8rem;color:var(--dim);margin:0 0 16px">All shows air on Fridays. Click any date to toggle it off (no show) or back on.</p>
-          <div class="ss-grid">${calHtml}</div>
-        </section>`;
+        return dbSec('schedule',
+          `<h2>📺 In-Depth Show Schedule — ${startYear}–${startYear+1}</h2>`,
+          `<span style="font-size:0.8rem;color:var(--dim)">${showDays} of ${fridays.length} Fridays</span>`,
+          `<p style="font-size:0.8rem;color:var(--dim);margin:0 0 16px">All shows air on Fridays. Click any date to toggle it off (no show) or back on.</p><div class="ss-grid">${calHtml}</div>`
+        );
       })()}
 
-      <section class="card db-section">
-        <div class="card-header">
-          <h2>IASB Competition Entries</h2>
-          <button class="btn-secondary" data-nav="iasb" style="font-size:0.8rem">Open IASB Hub</button>
-        </div>
-        <div class="db-iasb-list">${iasbSection}</div>
-      </section>
+      ${dbSec('iasb',
+        `<h2>IASB Competition Entries</h2>`,
+        `<button class="btn-secondary" data-nav="iasb" style="font-size:0.8rem">Open IASB Hub</button>`,
+        `<div class="db-iasb-list">${iasbSection}</div>`
+      )}
 
-      <section class="card db-section">
-        <div class="card-header">
-          <h2>Talk Show Plans</h2>
-          <button class="btn-secondary" id="db-refresh-plans" style="font-size:0.8rem">Refresh</button>
-        </div>
-        <div class="db-plans-list" id="db-plans-list">${plansSection}</div>
-      </section>
+      ${dbSec('plans',
+        `<h2>Talk Show Plans</h2>`,
+        `<button class="btn-secondary" id="db-refresh-plans" style="font-size:0.8rem">Refresh</button>`,
+        `<div class="db-plans-list" id="db-plans-list">${plansSection}</div>`
+      )}
 
-      <section class="card db-section">
-        <div class="card-header">
-          <h2>📅 Athletics Calendar Sync</h2>
-        </div>
-        <p style="font-size:0.875rem;color:var(--dim);margin-bottom:14px;line-height:1.6">
-          Syncs all varsity events from the HHS athletics source calendar into the HHS Media Events calendar for the current school year. Runs automatically every August 1 — use this button for a manual re-sync anytime.
-        </p>
+      ${dbSec('athletics',
+        `<h2>📅 Athletics Calendar Sync</h2>`,
+        ``,
+        `<p style="font-size:0.875rem;color:var(--dim);margin-bottom:14px;line-height:1.6">Syncs all varsity events from the HHS athletics source calendar into the HHS Media Events calendar for the current school year. Runs automatically every August 1 — use this button for a manual re-sync anytime.</p>
         ${SYNC_SCRIPT_URL
-          ? `<button class="btn-primary" id="sync-cal-btn" style="background:var(--success);color:#000">↻ Sync Athletics Calendar Now</button>
-             <span id="sync-cal-status" style="font-size:0.8rem;color:var(--dim);margin-left:12px"></span>`
-          : `<div style="font-size:0.85rem;color:var(--dim);background:var(--surface2);border-radius:8px;padding:12px 14px;line-height:1.7">
-               <strong style="color:var(--text)">One-time setup required:</strong><br>
-               1. Open <code>Code.gs</code> from the project folder and paste it into <a href="https://script.google.com" target="_blank" style="color:var(--radio)">script.google.com</a><br>
-               2. Deploy → Web app · Execute as: <em>Me</em> · Access: <em>Anyone with the link</em><br>
-               3. Run <code>createAnnualTrigger()</code> once from the editor<br>
-               4. Paste the web app URL into <code>data.js</code> → <code>SYNC_SCRIPT_URL</code>
-             </div>`}
-      </section>
+          ? `<button class="btn-primary" id="sync-cal-btn" style="background:var(--success);color:#000">↻ Sync Athletics Calendar Now</button><span id="sync-cal-status" style="font-size:0.8rem;color:var(--dim);margin-left:12px"></span>`
+          : `<div style="font-size:0.85rem;color:var(--dim);background:var(--surface2);border-radius:8px;padding:12px 14px;line-height:1.7"><strong style="color:var(--text)">One-time setup required:</strong><br>1. Open <code>Code.gs</code> from the project folder and paste it into <a href="https://script.google.com" target="_blank" style="color:var(--radio)">script.google.com</a><br>2. Deploy → Web app · Execute as: <em>Me</em> · Access: <em>Anyone with the link</em><br>3. Run <code>createAnnualTrigger()</code> once from the editor<br>4. Paste the web app URL into <code>data.js</code> → <code>SYNC_SCRIPT_URL</code></div>`}`
+      )}
 
-      <section class="card db-section">
-        <div class="card-header">
-          <h2>📖 Yearbook Event Manager</h2>
-          <button class="btn-primary" id="yb-add-event-btn" style="font-size:0.8rem">+ Add Event</button>
-        </div>
-        <div id="yb-event-form" style="display:none;padding:14px 0 18px;border-bottom:1px solid var(--border);margin-bottom:16px">
+      ${dbSec('yb_events',
+        `<h2>📖 Yearbook Event Manager</h2>`,
+        `<button class="btn-primary" id="yb-add-event-btn" style="font-size:0.8rem">+ Add Event</button>`,
+        `<div id="yb-event-form" style="display:none;padding:14px 0 18px;border-bottom:1px solid var(--border);margin-bottom:16px">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-            <div class="form-group" style="margin:0">
-              <label>Title</label>
-              <input id="yb-new-title" type="text" placeholder="e.g. Homecoming Dance">
-            </div>
-            <div class="form-group" style="margin:0">
-              <label>Date</label>
-              <input id="yb-new-date" type="date">
-            </div>
-            <div class="form-group" style="margin:0">
-              <label>Time <span class="hint">(optional)</span></label>
-              <input id="yb-new-time" type="text" placeholder="7:00 PM">
-            </div>
-            <div class="form-group" style="margin:0">
-              <label>Type</label>
-              <select id="yb-new-type">
-                ${Object.entries(EVENT_TYPES).map(([k, v]) => `<option value="${k}">${YB_ICONS[k] || '📅'} ${v.label}</option>`).join('')}
-              </select>
-            </div>
+            <div class="form-group" style="margin:0"><label>Title</label><input id="yb-new-title" type="text" placeholder="e.g. Homecoming Dance"></div>
+            <div class="form-group" style="margin:0"><label>Date</label><input id="yb-new-date" type="date"></div>
+            <div class="form-group" style="margin:0"><label>Time <span class="hint">(optional)</span></label><input id="yb-new-time" type="text" placeholder="7:00 PM"></div>
+            <div class="form-group" style="margin:0"><label>Type</label><select id="yb-new-type">${Object.entries(EVENT_TYPES).map(([k, v]) => `<option value="${k}">${YB_ICONS[k] || '📅'} ${v.label}</option>`).join('')}</select></div>
           </div>
           <button class="btn-primary" id="yb-save-event-btn">Save &amp; Add to Calendar</button>
           <button class="btn-secondary" id="yb-cancel-event-btn" style="margin-left:8px">Cancel</button>
@@ -3473,29 +3447,20 @@ function renderDashboard() {
           if (!custom.length) return `<p class="dim" style="font-size:0.875rem">No custom events added yet. Sports home games are managed in Homestead Live.</p>`;
           return custom.slice().sort((a,b) => a.date.localeCompare(b.date)).map(ev => `
             <div class="yb-db-event">
-              <div class="yb-db-event-title">
-                ${YB_ICONS[ev.type] || '📅'} ${esc(ev.title)}
-                <span class="dim" style="font-weight:400;font-size:0.8rem;margin-left:6px">${fmtDate(ev.date, false)}${ev.time ? ' · ' + esc(ev.time) : ''}</span>
-                <span style="background:var(--surface2);color:var(--dim);font-size:0.72rem;padding:2px 7px;border-radius:10px;margin-left:6px">${EVENT_TYPES[ev.type]?.label || ev.type}</span>
-                ${ev.calEventId ? '<span style="font-size:0.72rem;color:var(--success);margin-left:4px">✓ calendar</span>' : ''}
-              </div>
-              <div style="margin-top:6px">
-                <button class="btn-danger db-btn yb-delete-event-btn" data-yb-event-id="${esc(ev.id)}" style="font-size:0.75rem">Delete</button>
-              </div>
+              <div class="yb-db-event-title">${YB_ICONS[ev.type] || '📅'} ${esc(ev.title)}<span class="dim" style="font-weight:400;font-size:0.8rem;margin-left:6px">${fmtDate(ev.date, false)}${ev.time ? ' · ' + esc(ev.time) : ''}</span><span style="background:var(--surface2);color:var(--dim);font-size:0.72rem;padding:2px 7px;border-radius:10px;margin-left:6px">${EVENT_TYPES[ev.type]?.label || ev.type}</span>${ev.calEventId ? '<span style="font-size:0.72rem;color:var(--success);margin-left:4px">✓ calendar</span>' : ''}</div>
+              <div style="margin-top:6px"><button class="btn-danger db-btn yb-delete-event-btn" data-yb-event-id="${esc(ev.id)}" style="font-size:0.75rem">Delete</button></div>
             </div>`).join('');
-        })()}
-      </section>
+        })()}`
+      )}
 
-      <section class="card db-section">
-        <div class="card-header" style="flex-wrap:wrap;gap:8px">
-          <h2>📖 Yearbook Coverage Sign-Ups</h2>
-          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-            <button class="btn-secondary${S.ybDashView==='event'?' yb-view-active':''}" data-yb-view="event" style="font-size:0.75rem">By Event</button>
-            <button class="btn-secondary${S.ybDashView==='student'?' yb-view-active':''}" data-yb-view="student" style="font-size:0.75rem">By Student</button>
-            <button class="btn-secondary${S.ybDashView==='role'?' yb-view-active':''}" data-yb-view="role" style="font-size:0.75rem">By Role</button>
-            <button class="btn-secondary" id="yb-dash-refresh" style="font-size:0.75rem">↻ Refresh</button>
-          </div>
-        </div>
+      ${dbSec('yb_signups',
+        `<h2>📖 Yearbook Coverage Sign-Ups</h2>`,
+        `<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          <button class="btn-secondary${S.ybDashView==='event'?' yb-view-active':''}" data-yb-view="event" style="font-size:0.75rem">By Event</button>
+          <button class="btn-secondary${S.ybDashView==='student'?' yb-view-active':''}" data-yb-view="student" style="font-size:0.75rem">By Student</button>
+          <button class="btn-secondary${S.ybDashView==='role'?' yb-view-active':''}" data-yb-view="role" style="font-size:0.75rem">By Role</button>
+          <button class="btn-secondary" id="yb-dash-refresh" style="font-size:0.75rem">↻ Refresh</button>
+        </div>`,
         ${(() => {
           const coverage = S.yearbookCoverage || [];
           if (!coverage.length) return `<p class="dim" style="padding:16px 0;font-size:0.875rem">No sign-ups yet.</p>`;
@@ -3572,7 +3537,7 @@ function renderDashboard() {
               </div>
             </div>`).join('');
         })()}
-      </section>
+      `)}
     </div>`;
 }
 

@@ -1007,7 +1007,19 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 .db-stat-num { font-size: 1.5rem; font-weight: 900; line-height: 1; }
 .db-stat span:last-child { font-size: 0.72rem; color: var(--dim); text-transform: uppercase; letter-spacing: 0.06em; }
 
-.db-section { margin-bottom: 20px; }
+.db-section { margin-bottom: 12px; padding: 0; }
+.dbs-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; cursor: pointer; user-select: none;
+  border-radius: var(--radius); transition: background 0.12s;
+  gap: 12px;
+}
+.dbs-head:hover { background: var(--surface2); }
+.dbs-title { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.dbs-title h2 { margin: 0; font-size: 0.95rem; white-space: nowrap; }
+.dbs-chev { font-size: 0.65rem; color: var(--dim); width: 12px; flex-shrink: 0; }
+.dbs-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; flex-shrink: 0; }
+.dbs-body { padding: 4px 20px 20px; border-top: 1px solid var(--border); }
 
 /* ── Dashboard IASB list ─────────────────────────────────────── */
 .db-iasb-list { display: flex; flex-direction: column; gap: 2px; }
