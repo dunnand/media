@@ -1,317 +1,427 @@
-# Homestead Media — Full Project Reference
+# Homestead Media — Full Site Reference
+
+Last updated: July 2026  
+Live site: https://dunnand.github.io/homestead_media/  
+Local folder: C:\Users\Andy\homestead_media\
 
 ---
 
-## What This Is
+## 1. What This Site Is
 
-A student-facing website for Homestead High School's Audio Broadcasting program. It serves as a hub for the radio class — broadcast scheduling, student sign-ups, lesson content, and IASB competition entries. It lives at:
+A single-page web app (SPA) for the Homestead High School media program. Students and the teacher use it to manage:
+- Radio broadcasting schedules (The Point 91FM, 2.0)
+- Homestead Live TV show crew assignments and sign-ups
+- HHS In-Depth TV show 5-week rundown planning
+- Yearbook event coverage sign-ups
+- IASB competition entry tracking
+- Talk show planning wizard
+- Lessons/training content
 
-- **Local:** `C:\Users\Andy\homestead_media\`
-- **GitHub:** `github.com/dunnand/homestead_media`
-- **Live site:** `dunnand.github.io/homestead_media/`
-
----
-
-## Tech Stack
-
-- **Pure HTML, CSS, JavaScript** — no frameworks, no build process. Open the files and they work.
-- **Firebase Firestore** — cloud database for broadcasts, student sign-ups, IASB entries, and station schedule. Project ID: `audioaficionados-21ba0`. Uses the compat SDK v10.12.2 loaded from Google's CDN.
-- **GitHub Actions** — automated daily email reminders sent to students signed up for broadcasts the next day. Uses Nodemailer + Gmail App Password. Workflow file at `.github/workflows/send-reminders.yml`, script at `scripts/send-reminders.js`.
-- **No login system** — teacher access is gated by a PIN: `2027`
+**Tech stack:** Vanilla JS + HTML + CSS, Firebase Firestore, GitHub Pages hosting.  
+No build step — edit files, commit, push, and the site updates within ~2 minutes.
 
 ---
 
-## File Structure
+## 2. File Structure
 
+| File | Purpose |
+|------|---------|
+| `index.html` | HTML shell — loads Firebase, data.js, script.js, styles.css |
+| `script.js` | All app logic (~3,600 lines) — renders every page, handles all events |
+| `data.js` | All constants and configuration — edit this for yearly updates |
+| `styles.css` | All styling — dark theme, cards, tables, modals |
+| `Code.gs` | Google Apps Script — keep a copy here; paste into script.google.com |
+| `scripts/send-reminders.js` | Node.js email reminder script (not part of the main site) |
+| `REFERENCE.md` | This file |
+
+---
+
+## 3. How to Deploy Changes
+
+1. Edit files locally in `C:\Users\Andy\homestead_media\`
+2. Open Git Bash or terminal in that folder:
+   ```
+   git add .
+   git commit -m "describe what you changed"
+   git push
+   ```
+3. Wait ~2 minutes, then hard refresh the live site (Ctrl+Shift+R)
+
+GitHub repo: https://github.com/dunnand/homestead_media
+
+---
+
+## 4. Firebase (Database)
+
+**Project:** `audioaficionados-21ba0`  
+**Console:** https://console.firebase.google.com/project/audioaficionados-21ba0/firestore
+
+Firebase config lives in `index.html`. The app uses the **Compat SDK** (v8/compat style).  
+`getDB()` in script.js returns the Firestore instance (lazy-loaded singleton).
+
+### Firestore Collections
+
+| Collection | What It Stores |
+|------------|---------------|
+| `hm_broadcasts` | All Homestead Live events (football, basketball, etc.) with crew roles and checklists |
+| `hm_availability` | Student sign-ups for broadcasts (name, email, role preferences) |
+| `hm_radio` | Radio station schedules (doc: `station_schedule`) |
+| `hm_iasb_entries` | IASB competition entries per category |
+| `hm_radio_plans` | Talk show planning submissions from students |
+| `hm_indepth_rundown` | TV show rundown data, keyed by week (YYYY-MM-DD of Monday) |
+| `hm_indepth_beats` | Beat assignments (doc ID = beat number, fields: student1, student2) |
+| `hm_yearbook_coverage` | Yearbook event sign-ups (student, event, role) |
+| `hm_yearbook_events` | Custom events added by teacher via dashboard |
+| `hm_config` | App config: `show_schedule` (skipped Fridays), `cal_cache` (calendar event cache) |
+
+---
+
+## 5. Key Constants in data.js (Update Each Year)
+
+### Sports / Game Schedules
+
+```javascript
+// Update each August with the new season schedule
+const BASKETBALL_HOME_GAMES = [ ... ]       // Boys BB home games
+const GIRLS_BASKETBALL_HOME_GAMES = [ ... ] // Girls BB home games
+const FOOTBALL_HOME_GAMES = [ ... ]         // Football home games
+const SPECIAL_EVENTS = [ ... ]              // Homecoming Dance, Prom, Show Choir, NHS, Graduation
 ```
-homestead_media/
-├── index.html          ← Single HTML page. All three script/CSS files load here.
-├── styles.css          ← All styling
-├── script.js           ← All JavaScript — SPA logic, rendering, listeners
-├── data.js             ← All data — broadcasts, LESSONS content, seed games
-├── images/             ← All lesson images (see full list below)
-├── scripts/
-│   └── send-reminders.js   ← Node.js script run by GitHub Actions
-└── .github/
-    └── workflows/
-        └── send-reminders.yml  ← Daily cron job definition
+
+**Entry format:**
+```javascript
+{ id: 'bb26-1121', title: 'Boys Basketball vs. Blackford', date: '2026-11-21',
+  type: 'basketball_boys', gameTime: '7:30 PM', roles: {}, checks: {}, notes: 'Spartan Arena' }
+```
+- `id` must be unique — use format `typeYY-MMDD`
+- `type` must match a key in `EVENT_TYPES` (football, basketball_boys, basketball_girls, etc.)
+- `roles: {}` and `checks: {}` always start empty — Firestore fills them in at runtime
+
+### IASB Settings
+
+```javascript
+const IASB_SEASON   = '2026-2027'     // Update each year
+const IASB_DEADLINE = '2027-02-05'    // Update when IASB announces the date
+const TEACHER_PIN   = '2027'          // Change to whatever you want
 ```
 
-Cache busting: all three files in index.html load with `?v=YYYYMMDD`. Update this date whenever you push changes or the browser will serve old cached files.
+### Google Calendar & Apps Script
+
+```javascript
+const SYNC_SCRIPT_URL    = 'https://script.google.com/macros/s/AKfycbwH9agFB6OR5nPBGKWB7h0_xRq8HR-kdHcd5lo2xZSX5s36qcoWbjZ3UVrr0i-xnzpC/exec'
+const HHS_MEDIA_CAL_ID   = '2b9bdfdee65f7330d8d5d2fd1d4877c1b709289fa0b0747427f57fd62516bed5@group.calendar.google.com'
+const GOOGLE_CAL_API_KEY  = 'AIzaSyCy5ZKtIjrF1lgDojmYgDlxit2Te7SKyeU'
+```
+
+- `SYNC_SCRIPT_URL` — Apps Script web app URL. Used to add/delete custom yearbook events on the Google Calendar. If this breaks, see Section 9 for how to re-deploy.
+- `HHS_MEDIA_CAL_ID` — The HHS Media Events Google Calendar. Embedded as iframe in Yearbook and In-Depth pages.
+- `GOOGLE_CAL_API_KEY` — Google Cloud API key for reading the public calendar. Restricted to `dunnand.github.io` and Calendar API only. Created in Google Cloud Console.
+
+### Other External Links
+
+```javascript
+const IASB_DROPBOX_URL = 'https://drive.google.com/drive/folders/1Kg4UYcKzOLNYYqoEOG3fo2xbwNQtZCIY'
+// 36 IASB_DRIVE_FOLDERS entries (R1-R9, N1-N8, S1-S9, V1-V9, M1-M9)
+// DJ Panel: https://wcyt.org/dj  (Password: Homestead911-2.0)
+// Walsworth: https://login.walsworthyearbooks.com/login
+```
 
 ---
 
-## How the App Works
+## 6. Pages / Views
 
-This is a **Single Page Application (SPA)**. There is no routing — one HTML file, JavaScript swaps the content.
+The app has one HTML file. Navigation is via `go('viewname')` which sets `S.view` and re-renders.
 
-### State Object (`S`)
-Everything lives in one object at the top of `script.js`:
+| View | What It Shows |
+|------|---------------|
+| `home` | 5 class cards (Radio, Live, Sports, Yearbook, In-Depth) |
+| `radio` | Station schedules, DJ panel link, Talk Show Planner, IASB hub link |
+| `planner` | 6-step talk show planning form |
+| `live` | Next broadcast countdown, crew roles, mini calendar sidebar |
+| `broadcast` | Single broadcast: crew assignments, student sign-ups, checklist, notes |
+| `schedule` | All broadcasts in date order |
+| `availability` | Students sign up for broadcasts + choose role preferences |
+| `sports` | Coming soon placeholder |
+| `yearbook` | Event coverage sign-ups, calendar embed, shot list tips |
+| `indepth` | 5-week TV rundown table + calendar |
+| `beats` | 15 In-Depth coverage beats with student assignments |
+| `iasb` | IASB competition hub with all 45 categories |
+| `iasb-category` | Single IASB category: requirements, entries, checklist, drive link |
+| `dashboard` | Teacher-only overview (PIN required) |
+| `lessons` | Lesson hub → course → unit → lesson slides |
+
+---
+
+## 7. State Object (S)
+
+All app state lives in one object in script.js. Resets on page reload — Firestore reloads data on `init()`.
+
 ```javascript
 const S = {
   view: 'home',
-  broadcastId: null,
-  teacherMode: false,
-  lessonCourse: null,   // 'radio', 'live', 'yearbook'
-  lessonUnit: null,     // unit id e.g. 'u1'
-  lessonId: null,       // lesson id e.g. 'welcome'
-  lessonSlide: 0,       // current slide index within a lesson
-  // ...plus Firebase data arrays
+  broadcastId: null,          // Which broadcast detail page is open
+  teacherMode: false,         // Unlocked with PIN
+  stationSchedule: {},        // { point: [...], two: [...] } from Firestore
+  broadcasts: [],             // All Homestead Live events
+  plannerStep: 0,             // Talk show planner progress (0-5)
+  plannerData: null,          // Current planner form values
+  submissions: [],            // Talk show plan submissions
+  iasbEntries: [],            // All IASB entries from Firestore
+  iasbCategory: null,         // Currently viewed IASB category code (e.g. 'R1')
+  availabilities: [],         // Broadcast sign-ups
+  lessonCourse: null,         // 'radio', 'indepth', etc.
+  lessonUnit: null,
+  lessonId: null,
+  lessonSlide: 0,
+  yearbookCoverage: [],       // Sign-ups from hm_yearbook_coverage
+  customYbEvents: [],         // Teacher-added events from hm_yearbook_events
+  calendarYbEvents: [],       // Events fetched via Google Calendar API
+  ybDashView: 'event',        // Dashboard yearbook tab: 'event' | 'student' | 'role'
+  expandedBeat: null,         // Which beat row is open
+  beatAssignments: {},        // { beatId: { student1, student2 } }
+  rundownData: {},            // { weekKey: { roleKey: value } }
+  rundownWeekOffset: 0,       // Week nav: 0 = current, -1 = prev week, +1 = next
+  showSchedule: [],           // Skipped Friday dates (YYYY-MM-DD[])
+  calMonthOffset: 0,          // Homestead Live calendar month offset
+  dashSections: {},           // { sectionId: true/false } — which sections are open
 };
 ```
 
-### Navigation
-Call `go('viewname')` from anywhere to navigate. It updates `S.view` and calls `render()`.
+---
 
-### Render Cycle
-```
-go(view) → S.view = view → render() → app.innerHTML = [html] → attachListeners()
-```
-`render()` is a switch statement — one `case` per view. After every render, `attachListeners()` re-wires all click handlers because the DOM was replaced.
+## 8. In-Depth Rundown
 
-### Data Attributes for Navigation
-- `data-nav="viewname"` — navigate to a top-level view
-- `data-lesson-course="radio"` — open a lesson course (optionally with `data-lesson-unit` and `data-lesson-id`)
-- `data-lesson-back="hub"` or `"course"` — navigate back within lessons
-- `data-lesson-slide="prev"` or `"next"` — move between lesson slides
+### Rundown Roles
+
+```javascript
+const RUNDOWN_ROLES = [
+  { key: 'anchors',    label: 'Anchors',      pair: true,                         color: '#6366f1' },
+  { key: 'packages',   label: 'Packages',     structured: true,                   color: '#f59e0b' },
+  { key: 'vo_vosot',   label: 'VOs / VOSOTs', structured: true, typeToggle: true, color: '#a78bfa' },
+  { key: 'commercial', label: 'Commercial',                                        color: '#f97316' },
+  { key: 'psa',        label: 'PSA',                                               color: '#84cc16' },
+  { key: 'weather',    label: 'Weather',                                           color: '#06b6d4' },
+  { key: 'sports_btc', label: 'Sports / BTC',                                     color: '#22c55e' },
+];
+```
+
+- `pair: true` → 2 name fields (Anchor 1 / Anchor 2)
+- `structured: true` → rows of `{ type, topic, student }` with + Add button
+- `typeToggle: true` → each row also has VO / VOSOT badge toggle
+- Plain (no flags) → single text area
+
+### How Week Keys Work
+- Week key = Monday's date in YYYY-MM-DD
+- Stored in `hm_indepth_rundown/{weekKey}/{roleKey}`
+- Friday date is displayed in column headers but Monday is the Firestore key
+- `getRundownWeeks()` returns 5 Mondays starting from current + offset
 
 ---
 
-## Views (Pages)
+## 9. Google Apps Script (Code.gs)
 
-| View | What it is |
-|---|---|
-| `home` | Landing page with hero section |
-| `schedule` | Radio station DJ schedule (The Point + 2.0) — editable by teacher |
-| `games` | Broadcast game schedule — basketball, football etc. |
-| `signup` | Students enter name + email to sign up for a broadcast crew |
-| `teacher` | Teacher admin panel — PIN `2027` — manage broadcasts, view sign-ups |
-| `iasb` | IASB competition entry form |
-| `lessons` | Full lesson system (described in detail below) |
+### What It Does
+- Copies varsity athletics events from the HHS source calendar to the HHS Media Events calendar
+- Adds custom events to the calendar when teacher uses the Yearbook Event Manager
+- Runs auto-sync every July 1
+
+### How to Re-deploy (if the URL breaks)
+
+1. Go to https://script.google.com
+2. Create a new project (or open existing)
+3. Paste the full contents of `Code.gs` (replace everything)
+4. Click **Deploy → New deployment**
+   - Type: Web app
+   - Execute as: **Me**
+   - Who has access: **Anyone**
+5. Click **Deploy** — authorize when prompted (run `getUpcomingEvents` from editor first if needed)
+6. Copy the new web app URL
+7. Paste into `data.js` as `SYNC_SCRIPT_URL`
+8. Run `createAnnualTrigger()` once from the editor (sets up auto-sync each July)
+9. Commit and push data.js
+
+### Important Deployment Settings
+- **Execute as: Me** (not "User accessing the web app" — that forces login)
+- **Who has access: Anyone** (not "Anyone with Google account" — that also forces login)
+
+### Calendar IDs in Code.gs
+```javascript
+SOURCE_CAL_ID = 'fd9gn9o6bq5lfvsaiqkt4gs4n1gneqc6@import.calendar.google.com'
+TARGET_CAL_ID = '2b9bdfdee65f7330d8d5d2fd1d4877c1b709289fa0b0747427f57fd62516bed5@group.calendar.google.com'
+```
+
+### Actions (called via JSONP from browser)
+- `?action=sync` — Sync varsity events from source → target calendar
+- `?action=addEvent&title=X&date=YYYY-MM-DD&time=X` — Add event to calendar
+- `?action=deleteEvent&calEventId=X` — Delete event from calendar
+
+> Note: Reading calendar events does NOT go through Apps Script anymore.  
+> The site uses the Google Calendar API directly (see below).
 
 ---
 
-## Firebase Collections
+## 10. Google Calendar API Key
 
-| Collection | What's stored |
-|---|---|
-| `hm_broadcasts` | Each broadcast event (title, date, time, type, notes) |
-| `hm_availability` | Student sign-ups (name, email, broadcastId) |
-| `hm_iasb_entries` | IASB competition submissions |
-| `hm_radio` / `station_schedule` | The weekly DJ schedule for both stations |
+**Key:** `AIzaSyCy5ZKtIjrF1lgDojmYgDlxit2Te7SKyeU`  
+**Restrictions:** Websites → `https://dunnand.github.io/*` | API → Google Calendar API only  
+**Cloud project:** "Singular" (project ID: singular-381913) at https://console.cloud.google.com
 
-Firebase is loaded from CDN — no npm, no build step. If the database ever needs to be accessed directly, go to `console.firebase.google.com`, project `audioaficionados-21ba0`.
+### If the Key Needs to Be Replaced
+1. Go to https://console.cloud.google.com → select "Singular" project
+2. APIs & Services → Credentials → + Create Credentials → API key
+3. Restrict to: Websites → `https://dunnand.github.io/*`; API → Google Calendar API
+4. Paste new key into `data.js` → `GOOGLE_CAL_API_KEY`
+5. Commit and push
 
----
-
-## GitHub Actions — Email Reminders
-
-Every day at a set time, a Node.js script runs on GitHub's servers. It:
-1. Checks Firestore for any broadcasts scheduled for tomorrow
-2. Finds all students signed up for those broadcasts
-3. Sends each student a reminder email with their call time, Door 33 time, and location
-
-**Secrets required in GitHub repo settings:**
-- `FIREBASE_SERVICE_ACCOUNT` — JSON key for a Firebase service account
-- `FROM_EMAIL` — Gmail address emails send from
-- `GMAIL_APP_PASSWORD` — Gmail App Password (not the regular password)
+### How Calendar Events Get Into the Sign-Up Dropdown
+1. `loadCalendarYbEvents()` runs on page load
+2. Checks Firestore `hm_config/cal_cache` — if fresh (< 6 hours), uses that
+3. Otherwise calls Google Calendar API with the key above
+4. Maps event titles to types using `inferYbType()` (e.g., "volleyball" → `volleyball`)
+5. Saves results to Firestore cache
+6. Teacher can force refresh: Dashboard → Yearbook Event Manager → ↻ Refresh Calendar Events
 
 ---
 
-## The Lesson System
+## 11. Yearbook Sign-Up
 
-### How It's Organized
+### Event Sources (combined in `allYbEvents()`)
+1. **Hardcoded** in `data.js` — football, basketball, girls BB, special events
+2. **Teacher-added** via Dashboard → Yearbook Event Manager → + Add Event → `hm_yearbook_events`
+3. **Google Calendar** — fetched via API, cached in `hm_config/cal_cache`
 
-Lesson content lives entirely in `data.js` inside the `LESSONS` constant. Three courses exist:
+### Student Sign-Up Flow
+1. Enter name + email (saved to localStorage for next visit)
+2. Select Sport/Event Type from dropdown (only types with upcoming events appear)
+3. Select specific event from second dropdown
+4. Click Submit → saved to `hm_yearbook_coverage`
 
-```
-LESSONS
-├── radio    (Radio Broadcasting — fully built)
-├── live     (Homestead Live — empty, shows "Coming Soon")
-└── yearbook (Yearbook — empty, shows "Coming Soon")
-```
+### Teacher Dashboard — Yearbook Event Manager
+- **+ Add Event** → form with title, date, time, type → saves to Firestore + calendar
+- **↻ Refresh Calendar Events** → clears cache, re-fetches all sports from Google Calendar
+- **Coverage Sign-Ups** → view by Event, Student, or Role
 
-### Navigation Flow
-```
-Lessons Hub (pick a course)
-  → Course Page (list of units and lessons)
-    → Lesson Slideshow (one section per slide)
-```
+---
 
-Each lesson is a slideshow. The slides are:
-1. **Title slide** — big icon, lesson name, duration, summary, "Press → to begin"
-2. **One slide per section** — each section in the lesson's `sections[]` array
-3. **End slide** — "Lesson Complete!" + link to next lesson or "Unit Complete!"
+## 12. Broadcast Timing Logic
 
-Keyboard arrows (← →) navigate slides. Progress bar at bottom tracks position.
+| Sport | Arrival Location | Arrive Before Game | Door 33 Opens |
+|-------|-----------------|-------------------|---------------|
+| Basketball (boys/girls) | Media Row | 45 min | 75 min before tip |
+| Football | Press Box | 60 min | 90 min before kickoff |
+| All others | Crew Call | 60 min | 90 min before |
 
-### Adding or Editing a Lesson
+Functions: `computeArrival(gameTime, type)` and `computeDoor33(gameTime, type)` in script.js.
 
-Open `data.js`. Find the `LESSONS` constant. All lesson content is here as JavaScript objects. Structure:
+---
 
+## 13. Teacher Dashboard Sections
+
+Access: click 🔑 in nav → enter PIN (default: `2027`)
+
+| Section | Firestore key | What It Does |
+|---------|--------------|--------------|
+| In-Depth Show Schedule | `hm_config/show_schedule` | Toggle Fridays as show/no-show for the year |
+| IASB Entries | `hm_iasb_entries` | View/manage all competition entries by category |
+| Talk Show Plans | `hm_radio_plans` | View all student talk show plan submissions |
+| Athletics Calendar Sync | (runs Code.gs) | Manually trigger athletics calendar sync |
+| Yearbook Event Manager | `hm_yearbook_events` | Add/delete custom events + refresh calendar cache |
+| Yearbook Coverage Sign-Ups | `hm_yearbook_coverage` | View all sign-ups by event / student / role |
+
+- Firebase Usage is **always visible** (not collapsible) — shows daily read/write counts
+- All other sections start collapsed — click header to expand/collapse
+
+---
+
+## 14. IASB Competition
+
+**45 categories** across 5 divisions: Radio (R1-R9), News (N1-N8), Sports (S1-S9), Video (V1-V9), Emerging Media (M1-M9)
+
+Key settings to update each year:
 ```javascript
-{
-  id: 'lesson-id',
-  title: 'Lesson Title',
-  duration: '1 class',
-  summary: 'One sentence summary shown in course list and title slide.',
-  sections: [
-    // One object per slide
-  ]
-}
+const IASB_SEASON   = '2027-2028'     // Update in data.js
+const IASB_DEADLINE = '2028-02-05'    // Update in data.js
 ```
 
-### Section Types
+Drive submission folders are in `IASB_DRIVE_FOLDERS` in data.js (36 Google Drive links).  
+Main dropbox: https://drive.google.com/drive/folders/1Kg4UYcKzOLNYYqoEOG3fo2xbwNQtZCIY
 
-Every section becomes one slide. These are the available types:
+---
 
-**`intro`** — Opening statement with lightbulb icon
+## 15. Annual Start-of-Year Checklist
+
+Do this each August before school starts:
+
+- [ ] Update `BASKETBALL_HOME_GAMES` in data.js with new boys BB schedule
+- [ ] Update `GIRLS_BASKETBALL_HOME_GAMES` in data.js with new girls BB schedule
+- [ ] Update `FOOTBALL_HOME_GAMES` in data.js with new football schedule
+- [ ] Update `SPECIAL_EVENTS` — confirm Homecoming Dance, Prom, Show Choir, NHS, Graduation dates
+- [ ] Update `IASB_SEASON` and `IASB_DEADLINE`
+- [ ] Change `TEACHER_PIN` if desired
+- [ ] Commit and push all data.js changes
+- [ ] In teacher dashboard → Athletics Calendar Sync → run sync to pull all other sports
+- [ ] In teacher dashboard → Yearbook Event Manager → ↻ Refresh Calendar Events
+- [ ] Review show schedule (all Fridays) and mark any that won't have a broadcast
+
+---
+
+## 16. School Year Date Logic
+
+The app calculates the current school year with:
 ```javascript
-{ type: 'intro', content: 'Text here.' }
+const startYear = now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1;
+```
+- July (month 6) or later → current year is the START of the upcoming school year
+- e.g., July 2026 → school year 2026-2027 (startYear = 2026)
+
+Show schedule spans: first Friday on or after Aug 21 → last Friday on or before May 28.
+
+---
+
+## 17. Common Code Patterns
+
+### Adding a new view/page
+1. Add a render function: `function renderMyPage() { return \`...\`; }`
+2. Add a case in `render()`: `case 'mypage': app.innerHTML = renderMyPage(); break;`
+3. Add event handlers in `attachListeners()`
+4. Add nav link or `go('mypage')` call somewhere
+
+### Saving to Firestore
+```javascript
+const db = getDB();
+trackUsage('writes');
+await db.collection('hm_mycollection').doc(id).set({ field: value });
 ```
 
-**`callout`** — Colored box, tip (teal) or warning (amber)
+### Reading from Firestore
 ```javascript
-{ type: 'callout', label: 'Label', items: ['item 1', 'item 2'] }
-{ type: 'callout', label: 'Label', warning: true, content: 'Single paragraph warning.' }
+const db = getDB();
+const snap = await db.collection('hm_mycollection').get();
+trackUsage('reads', snap.size);
+snap.docs.forEach(doc => { /* doc.id, doc.data() */ });
 ```
 
-**`keyterms`** — Two-column term/definition table
+### Creating a modal
 ```javascript
-{ type: 'keyterms', title: 'Section Title', terms: [
-  { term: 'Term', def: 'Definition' }
-]}
-```
-
-**`list`** — Bulleted list
-```javascript
-{ type: 'list', title: 'Title', items: ['item 1', 'item 2'] }
-```
-
-**`text`** — Paragraph block
-```javascript
-{ type: 'text', title: 'Title', content: 'Paragraph text. HTML tags work here.' }
-```
-
-**`video`** — Embedded YouTube video
-```javascript
-{ type: 'video', youtube: 'VIDEO_ID_HERE', label: 'Video Title', note: 'Context note.' }
-```
-
-**`gallery`** — 2x2 image grid
-```javascript
-{ type: 'gallery', label: 'Gallery Title', images: [
-  { src: 'images/filename.png', alt: 'Caption' }
-]}
-```
-
-### Adding a Side Image to Any Section
-
-Any section type can show an image alongside it by adding:
-```javascript
-{ type: 'text', title: '...', content: '...',
-  sideImg: 'images/filename.png',
-  sideImgCap: 'Caption text under the image.' }
-```
-This creates a two-column layout: content left, image right.
-
-### Adding a New Lesson
-
-1. Open `data.js`
-2. Find the unit you want to add it to (e.g. `id: 'u2'`)
-3. Add a new object to that unit's `lessons: []` array
-4. Add the lesson icon to `LESSON_ICONS` in `script.js` (e.g. `'my-lesson-id': '🎙️'`)
-
-### Adding a New Unit
-
-Add a new object to the `units: []` array inside a course:
-```javascript
-{ id: 'u5', title: 'Unit 5 — Title', lessons: [ ... ] }
+const m = modal(`<h2>Title</h2><div class="form-group"><label>X</label><input id="my-input"></div>`, 'Delete', true);
+m.querySelector('#modal-save').addEventListener('click', async () => {
+  const v = val('my-input');
+  // ... save ...
+  m.remove();
+  render();
+});
 ```
 
 ---
 
-## Images
+## 18. Known Notes & Quirks
 
-All lesson images live in `images/` folder. Current inventory:
-
-| File | What it is | Used in |
-|---|---|---|
-| `logo-wcyt-point.png` | WCYT / The Point 91FM official logo | Stations |
-| `logo-2point0.png` | WCYT 2.0 pixel logo | Stations |
-| `wcyt-homepage.png` | Current WCYT.org homepage screenshot | Stations |
-| `coverage-map.png` | The Point 91FM broadcast coverage map | Stations, FCC |
-| `iasb-group.png` | Team photo at IASB competition | Welcome, Expectations |
-| `iasb-finalists.png` | IASB finalists list (Homestead students highlighted) | Stations |
-| `mic-cartoon.png` | Cartoon microphone illustration | Welcome, Air Personality |
-| `npr-tips.png` | NPR "Want to sound your best?" infographic | Air Personality |
-| `simian.png` | Simian radio automation software screenshot | First Break |
-| `song-catalog.png` | Simian song catalog categories spreadsheet | First Break |
-| `on-air-checklist.png` | On Air Checklist (red = every break) | First Break |
-| `benztown.png` | Benztown music library interface | First Break |
-| `dj-panel.png` | wcyt.org/dj panel (On Air/On Break/End Show) | First Break |
-| `audition-levels.png` | "Adobe Audition LEVELS" graphic with ear | Audition Basics |
-| `clipping.png` | Clipping waveform graphic | Audition Basics |
-| `save-as-wav.png` | Save As WAV export dialog | Audition Basics |
-| `show-thumb-theories.png` | "Off The Theories" student show thumbnail | Show Structure |
-| `show-thumb-reeltalk.png` | "Reel Talk" student show thumbnail | Show Structure |
-| `show-thumb-gg.png` | "GG Radio" student show thumbnail | Show Structure |
-| `show-thumb-davon.png` | "The Davon & Vaughn Show" thumbnail | Show Structure |
-
-All images were extracted from your Canva/PPTX source files.
-
----
-
-## Source PowerPoint Files
-
-Three PPTX decks were used to build lesson content:
-
-| File | Content |
-|---|---|
-| `Audio 1st Semester.pptx` | 100-slide Sem 1 deck — all Unit 1-4 content, FCC rules, Air Personality, Audition basics |
-| `Sem 2 2026- Radio Pairs & Audio Production Tricks.pptx` | 29-slide Sem 2 deck — Radio Pairs, Double Track, Remix/Stretch, Reverb FX, IASB finalists |
-| `DJ Panel WCYT.org.pptx` | 6-slide deck — wcyt.org/dj panel walkthrough, show thumbnail creation, student thumbnail examples |
-
----
-
-## What's Built vs. What's Pending
-
-### Built and working:
-- Full SPA with all views (home, schedule, games, signup, teacher, iasb, lessons)
-- Lesson slideshow system with keyboard navigation, progress bar, side images, video embeds, gallery
-- 4 units, 9 lessons of Radio Broadcasting content
-- Daily email reminder GitHub Action
-- All images extracted from source PPTXs and integrated
-- IASB finalists, DJ panel, On Air Checklist, Simian catalog all in lessons
-
-### Decided but not yet done:
-- **Commit and push** — many sessions of work are uncommitted locally. The live GitHub Pages site is behind.
-- **Gamma/Canva route** — we decided the lesson slideshow on the website is not as good as Canva visually. Plan is to link to Canva/Gamma decks from the lesson cards instead of using the built-in slideshow.
-- **New Unit 4 lessons** from Sem 2 PPTX: Radio Pairs, Double Track & Speech Alignment, Remix & Stretch, FX & Reverb (all content extracted, not yet built)
-- **Homestead Live course** — empty, needs lessons
-- **Yearbook course** — empty, needs lessons
-- **Firebase security rules** — currently open, flagged for tightening later
-
----
-
-## Key Credentials & Logins
-
-| What | Value |
-|---|---|
-| Teacher PIN (site) | `2027` |
-| wcyt.org/dj password | `Homestead911-2.0` |
-| DJ panel URL | `wcyt.org/dj` |
-| Firebase project | `audioaficionados-21ba0` |
-| GitHub repo | `github.com/dunnand/homestead_media` |
-| Teacher email | `adunn@sacs.k12.in.us` |
-| Personal email | `dunnand@gmail.com` |
-
----
-
-## How to Resume With an AI
-
-Share this file and say:
-
-> "I'm working on the Homestead Media website at C:\Users\Andy\homestead_media\ — here's the full project reference (REFERENCE.md). I want to [specific task]."
-
-The AI can then read the actual files with the paths listed above to get current state before making any changes.
+- **No build step** — plain HTML/CSS/JS. Edit files and push.
+- **Dark mode only** — CSS is written for dark theme; no light mode toggle.
+- **No user authentication** — teacher access is PIN-only. Student names are self-reported.
+- **Apps Script CORS** — The Apps Script URL cannot be called with `fetch()` from the browser (CORS block). The site uses JSONP for Apps Script calls (`fetchJsonp()` helper in script.js). Reading calendar events bypasses Apps Script entirely and uses the Google Calendar API directly.
+- **GitHub Pages deploy time** — ~2 minutes after `git push`. Hard refresh (Ctrl+Shift+R) after waiting.
+- **Rundown week keys** — Stored as Monday's date (YYYY-MM-DD), not Friday's. Friday date is only for display.
+- **Firestore cal_cache TTL** — 6 hours. If calendar events look stale in the yearbook dropdown, teacher hits ↻ Refresh in dashboard.
+- **YEARBOOK_EVENTS de-duplication** — `allYbEvents()` de-dupes calendar events against hardcoded + custom events using `type|date` as the key.
+- **inferYbType()** — Maps calendar event titles to type keys by checking for keywords (e.g., title includes "volleyball" → `volleyball`). If a sport isn't being categorized correctly, add a rule in this function in script.js.
