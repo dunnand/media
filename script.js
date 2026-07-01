@@ -51,6 +51,7 @@ const S = {
   expandedBeat: null,
   beatAssignments: {},
   rundownData: {},
+  rundownWeekOffset: 0,
   showSchedule: [],
 };
 
@@ -903,8 +904,8 @@ function renderSports() {
 // ── HHS IN-DEPTH ──────────────────────────────────────────────
 const RUNDOWN_ROLES = [
   { key: 'anchors',    label: 'Anchors' },
-  { key: 'packages',   label: 'Packages' },
-  { key: 'vos',        label: 'VOs' },
+  { key: 'packages',   label: 'Packages',   structured: true },
+  { key: 'vos',        label: 'VOs',         structured: true },
   { key: 'vosots',     label: 'VOSOTs' },
   { key: 'weather',    label: 'Weather' },
   { key: 'sports_btc', label: 'Sports / BTC' },
@@ -927,7 +928,7 @@ function getRundownWeeks() {
   const now = new Date();
   const day = now.getDay();
   const monday = new Date(now);
-  monday.setDate(now.getDate() - (day === 0 ? 6 : day - 1));
+  monday.setDate(now.getDate() - (day === 0 ? 6 : day - 1) + (S.rundownWeekOffset || 0) * 7);
   monday.setHours(0, 0, 0, 0);
   return Array.from({ length: 5 }, (_, i) => {
     const d = new Date(monday);
@@ -945,23 +946,54 @@ function fmtWeekRange(d) {
   return `${mo} – ${fr}`;
 }
 
+function renderRundownCell(wk, role) {
+  const rawVal = (S.rundownData[wk] || {})[role.key];
+
+  if (role.structured) {
+    const items = Array.isArray(rawVal) ? rawVal : (rawVal ? [{ topic: rawVal, student: '' }] : []);
+    const slots = items.length > 0 ? [...items] : [{ topic: '', student: '' }, { topic: '', student: '' }];
+
+    if (!S.teacherMode) {
+      const filled = slots.filter(i => i.topic || i.student);
+      if (!filled.length) return `<td class="rd-cell rd-cell-ro"><span class="rd-empty">—</span></td>`;
+      return `<td class="rd-cell rd-cell-ro">${filled.map(i => `
+        <div class="rd-struct-ro">
+          ${i.topic   ? `<span class="rd-struct-topic">${esc(i.topic)}</span>` : ''}
+          ${i.student ? `<span class="rd-struct-student">${esc(i.student)}</span>` : ''}
+        </div>`).join('')}</td>`;
+    }
+    return `<td class="rd-cell"><div class="rd-structured">
+      ${slots.map((item, idx) => `
+        <div class="rd-struct-item">
+          <input class="rd-struct-input rd-topic-input" data-week="${wk}" data-role="${role.key}" data-idx="${idx}" data-field="topic" placeholder="Topic" value="${esc(item.topic || '')}">
+          <input class="rd-struct-input rd-student-input" data-week="${wk}" data-role="${role.key}" data-idx="${idx}" data-field="student" placeholder="Student" value="${esc(item.student || '')}">
+        </div>`).join('')}
+      <button class="rd-add-item" data-week="${wk}" data-role="${role.key}">+ Add</button>
+    </div></td>`;
+  }
+
+  const val = rawVal || '';
+  if (!S.teacherMode) {
+    return `<td class="rd-cell rd-cell-ro">${val ? esc(val).replace(/\n/g,'<br>') : '<span class="rd-empty">—</span>'}</td>`;
+  }
+  return `<td class="rd-cell"><textarea class="rd-input" data-week="${wk}" data-role="${role.key}" rows="2">${esc(val)}</textarea></td>`;
+}
+
 function renderInDepth() {
-  const weeks = getRundownWeeks();
+  const weeks    = getRundownWeeks();
+  const offset   = S.rundownWeekOffset || 0;
+  const todayKey = weekKey(new Date());
+  const isPast   = weekKey(weeks[0]) < todayKey;
 
-  const headerCols = weeks.map(w => `<th class="rd-week-head">${fmtWeekRange(w)}</th>`).join('');
-
-  const bodyRows = RUNDOWN_ROLES.map(role => {
-    const cells = weeks.map(w => {
-      const key  = weekKey(w);
-      const val  = (S.rundownData[key] || {})[role.key] || '';
-      const edit = S.teacherMode;
-      if (edit) {
-        return `<td class="rd-cell"><textarea class="rd-input" data-week="${key}" data-role="${role.key}" rows="2">${val}</textarea></td>`;
-      }
-      return `<td class="rd-cell rd-cell-ro">${val ? val.replace(/\n/g,'<br>') : '<span class="rd-empty">—</span>'}</td>`;
-    }).join('');
-    return `<tr><td class="rd-role-label">${role.label}</td>${cells}</tr>`;
+  const headerCols = weeks.map(w => {
+    const wk     = weekKey(w);
+    const past   = wk < todayKey;
+    return `<th class="rd-week-head${past ? ' rd-past' : ''}">${fmtWeekRange(w)}${past ? '<br><span class="rd-past-tag">past</span>' : ''}</th>`;
   }).join('');
+
+  const bodyRows = RUNDOWN_ROLES.map(role =>
+    `<tr><td class="rd-role-label">${role.label}</td>${weeks.map(w => renderRundownCell(weekKey(w), role)).join('')}</tr>`
+  ).join('');
 
   return `
     ${navBar('indepth')}
@@ -975,9 +1007,14 @@ function renderInDepth() {
       </div>
 
       <section class="card" style="margin-bottom:24px;overflow-x:auto">
-        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px">
-          <h2 style="font-size:1rem;font-weight:700">5-Week Look Ahead</h2>
-          ${S.teacherMode ? '<span style="font-size:0.75rem;color:var(--dim)">Click any cell to edit · saves on blur</span>' : ''}
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+          <h2 style="font-size:1rem;font-weight:700">${isPast ? 'Past Shows' : 'Show Rundown'}</h2>
+          <div style="display:flex;gap:6px;align-items:center">
+            ${S.teacherMode ? '<span style="font-size:0.72rem;color:var(--dim)">saves on blur&nbsp;·&nbsp;</span>' : ''}
+            <button class="btn-secondary rd-nav-btn" id="rd-prev" style="font-size:0.75rem;padding:4px 10px">← Back</button>
+            ${offset !== 0 ? `<button class="btn-secondary rd-nav-btn" id="rd-today" style="font-size:0.75rem;padding:4px 10px">Today</button>` : ''}
+            <button class="btn-secondary rd-nav-btn" id="rd-next" style="font-size:0.75rem;padding:4px 10px">Forward →</button>
+          </div>
         </div>
         <table class="rd-table">
           <thead><tr><th class="rd-role-head"></th>${headerCols}</tr></thead>
@@ -2162,6 +2199,42 @@ function attachListeners() {
 
   document.querySelectorAll('.rd-input').forEach(ta =>
     ta.addEventListener('blur', () => saveRundownCell(ta.dataset.week, ta.dataset.role, ta.value)));
+
+  document.querySelectorAll('.rd-struct-input').forEach(input =>
+    input.addEventListener('blur', () => {
+      const { week, role, idx, field } = input.dataset;
+      const existing = (S.rundownData[week] || {})[role];
+      const items = Array.isArray(existing) ? existing.map(i => ({ ...i })) : [];
+      const i = parseInt(idx);
+      while (items.length <= i) items.push({ topic: '', student: '' });
+      items[i] = { ...items[i], [field]: input.value };
+      saveRundownCell(week, role, items);
+    }));
+
+  document.querySelectorAll('.rd-add-item').forEach(btn =>
+    btn.addEventListener('click', () => {
+      const { week, role } = btn.dataset;
+      if (!S.rundownData[week]) S.rundownData[week] = {};
+      const existing = S.rundownData[week][role];
+      const items = Array.isArray(existing) ? [...existing] : (existing ? [{ topic: existing, student: '' }] : []);
+      items.push({ topic: '', student: '' });
+      S.rundownData[week][role] = items;
+      saveRundownCell(week, role, items);
+      render();
+    }));
+
+  document.getElementById('rd-prev')?.addEventListener('click', () => {
+    S.rundownWeekOffset = (S.rundownWeekOffset || 0) - 1;
+    render(); loadRundownData();
+  });
+  document.getElementById('rd-next')?.addEventListener('click', () => {
+    S.rundownWeekOffset = (S.rundownWeekOffset || 0) + 1;
+    render(); loadRundownData();
+  });
+  document.getElementById('rd-today')?.addEventListener('click', () => {
+    S.rundownWeekOffset = 0;
+    render(); loadRundownData();
+  });
 
   document.querySelectorAll('[data-show-date]').forEach(btn =>
     btn.addEventListener('click', () => toggleShowDate(btn.dataset.showDate)));

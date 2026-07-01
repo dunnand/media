@@ -850,6 +850,23 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 }
 .rd-input:focus { background: var(--surface2); }
 
+/* Structured cells (Packages, VOs) */
+.rd-structured { display: flex; flex-direction: column; padding: 4px 0; }
+.rd-struct-item { display: flex; flex-direction: column; gap: 0; padding: 5px 10px; border-bottom: 1px solid var(--border); }
+.rd-struct-item:last-of-type { border-bottom: none; }
+.rd-struct-input { background: transparent; border: none; outline: none; color: var(--text); font-size: 0.78rem; font-family: inherit; padding: 2px 0; width: 100%; line-height: 1.4; }
+.rd-struct-input:focus { background: var(--surface2); padding: 2px 4px; border-radius: 3px; }
+.rd-topic-input { font-weight: 600; }
+.rd-student-input { color: var(--dim); font-size: 0.73rem; }
+.rd-add-item { background: none; border: none; color: var(--accent); font-size: 0.71rem; cursor: pointer; padding: 5px 10px 6px; text-align: left; opacity: 0.7; }
+.rd-add-item:hover { opacity: 1; text-decoration: underline; }
+.rd-struct-ro { padding: 5px 10px; border-bottom: 1px solid var(--border); }
+.rd-struct-ro:last-child { border-bottom: none; }
+.rd-struct-topic { font-size: 0.78rem; font-weight: 600; display: block; }
+.rd-struct-student { font-size: 0.72rem; color: var(--dim); display: block; }
+.rd-week-head.rd-past { color: var(--border); }
+.rd-past-tag { font-size: 0.62rem; font-weight: 400; text-transform: uppercase; letter-spacing: 0.05em; }
+
 /* ── In-Depth Beats ─────────────────────────────────────────── */
 .beat-list-header {
   display: flex; align-items: baseline; gap: 10px;
