@@ -46,6 +46,7 @@ const S = {
   yearbookCoverage: [],
   customYbEvents: [],
   calendarYbEvents: [],
+  ybShowAway: false,
   ybDashView: 'event',
   beatId: null,
   expandedBeat: null,
@@ -1261,11 +1262,12 @@ async function saveBeatAssignment(beatId, student1, student2) {
 
 // ── YEARBOOK ──────────────────────────────────────────────────
 function allYbEvents() {
-  const custom = (S.customYbEvents || []).map(e => ({ ...e, icon: YB_ICONS[e.type] || '📅' }));
-  const base = [...YEARBOOK_EVENTS, ...custom];
+  const custom = (S.customYbEvents || []).map(e => ({ ...e, home: true, icon: YB_ICONS[e.type] || '📅' }));
+  const base = [...YEARBOOK_EVENTS.map(e => ({ ...e, home: true })), ...custom];
   const covered = new Set(base.map(e => e.type + '|' + e.date));
   const fromCal = (S.calendarYbEvents || []).filter(e => !covered.has(e.type + '|' + e.date));
-  return [...base, ...fromCal];
+  const all = [...base, ...fromCal];
+  return S.ybShowAway ? all : all.filter(e => e.home !== false || YB_ALWAYS_SHOW.has(e.type));
 }
 
 function filterYbEvents() {
@@ -1415,7 +1417,12 @@ function renderYearbook() {
           </section>
 
           <section class="card">
-            <h2 class="cal-section-title">📊 Season Coverage Tracker</h2>
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:4px">
+              <h2 class="cal-section-title" style="margin:0">📊 Season Coverage Tracker</h2>
+              <button id="yb-away-toggle" class="btn-secondary" style="font-size:0.78rem;padding:4px 12px">
+                ${S.ybShowAway ? '🏠 Home Games Only' : '🚌 Show Away Games'}
+              </button>
+            </div>
             <p class="cal-section-sub">How many photographers have covered each event this year.</p>
             ${(() => {
               const covCount = {};
@@ -1635,6 +1642,15 @@ function inferYbType(title) {
   return 'other';
 }
 
+// Sport types that always show regardless of home/away filter
+const YB_ALWAYS_SHOW = new Set(['dance', 'nhs', 'showchoir', 'graduation', 'other']);
+
+function isHomeGame(title) {
+  const t = title.toLowerCase();
+  if (/ at /.test(t) || / @ /.test(t) || t.startsWith('@') || /\(a\)\s*$/.test(t) || /\(away\)/.test(t)) return false;
+  return true;
+}
+
 function fetchJsonp(url) {
   return new Promise((resolve, reject) => {
     const id = '_gs_' + Date.now() + '_' + Math.random().toString(36).slice(2);
@@ -1687,6 +1703,7 @@ async function loadCalendarYbEvents() {
         return {
           id:   'cal-' + ev.id.replace(/[^a-z0-9]/gi, '').slice(0, 20),
           title, date: dateStr, time: timeStr, type,
+          home: YB_ALWAYS_SHOW.has(type) ? true : isHomeGame(title),
           icon: YB_ICONS[type] || '📅'
         };
       }).filter(e => e.date);
@@ -2623,6 +2640,12 @@ function attachListeners() {
 
   document.querySelectorAll('.yb-delete-event-btn').forEach(btn =>
     btn.addEventListener('click', () => deleteYbEvent(btn.dataset.ybEventId)));
+
+  const ybAwayToggle = document.getElementById('yb-away-toggle');
+  if (ybAwayToggle) ybAwayToggle.addEventListener('click', () => {
+    S.ybShowAway = !S.ybShowAway;
+    render();
+  });
 
   const ybRefreshCalBtn = document.getElementById('yb-refresh-cal-btn');
   if (ybRefreshCalBtn) ybRefreshCalBtn.addEventListener('click', async () => {
