@@ -1340,7 +1340,12 @@ function renderYearbook() {
           </section>
 
           <section class="card" id="yb-signup-card">
-            <h2 class="cal-section-title">✏️ Sign Up to Cover an Event</h2>
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:4px">
+              <h2 class="cal-section-title" style="margin:0">✏️ Sign Up to Cover an Event</h2>
+              <button id="yb-away-toggle" class="btn-secondary" style="font-size:0.78rem;padding:4px 12px">
+                ${S.ybShowAway ? '🏠 Home Only' : '🚌 Show Away Games'}
+              </button>
+            </div>
             <p class="cal-section-sub">Pick an event, choose your role, and submit. Your teacher will confirm assignments.</p>
 
             <div class="yb-name-row">
@@ -1417,54 +1422,32 @@ function renderYearbook() {
           </section>
 
           <section class="card">
-            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:4px">
-              <h2 class="cal-section-title" style="margin:0">📊 Season Coverage Tracker</h2>
-              <button id="yb-away-toggle" class="btn-secondary" style="font-size:0.78rem;padding:4px 12px">
-                ${S.ybShowAway ? '🏠 Home Games Only' : '🚌 Show Away Games'}
-              </button>
-            </div>
-            <p class="cal-section-sub">How many photographers have covered each event this year.</p>
+            <h2 class="cal-section-title">📊 Season Coverage Tracker</h2>
+            <p class="cal-section-sub">Total times each sport or event has been photographed this year.</p>
             ${(() => {
-              const covCount = {};
+              if (!allCoverage.length) return `<p class="dim" style="font-size:0.875rem">No coverage recorded yet.</p>`;
+              const evtTypeMap = {};
+              allYbEvents().forEach(e => { evtTypeMap[e.id] = e.type; });
+              const typeCounts = {};
               allCoverage.forEach(s => {
-                const key = s.eventId || (s.eventDate + '|' + s.eventTitle);
-                covCount[key] = (covCount[key] || 0) + 1;
+                const type = evtTypeMap[s.eventId] || inferYbType(s.eventTitle || '');
+                if (type) typeCounts[type] = (typeCounts[type] || 0) + 1;
               });
-              const allEvts = allYbEvents().sort((a,b) => a.date.localeCompare(b.date));
-              if (!allEvts.length) return `<p class="dim" style="font-size:0.875rem">No events found.</p>`;
-              const past   = allEvts.filter(e => new Date(e.date + 'T23:59:00') < now);
-              const future = allEvts.filter(e => new Date(e.date + 'T23:59:00') >= now);
-              const renderEvt = (ev, isPast) => {
-                const count = covCount[ev.id] || covCount[ev.date + '|' + ev.title] || 0;
-                let badge, badgeStyle;
-                if (isPast) {
-                  if (count === 0)      { badge = 'No coverage'; badgeStyle = 'background:#ef444422;color:#f87171;'; }
-                  else if (count === 1) { badge = '1 photographer'; badgeStyle = 'background:#f59e0b22;color:#fbbf24;'; }
-                  else                  { badge = `${count} photographers`; badgeStyle = 'background:#22c55e22;color:#4ade80;'; }
-                } else {
-                  badge = count ? `${count} signed up` : 'No sign-ups yet';
-                  badgeStyle = count ? 'background:#6366f122;color:#a5b4fc;' : 'background:var(--surface2);color:var(--dim);';
-                }
-                return `
-                  <div class="yb-tracker-row">
-                    <span class="yb-tracker-icon">${ev.icon || '📅'}</span>
-                    <div class="yb-tracker-info">
-                      <span class="yb-tracker-title">${esc(ev.title)}</span>
-                      <span class="yb-tracker-date dim">${fmtDate(ev.date, false)}</span>
-                    </div>
-                    <span class="yb-tracker-badge" style="${badgeStyle}">${badge}</span>
-                  </div>`;
-              };
-              let html = '';
-              if (past.length) {
-                html += `<div class="yb-tracker-group-label">Past Events</div>`;
-                html += past.map(e => renderEvt(e, true)).join('');
-              }
-              if (future.length) {
-                html += `<div class="yb-tracker-group-label" style="margin-top:16px">Upcoming Events</div>`;
-                html += future.map(e => renderEvt(e, false)).join('');
-              }
-              return html;
+              return Object.entries(typeCounts)
+                .sort(([,a],[,b]) => b - a)
+                .map(([type, count]) => {
+                  const label = EVENT_TYPES[type]?.label || type;
+                  const icon  = YB_ICONS[type] || '📅';
+                  const style = count >= 3 ? 'background:#22c55e22;color:#4ade80'
+                              : count === 2 ? 'background:#f59e0b22;color:#fbbf24'
+                              : 'background:#6366f122;color:#a5b4fc';
+                  return `
+                    <div class="yb-tracker-row">
+                      <span class="yb-tracker-icon">${icon}</span>
+                      <span class="yb-tracker-title" style="flex:1">${esc(label)}</span>
+                      <span class="yb-tracker-badge" style="${style}">${count} ${count === 1 ? 'time' : 'times'}</span>
+                    </div>`;
+                }).join('');
             })()}
           </section>
 
