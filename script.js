@@ -46,7 +46,6 @@ const S = {
   yearbookCoverage: [],
   customYbEvents: [],
   calendarYbEvents: [],
-  dropboxFolders: {},
   ybDashView: 'event',
   beatId: null,
   expandedBeat: null,
@@ -1471,9 +1470,9 @@ function renderYearbook() {
               <h3 style="margin:0;font-size:1rem;font-weight:700">Photo Dropbox</h3>
             </div>
             <p style="font-size:0.82rem;color:var(--dim);margin-bottom:12px">Upload your photos after covering an event. Select your sport's folder below.</p>
-            ${Object.keys(S.dropboxFolders || {}).length
+            ${Object.keys(YB_DROPBOX_FOLDERS).length
               ? `<div class="yb-dropbox-list">
-                  ${Object.entries(S.dropboxFolders)
+                  ${Object.entries(YB_DROPBOX_FOLDERS)
                     .filter(([k]) => EVENT_TYPES[k])
                     .sort(([a],[b]) => (EVENT_TYPES[a]?.label||a).localeCompare(EVENT_TYPES[b]?.label||b))
                     .map(([k, fid]) => `
@@ -3075,37 +3074,8 @@ async function loadFromFirebase() {
 }
 
 // ── Init ──────────────────────────────────────────────────────
-async function loadDropboxFolders() {
-  const db = getDB();
-  if (!db) return;
-  try {
-    const doc = await db.collection('hm_config').doc('dropbox_folders').get();
-    trackUsage('reads', 1);
-    if (doc.exists) S.dropboxFolders = doc.data().folders || {};
-  } catch(e) {}
-}
-
-async function autoCreateDropboxFolders() {
-  if (!SYNC_SCRIPT_URL) return;
-  const types = [...new Set(allYbEvents().map(e => e.type))]
-    .filter(t => t && EVENT_TYPES[t])
-    .map(t => `${t}:${EVENT_TYPES[t].label}`)
-    .join(',');
-  if (!types) return;
-  try {
-    const result = await fetchJsonp(`${SYNC_SCRIPT_URL}?action=createFolders&types=${encodeURIComponent(types)}`);
-    if (result.success && result.folders) {
-      S.dropboxFolders = result.folders;
-      const db = getDB();
-      if (db) db.collection('hm_config').doc('dropbox_folders').set({ folders: result.folders }).catch(() => {});
-      if (S.view === 'yearbook') render();
-    }
-  } catch(e) {}
-}
-
 async function init() {
-  await Promise.all([loadFromFirebase(), loadCustomYbEvents(), loadYearbookCoverage(), loadCalendarYbEvents(), loadDropboxFolders()]);
-  if (!Object.keys(S.dropboxFolders).length) autoCreateDropboxFolders();
+  await Promise.all([loadFromFirebase(), loadCustomYbEvents(), loadYearbookCoverage(), loadCalendarYbEvents()]);
   render();
   document.addEventListener('keydown', e => {
     if (!S.lessonId) return;

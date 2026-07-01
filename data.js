@@ -140,6 +140,11 @@ const SYNC_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwH9agFB6OR5nPB
 const HHS_MEDIA_CAL_ID  = '2b9bdfdee65f7330d8d5d2fd1d4877c1b709289fa0b0747427f57fd62516bed5@group.calendar.google.com';
 const GOOGLE_CAL_API_KEY = 'AIzaSyCy5ZKtIjrF1lgDojmYgDlxit2Te7SKyeU';
 
+// Google Drive subfolder IDs for the Photo Dropbox — one folder per sport/category.
+// To populate: run createDropboxFolders() from the Apps Script editor, then paste the
+// logged JSON here. Subfolders live inside drive.google.com/drive/folders/0AKQDvIUms2qIUk9PVA
+const YB_DROPBOX_FOLDERS = {};
+
 // Google Drive folder links — Dropbox 2027 in Audio Broadcasting shared drive
 const IASB_DROPBOX_URL = 'https://drive.google.com/drive/folders/1Kg4UYcKzOLNYYqoEOG3fo2xbwNQtZCIY';
 

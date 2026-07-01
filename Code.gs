@@ -24,11 +24,10 @@ function doGet(e) {
     return respond(obj);
   }
   try {
-    if (action === 'sync')          return out(syncAthletics());
-    if (action === 'getEvents')     return out(getUpcomingEvents());
-    if (action === 'addEvent')      return out(addCalendarEvent(e.parameter));
-    if (action === 'deleteEvent')   return out(deleteCalendarEvent(e.parameter.calEventId));
-    if (action === 'createFolders') return out(createDropboxFolders(e.parameter));
+    if (action === 'sync')        return out(syncAthletics());
+    if (action === 'getEvents')   return out(getUpcomingEvents());
+    if (action === 'addEvent')    return out(addCalendarEvent(e.parameter));
+    if (action === 'deleteEvent') return out(deleteCalendarEvent(e.parameter.calEventId));
     return out({ success: false, error: 'Unknown action: ' + action });
   } catch(err) {
     return out({ success: false, error: err.toString() });
@@ -184,35 +183,48 @@ function maybeSync() {
 }
 
 // ── Create per-sport subfolders in the Photo Dropbox ─────────
-function createDropboxFolders(p) {
-  try {
-    const parent = DriveApp.getFolderById(DROPBOX_FOLDER_ID);
+// Run this once from the Apps Script editor (not via web app).
+// After it runs, copy the logged output into data.js → YB_DROPBOX_FOLDERS.
+function createDropboxFolders() {
+  const SPORT_LABELS = {
+    football:        'Football',
+    basketball_boys: 'Boys Basketball',
+    basketball_girls:'Girls Basketball',
+    volleyball:      'Volleyball',
+    soccer_boys:     'Boys Soccer',
+    soccer_girls:    'Girls Soccer',
+    cross_country:   'Cross Country',
+    tennis_boys:     'Boys Tennis',
+    tennis_girls:    'Girls Tennis',
+    golf_boys:       'Boys Golf',
+    golf_girls:      'Girls Golf',
+    wrestling:       'Wrestling',
+    swimming:        'Swimming',
+    gymnastics:      'Gymnastics',
+    track:           'Track & Field',
+    baseball:        'Baseball',
+    softball:        'Softball',
+    dance:           'Dance',
+    showchoir:       'Show Choir',
+    nhs:             'NHS / Honor Society',
+    graduation:      'Graduation'
+  };
 
-    // Index existing subfolders by name to avoid duplicates
-    const existing = {};
-    const iter = parent.getFolders();
-    while (iter.hasNext()) {
-      const f = iter.next();
-      existing[f.getName()] = f.getId();
-    }
+  const parent = DriveApp.getFolderById(DROPBOX_FOLDER_ID);
 
-    // types param: comma-separated "typeKey:Label" pairs
-    const pairs = (p.types || '').split(',').map(s => {
-      const idx = s.indexOf(':');
-      return idx > 0 ? { key: s.slice(0, idx), label: s.slice(idx + 1) } : null;
-    }).filter(Boolean);
-
-    const folders = {};
-    pairs.forEach(({ key, label }) => {
-      if (existing[label]) {
-        folders[key] = existing[label];
-      } else {
-        folders[key] = parent.createFolder(label).getId();
-      }
-    });
-
-    return { success: true, folders };
-  } catch(err) {
-    return { success: false, error: err.toString() };
+  const existing = {};
+  const iter = parent.getFolders();
+  while (iter.hasNext()) {
+    const f = iter.next();
+    existing[f.getName()] = f.getId();
   }
+
+  const result = {};
+  Object.entries(SPORT_LABELS).forEach(([key, label]) => {
+    result[key] = existing[label] || parent.createFolder(label).getId();
+  });
+
+  Logger.log('Paste this into data.js as YB_DROPBOX_FOLDERS:');
+  Logger.log(JSON.stringify(result));
+  return result;
 }
