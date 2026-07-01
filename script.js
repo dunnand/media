@@ -1579,31 +1579,48 @@ function fetchJsonp(url) {
 
 async function loadCalendarYbEvents() {
   const db = getDB();
-  const TTL = 24 * 60 * 60 * 1000; // 24 hours
+  const TTL = 6 * 60 * 60 * 1000; // 6 hours
 
-  // Try Firestore shared cache first — all students benefit from one fetch
+  // Try Firestore shared cache first
   if (db) {
     try {
       const doc = await db.collection('hm_config').doc('cal_cache').get();
       trackUsage('reads', 1);
       if (doc.exists) {
         const { ts, events } = doc.data();
-        if (Date.now() - ts < TTL && events) {
+        if (Date.now() - ts < TTL && events && events.length) {
           S.calendarYbEvents = events; return;
         }
       }
     } catch(e) {}
   }
 
-  // Cache is missing or stale — fetch from Apps Script and update Firestore
-  if (!SYNC_SCRIPT_URL) return;
+  if (!GOOGLE_CAL_API_KEY) return;
   try {
-    const result = await fetchJsonp(`${SYNC_SCRIPT_URL}?action=getEvents`);
-    if (result.success) {
-      const events = result.events.map(ev => {
-        const type = inferYbType(ev.title);
-        return { ...ev, type, icon: YB_ICONS[type] || '📅' };
-      });
+    const now     = new Date();
+    const syStart = now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1;
+    const end     = new Date(syStart + 1, 7, 1);
+    const calId   = encodeURIComponent(HHS_MEDIA_CAL_ID);
+    const url     = `https://www.googleapis.com/calendar/v3/calendars/${calId}/events`
+      + `?key=${GOOGLE_CAL_API_KEY}&timeMin=${now.toISOString()}&timeMax=${end.toISOString()}`
+      + `&singleEvents=true&orderBy=startTime&maxResults=500`;
+
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (data.items) {
+      const events = data.items.map(ev => {
+        const title   = ev.summary || '';
+        const type    = inferYbType(title);
+        const dateStr = (ev.start.dateTime || ev.start.date || '').slice(0, 10);
+        const timeStr = ev.start.dateTime
+          ? new Date(ev.start.dateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
+          : '';
+        return {
+          id:   'cal-' + ev.id.replace(/[^a-z0-9]/gi, '').slice(0, 20),
+          title, date: dateStr, time: timeStr, type,
+          icon: YB_ICONS[type] || '📅'
+        };
+      }).filter(e => e.date);
       S.calendarYbEvents = events;
       if (db) {
         trackUsage('writes');
