@@ -53,6 +53,7 @@ const S = {
   rundownData: {},
   rundownWeekOffset: 0,
   showSchedule: [],
+  calMonthOffset: 0,
 };
 
 // ── Timing Helpers ────────────────────────────────────────────
@@ -457,6 +458,63 @@ function renderPlanner() {
 }
 
 // ── HOMESTEAD LIVE ────────────────────────────────────────────
+function renderLiveCalendar() {
+  const now      = new Date();
+  const offset   = S.calMonthOffset || 0;
+  const view     = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+  const year     = view.getFullYear();
+  const month    = view.getMonth();
+  const todayStr = now.toISOString().slice(0, 10);
+
+  const byDate = {};
+  (S.broadcasts || []).forEach(b => {
+    (byDate[b.date] = byDate[b.date] || []).push(b);
+  });
+
+  const firstDow   = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const monthLabel  = view.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+  const cells = [];
+  for (let i = 0; i < firstDow; i++) cells.push(`<div class="lc-day lc-empty"></div>`);
+  for (let d = 1; d <= daysInMonth; d++) {
+    const ds  = `${year}-${String(month + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const bcs = byDate[ds] || [];
+    const isToday = ds === todayStr;
+    const isPast  = ds < todayStr;
+    const dots    = bcs.map(b => {
+      const et = EVENT_TYPES[b.type] || EVENT_TYPES.other;
+      return `<span class="lc-dot" style="background:${et.color}" title="${esc(b.title)}"></span>`;
+    }).join('');
+    cells.push(`
+      <div class="lc-day${isToday ? ' lc-today' : ''}${isPast ? ' lc-past' : ''}${bcs.length ? ' lc-has-event' : ''}"${bcs.length ? ` data-broadcast="${bcs[0].id}"` : ''}>
+        <span class="lc-day-num">${d}</span>
+        ${dots ? `<div class="lc-dots">${dots}</div>` : ''}
+      </div>`);
+  }
+
+  const hasPrev = (S.broadcasts || []).some(b => b.date < `${year}-${String(month+1).padStart(2,'0')}-01`);
+  const hasNext = (S.broadcasts || []).some(b => b.date >= `${year}-${String(month+1).padStart(2,'0')}-${String(daysInMonth).padStart(2,'0')}`);
+
+  return `
+    <section class="card lc-card">
+      <div class="lc-header">
+        <button class="lc-nav" id="lc-prev"${hasPrev ? '' : ' disabled'}>‹</button>
+        <span class="lc-month-label">${monthLabel}</span>
+        <button class="lc-nav" id="lc-next"${hasNext ? '' : ' disabled'}>›</button>
+      </div>
+      <div class="lc-grid">
+        ${['Su','Mo','Tu','We','Th','Fr','Sa'].map(d => `<div class="lc-dow">${d}</div>`).join('')}
+        ${cells.join('')}
+      </div>
+      <div class="lc-legend">
+        ${Object.entries(EVENT_TYPES).slice(0,5).map(([,et]) =>
+          `<span class="lc-legend-item"><span class="lc-dot" style="background:${et.color}"></span>${et.label}</span>`
+        ).join('')}
+      </div>
+    </section>`;
+}
+
 function renderLive() {
   const now = new Date();
   const upcoming = (S.broadcasts || [])
@@ -544,6 +602,7 @@ function renderLive() {
           </section>
         </div>
         <div class="side-col">
+          ${renderLiveCalendar()}
           ${!S.teacherMode ? `
           <section class="card action-card live-action">
             <div class="action-icon">📋</div>
@@ -2278,6 +2337,14 @@ function attachListeners() {
     S.rundownWeekOffset = 0;
     render(); loadRundownData();
   });
+
+  document.getElementById('lc-prev')?.addEventListener('click', () => { S.calMonthOffset = (S.calMonthOffset || 0) - 1; render(); });
+  document.getElementById('lc-next')?.addEventListener('click', () => { S.calMonthOffset = (S.calMonthOffset || 0) + 1; render(); });
+  document.querySelectorAll('.lc-has-event').forEach(el =>
+    el.addEventListener('click', () => {
+      const id = el.dataset.broadcast;
+      if (id) { S.broadcastId = id; go('broadcast'); }
+    }));
 
   document.querySelectorAll('[data-show-date]').forEach(btn =>
     btn.addEventListener('click', () => toggleShowDate(btn.dataset.showDate)));
