@@ -509,9 +509,10 @@ function renderLiveCalendar() {
         ${cells.join('')}
       </div>
       <div class="lc-legend">
-        ${Object.entries(EVENT_TYPES).slice(0,5).map(([,et]) =>
-          `<span class="lc-legend-item"><span class="lc-dot" style="background:${et.color}"></span>${et.label}</span>`
-        ).join('')}
+        ${[...new Set((S.broadcasts || []).map(b => b.type))].map(type => {
+          const et = EVENT_TYPES[type] || EVENT_TYPES.other;
+          return `<span class="lc-legend-item"><span class="lc-dot" style="background:${et.color}"></span>${et.label}</span>`;
+        }).join('')}
       </div>
     </section>`;
 }
