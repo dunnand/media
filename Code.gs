@@ -7,8 +7,9 @@
 // 3. Copy the web app URL into data.js → SYNC_SCRIPT_URL
 // 4. Run createAnnualTrigger() once from the editor to set up auto-sync each August 1
 
-const SOURCE_CAL_ID = 'fd9gn9o6bq5lfvsaiqkt4gs4n1gneqc6@import.calendar.google.com';
-const TARGET_CAL_ID = '2b9bdfdee65f7330d8d5d2fd1d4877c1b709289fa0b0747427f57fd62516bed5@group.calendar.google.com';
+const SOURCE_CAL_ID     = 'fd9gn9o6bq5lfvsaiqkt4gs4n1gneqc6@import.calendar.google.com';
+const TARGET_CAL_ID     = '2b9bdfdee65f7330d8d5d2fd1d4877c1b709289fa0b0747427f57fd62516bed5@group.calendar.google.com';
+const DROPBOX_FOLDER_ID = '0AKQDvIUms2qIUk9PVA';
 
 function respond(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj))
@@ -23,10 +24,11 @@ function doGet(e) {
     return respond(obj);
   }
   try {
-    if (action === 'sync')        return out(syncAthletics());
-    if (action === 'getEvents')   return out(getUpcomingEvents());
-    if (action === 'addEvent')    return out(addCalendarEvent(e.parameter));
-    if (action === 'deleteEvent') return out(deleteCalendarEvent(e.parameter.calEventId));
+    if (action === 'sync')          return out(syncAthletics());
+    if (action === 'getEvents')     return out(getUpcomingEvents());
+    if (action === 'addEvent')      return out(addCalendarEvent(e.parameter));
+    if (action === 'deleteEvent')   return out(deleteCalendarEvent(e.parameter.calEventId));
+    if (action === 'createFolders') return out(createDropboxFolders(e.parameter));
     return out({ success: false, error: 'Unknown action: ' + action });
   } catch(err) {
     return out({ success: false, error: err.toString() });
@@ -178,5 +180,39 @@ function createAnnualTrigger() {
 function maybeSync() {
   if (new Date().getMonth() === 6) {
     syncAthletics();
+  }
+}
+
+// ── Create per-sport subfolders in the Photo Dropbox ─────────
+function createDropboxFolders(p) {
+  try {
+    const parent = DriveApp.getFolderById(DROPBOX_FOLDER_ID);
+
+    // Index existing subfolders by name to avoid duplicates
+    const existing = {};
+    const iter = parent.getFolders();
+    while (iter.hasNext()) {
+      const f = iter.next();
+      existing[f.getName()] = f.getId();
+    }
+
+    // types param: comma-separated "typeKey:Label" pairs
+    const pairs = (p.types || '').split(',').map(s => {
+      const idx = s.indexOf(':');
+      return idx > 0 ? { key: s.slice(0, idx), label: s.slice(idx + 1) } : null;
+    }).filter(Boolean);
+
+    const folders = {};
+    pairs.forEach(({ key, label }) => {
+      if (existing[label]) {
+        folders[key] = existing[label];
+      } else {
+        folders[key] = parent.createFolder(label).getId();
+      }
+    });
+
+    return { success: true, folders };
+  } catch(err) {
+    return { success: false, error: err.toString() };
   }
 }
