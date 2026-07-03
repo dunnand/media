@@ -45,6 +45,7 @@ const S = {
   lessonSlide: 0,
   canvaLessons: {},
   showCanvaForm: false,
+  hiddenLessons: new Set(),
   yearbookCoverage: [],
   customYbEvents: [],
   calendarYbEvents: [],
@@ -599,10 +600,10 @@ function renderLive() {
           ${countdownBlock}
           ${(() => {
             const liveCourse = LESSONS.live;
-            const fromData = (liveCourse?.units || []).flatMap(u => u.lessons.map(l => ({ ...l, unitTitle: u.title, unitId: u.id })));
+            const fromData = (liveCourse?.units || []).flatMap(u => u.lessons.map(l => ({ ...l, unitTitle: u.title, unitId: u.id, isCustom: false }))).filter(l => !S.hiddenLessons.has(l.id));
             const fromCanva = Object.entries(S.canvaLessons)
               .filter(([,d]) => d.isCustom && d.course === 'live')
-              .map(([id, d]) => ({ id, title: d.title, duration: d.duration || '', summary: d.summary || '', unitId: d.unit || 'u1', unitTitle: 'Canva Lesson' }));
+              .map(([id, d]) => ({ id, title: d.title, duration: d.duration || '', summary: d.summary || '', unitId: d.unit || 'u1', unitTitle: 'Canva Lesson', isCustom: true }));
             const allLessons = [...fromData, ...fromCanva];
             const renderLessonCard = l => `
               <div class="lesson-item" data-lesson-course="live" data-lesson-unit="${l.unitId}" data-lesson-id="${l.id}">
@@ -614,7 +615,9 @@ function renderLive() {
                 </div>
                 <div class="lesson-item-right">
                   <span class="lesson-duration-chip">${esc(l.duration || '')}</span>
-                  <span class="lesson-item-arrow">→</span>
+                  ${S.teacherMode
+                    ? `<button class="lesson-delete-btn" data-delete-lesson="${l.id}" data-delete-type="${l.isCustom ? 'canva' : 'builtin'}" title="${l.isCustom ? 'Delete' : 'Hide'} lesson">✕</button>`
+                    : `<span class="lesson-item-arrow">→</span>`}
                 </div>
               </div>`;
             return `
@@ -2709,6 +2712,28 @@ function attachListeners() {
       go('lessons');
     }));
 
+  // ── Lesson delete / hide handlers ───────────────────────────
+  document.querySelectorAll('[data-delete-lesson]').forEach(btn => {
+    btn.addEventListener('click', async e => {
+      e.stopPropagation();
+      const lessonId = btn.dataset.deleteLesson;
+      const type     = btn.dataset.deleteType;
+      const label    = type === 'canva' ? 'Delete this Canva lesson?' : 'Hide this lesson for all students?';
+      if (!confirm(label)) return;
+      const db = getDB();
+      if (!db) return;
+      trackUsage('writes');
+      if (type === 'canva') {
+        await db.collection('hm_canva_lessons').doc(lessonId).delete();
+        delete S.canvaLessons[lessonId];
+      } else {
+        await db.collection('hm_hidden_lessons').doc(lessonId).set({ hidden: true });
+        S.hiddenLessons.add(lessonId);
+      }
+      render();
+    });
+  });
+
   // ── Canva lesson handlers ────────────────────────────────────
   const lsConnectCanva = document.getElementById('ls-connect-canva');
   if (lsConnectCanva) lsConnectCanva.addEventListener('click', async () => {
@@ -2830,14 +2855,15 @@ function renderLessonCourse() {
   if (!course) return renderLessonsHub();
 
   const units = course.units.map((unit, ui) => {
-    const items = unit.lessons.map((l, li) => {
+    const items = unit.lessons.filter(l => !S.hiddenLessons.has(l.id)).map((l, li) => {
       const icon = LESSON_ICONS[l.id] || course.icon;
+      const hasCanva = !!S.canvaLessons[l.id]?.url;
       return `
         <div class="lesson-item"
              data-lesson-course="${S.lessonCourse}"
              data-lesson-unit="${unit.id}"
              data-lesson-id="${l.id}">
-          <div class="lesson-item-icon">${icon}</div>
+          <div class="lesson-item-icon">${hasCanva ? '🎨' : icon}</div>
           <div class="lesson-item-body">
             <div class="lesson-item-num">Lesson ${ui * 10 + li + 1}</div>
             <div class="lesson-item-title">${l.title}</div>
@@ -2845,7 +2871,9 @@ function renderLessonCourse() {
           </div>
           <div class="lesson-item-right">
             <span class="lesson-duration-chip">${l.duration}</span>
-            <span class="lesson-item-arrow">→</span>
+            ${S.teacherMode
+              ? `<button class="lesson-delete-btn" data-delete-lesson="${l.id}" data-delete-type="builtin" title="Hide lesson">✕</button>`
+              : `<span class="lesson-item-arrow">→</span>`}
           </div>
         </div>`;
     }).join('');
@@ -2871,7 +2899,9 @@ function renderLessonCourse() {
         </div>
         <div class="lesson-item-right">
           <span class="lesson-duration-chip">${esc(d.duration || '')}</span>
-          <span class="lesson-item-arrow">→</span>
+          ${S.teacherMode
+            ? `<button class="lesson-delete-btn" data-delete-lesson="${id}" data-delete-type="canva" title="Delete lesson">✕</button>`
+            : `<span class="lesson-item-arrow">→</span>`}
         </div>
       </div>`).join('');
 
@@ -3263,9 +3293,19 @@ async function loadCanvaLessons() {
   } catch(e) {}
 }
 
+async function loadHiddenLessons() {
+  const db = getDB();
+  if (!db) return;
+  try {
+    const snap = await db.collection('hm_hidden_lessons').get();
+    trackUsage('reads', snap.size || 1);
+    S.hiddenLessons = new Set(snap.docs.map(d => d.id));
+  } catch(e) {}
+}
+
 // ── Init ──────────────────────────────────────────────────────
 async function init() {
-  await Promise.all([loadFromFirebase(), loadCustomYbEvents(), loadYearbookCoverage(), loadCalendarYbEvents(), loadCanvaLessons()]);
+  await Promise.all([loadFromFirebase(), loadCustomYbEvents(), loadYearbookCoverage(), loadCalendarYbEvents(), loadCanvaLessons(), loadHiddenLessons()]);
   render();
   document.addEventListener('keydown', e => {
     if (!S.lessonId) return;

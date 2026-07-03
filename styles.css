@@ -1384,6 +1384,8 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
   padding: 4px 10px; border-radius: 8px; white-space: nowrap;
 }
 .lesson-item-arrow { font-size: 1.2rem; color: var(--dim); }
+.lesson-delete-btn { background: none; border: none; color: var(--dim); font-size: 1rem; cursor: pointer; padding: 4px 6px; border-radius: 6px; line-height: 1; }
+.lesson-delete-btn:hover { background: #ef444422; color: #ef4444; }
 
 /* ── Lesson Slideshow ────────────────────────────────────────── */
 .ls-show {
