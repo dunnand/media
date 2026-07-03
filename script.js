@@ -2923,6 +2923,35 @@ function renderLessonCourse() {
       : ''}
     </div>` : '';
 
+  // ── Intro course: render with a "where you're headed" sidebar ──
+  const isIntro = S.lessonCourse === 'intro';
+  const sidebar = isIntro ? (() => {
+    const cards = Object.entries(LESSONS)
+      .filter(([key]) => key !== 'intro')
+      .map(([key, c]) => {
+        const totalLessons = c.units.reduce((n, u) => n + u.lessons.length, 0);
+        const canvaCount = Object.values(S.canvaLessons).filter(d => d.isCustom && d.course === key).length;
+        const count = totalLessons + canvaCount;
+        return `
+        <div class="intro-class-card" style="border-left:4px solid ${c.color}">
+          <div class="intro-class-card-top">
+            <span class="intro-class-icon" style="background:${c.color}18;color:${c.color}">${c.icon}</span>
+            <div>
+              <div class="intro-class-name" style="color:${c.color}">${c.name}</div>
+              ${count > 0 ? `<div class="intro-class-meta">${count} lesson${count !== 1 ? 's' : ''}</div>` : `<div class="intro-class-meta">Coming soon</div>`}
+            </div>
+          </div>
+          ${c.desc ? `<p class="intro-class-desc">${c.desc}</p>` : ''}
+        </div>`;
+      }).join('');
+    return `
+    <aside class="intro-sidebar">
+      <div class="intro-sidebar-header">Where You're Headed</div>
+      <p class="intro-sidebar-sub">After this intro period you'll be placed into one of these classes based on your interests and skills.</p>
+      <div class="intro-class-cards">${cards}</div>
+    </aside>`;
+  })() : '';
+
   return `
     ${navBar('lessons')}
     <div class="class-page">
@@ -2934,7 +2963,10 @@ function renderLessonCourse() {
           <p>${course.units.length} unit${course.units.length !== 1 ? 's' : ''} · ${course.units.reduce((s, u) => s + u.lessons.length, 0)} lessons</p>
         </div>
       </div>
-      <div class="lesson-units-list">${units}${canvaSection}</div>
+      <div class="${isIntro ? 'intro-course-grid' : ''}">
+        <div class="lesson-units-list">${units}${canvaSection}</div>
+        ${sidebar}
+      </div>
     </div>`;
 }
 

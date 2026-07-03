@@ -1000,10 +1000,127 @@ const INDEPTH_BEATS = [
 
 // ── Lessons ───────────────────────────────────────────────────
 const LESSONS = {
+  intro: {
+    name: 'Intro to Media',
+    color: '#f59e0b',
+    icon: '🎓',
+    units: [
+      {
+        id: 'u1',
+        title: 'Unit 1 — Welcome',
+        lessons: [
+          {
+            id: 'intro-welcome',
+            title: 'Welcome to Homestead Media',
+            duration: '1 class',
+            summary: 'The program at a glance — who we are, what we make, and what to expect.',
+            sections: [
+              { type: 'intro', content: 'Homestead Media is one of the most award-winning high school media programs in Indiana. You are joining a team that runs two real radio stations, produces live sports broadcasts, publishes a yearbook, and creates original journalism — all in this building, all during school.' },
+              { type: 'callout', label: 'What We Do', items: [
+                '📻 <strong>Radio</strong> — Live DJ breaks and talk shows on The Point 91FM and WCYT 2.0',
+                '🎬 <strong>Live</strong> — Produce and broadcast Homestead sports games on YouTube',
+                '📖 <strong>Yearbook</strong> — Photograph and document the entire school year',
+                '🏟️ <strong>Sports</strong> — Write, shoot, and post about Homestead athletics',
+                '📺 <strong>In-Depth</strong> — Documentary and investigative journalism',
+              ]},
+              { type: 'text', title: '🏆 The Standard', content: 'Homestead Audio Broadcasting has won <strong>IASB Radio School of the Year</strong> in 2026, 2024, 2023, 2021, 2019, 2018, and 2017. The yearbook and broadcast programs carry the same standard. The work you do here is real — real audience, real deadlines, real results.' },
+              { type: 'callout', label: 'How Class Works', items: [
+                'Every day has a purpose — there is no sitting around waiting for something to do',
+                'You will be assigned to a class (Radio, Live, Yearbook, Sports, or In-Depth) after this intro period',
+                'You may rotate between classes in future semesters based on your interests and skills',
+                'Seniors and returning students mentor newcomers — lean on them',
+              ]},
+            ]
+          },
+          {
+            id: 'intro-routine',
+            title: 'The Daily Routine',
+            duration: '1 class',
+            summary: 'How a media class day runs — roles, check-ins, and getting to work.',
+            sections: [
+              { type: 'intro', content: 'Media class does not look like a typical class. There is no lecture to sit through. From the moment the bell rings, people are working. Understanding the daily rhythm is how you start contributing fast.' },
+              { type: 'list', title: 'A Typical Day', items: [
+                '<strong>Bell rings</strong> — Drop your stuff and check your assignment or station post',
+                '<strong>First 5 minutes</strong> — Quick check-in with your teacher or team lead',
+                '<strong>Work period</strong> — On air, editing, shooting, writing, or producing',
+                '<strong>End of class</strong> — File your work, log your progress, tidy your station',
+              ]},
+              { type: 'callout', label: 'The Golden Rule', items: [
+                'Dead air is the enemy. In radio, silence kills a show. In broadcast, a frozen graphic kills a game. In yearbook, a missed photo never comes back. Always be doing something that moves the work forward.' ],
+              },
+              { type: 'keyterms', title: 'Key Terms to Know', terms: [
+                { term: 'Air Shift', def: 'A scheduled block of time you are on the radio — live, in the studio, on mic.' },
+                { term: 'Broadcast', def: 'A live video production going out over YouTube or cable.' },
+                { term: 'Deadline', def: 'Non-negotiable. Missing a deadline affects every person on the team.' },
+                { term: 'Rundown', def: 'The ordered list of everything that happens during a show or broadcast.' },
+                { term: 'B-Roll', def: 'Supporting footage shot to accompany narration or interviews in video work.' },
+              ]},
+            ]
+          },
+        ]
+      },
+      {
+        id: 'u2',
+        title: 'Unit 2 — Studio & Gear',
+        lessons: [
+          {
+            id: 'intro-studio',
+            title: 'Your Studio Tour',
+            duration: '1 class',
+            summary: 'Walk through the audio, video, and broadcast facilities you will be using.',
+            sections: [
+              { type: 'intro', content: 'The Homestead Media suite has professional-grade gear — the same type of equipment used in commercial radio stations, local TV news operations, and production companies. Learning where everything is and what it does is your first job.' },
+              { type: 'list', title: 'Spaces in the Suite', items: [
+                '<strong>Radio Studio A</strong> — Live broadcast studio for The Point 91FM',
+                '<strong>Radio Studio B</strong> — WCYT 2.0 and podcast production',
+                '<strong>Production Lab</strong> — Adobe workstations for editing audio, video, and graphics',
+                '<strong>Yearbook Lab</strong> — Layout stations and camera checkout',
+                '<strong>Broadcast Control Room</strong> — Video switching and live streaming for Homestead Live',
+              ]},
+              { type: 'callout', label: 'Studio Rules', items: [
+                'Never touch a control or fader that is not yours to run — ask first',
+                'Log all camera and equipment checkouts with your teacher',
+                'If you broke it, say so immediately — hiding damage makes it worse',
+                'Headphones on means someone is working — do not interrupt on air',
+              ]},
+              { type: 'keyterms', title: 'Gear You Will Use', terms: [
+                { term: 'Condenser Mic', def: 'The main on-air microphone in both radio studios. Sensitive — stay on axis, do not pop your Ps.' },
+                { term: 'Audio Board / Console', def: 'The mixing board that controls levels for every mic, phone, and source going to air.' },
+                { term: 'DSLR / Mirrorless Camera', def: 'Used for yearbook, sports, and video work. Handle with two hands and always return with the lens cap on.' },
+                { term: 'Video Switcher', def: 'The device in the control room that cuts between camera feeds during a live broadcast.' },
+                { term: 'Adobe Creative Cloud', def: 'Audition (audio), Premiere (video), Photoshop (graphics), InDesign (yearbook layout) — the full suite.' },
+              ]},
+            ]
+          },
+          {
+            id: 'intro-software',
+            title: 'Essential Software',
+            duration: '1–2 classes',
+            summary: 'A first look at Adobe Audition, Premiere, Photoshop, and InDesign.',
+            sections: [
+              { type: 'intro', content: 'Every class in Homestead Media uses Adobe Creative Cloud. You will specialize in one or two apps based on your class, but knowing your way around all of them makes you more valuable across the whole program.' },
+              { type: 'keyterms', title: 'The Four Core Apps', terms: [
+                { term: 'Adobe Audition', def: 'Audio recording and editing. Used in Radio for imaging, spot production, and editing air breaks. Think of it as Photoshop for sound.' },
+                { term: 'Adobe Premiere Pro', def: 'Video editing. Used in Homestead Live and In-Depth for packaging, highlight reels, and documentary segments.' },
+                { term: 'Adobe Photoshop', def: 'Image editing and graphic design. Used in Homestead Live for broadcast graphics (scoreboards, lower thirds) and in Yearbook for photo editing.' },
+                { term: 'Adobe InDesign', def: 'Page layout and publishing. Used in Yearbook to build the actual book pages — text, photos, and design all together.' },
+              ]},
+              { type: 'callout', label: 'Where to Start', items: [
+                'Your teacher will assign the app that matches your class focus',
+                'LinkedIn Learning (free through school) has full beginner courses for every Adobe app',
+                'The best way to learn is to open a project and break things — just on a copy, not the original',
+              ]},
+            ]
+          },
+        ]
+      },
+    ]
+  },
   radio: {
     name: 'Radio Broadcasting',
     color: '#a78bfa',
     icon: '📻',
+    desc: 'Go on the air at The Point 91FM and WCYT 2.0. Air personality, talk shows, production, and IASB competition.',
     units: [
       {
         id: 'u1',
@@ -1527,6 +1644,7 @@ const LESSONS = {
     name: 'Homestead Live',
     color: '#06b6d4',
     icon: '🎬',
+    desc: 'Produce and broadcast live Homestead sports — graphics, play-by-play, camera operation, and directing.',
     units: [
       {
         id: 'u1',
@@ -1591,18 +1709,21 @@ const LESSONS = {
     name: 'Yearbook',
     color: '#34d399',
     icon: '📖',
+    desc: 'Photograph and document the entire school year. Portraits, sports, events, and final book layout in InDesign.',
     units: []
   },
   sports: {
     name: 'Sports Broadcasting',
     color: '#f97316',
     icon: '🏟️',
+    desc: 'Cover Homestead athletics through game writing, action photography, and social media content creation.',
     units: []
   },
   indepth: {
     name: 'HHS In-Depth',
     color: '#3b82f6',
     icon: '📺',
+    desc: 'Long-form documentary and investigative journalism — reporting, interviewing, scripting, and editing.',
     units: []
   }
 };
