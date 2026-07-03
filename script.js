@@ -2744,7 +2744,7 @@ function attachListeners() {
     if (!db) return;
     trackUsage('writes');
     const ref  = db.collection('hm_canva_lessons').doc();
-    const data = { url, title, duration, course: 'live', unit: 'u1', isCustom: true, order: Date.now() };
+    const data = { url, title, duration, course: S.lessonCourse || 'live', unit: 'u1', isCustom: true, order: Date.now() };
     await ref.set(data);
     S.canvaLessons[ref.id] = data;
     S.showCanvaForm = false;
