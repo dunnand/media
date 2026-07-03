@@ -46,6 +46,8 @@ const S = {
   canvaLessons: {},
   showCanvaForm: false,
   hiddenLessons: new Set(),
+  introClassInfo: {},
+  editingIntroClass: null,
   yearbookCoverage: [],
   customYbEvents: [],
   calendarYbEvents: [],
@@ -1111,6 +1113,49 @@ function renderRundownCell(wk, role, isCurrent = false) {
 }
 
 function renderIntro() {
+  const INTRO_CLASSES = [
+    { key: 'radio',    icon: '📻', name: 'Radio Broadcasting', defaultBlurb: 'Students go on the air at The Point 91FM and WCYT 2.0 — Homestead\'s two student-run radio stations. Class covers air personality, talk shows, copywriting, Adobe Audition production, and IASB competition.' },
+    { key: 'live',     icon: '🎬', name: 'Homestead Live',      defaultBlurb: 'Students produce and broadcast live Homestead sports games on YouTube. Roles include graphics design in Photoshop, camera operation, play-by-play commentary, directing, and video switching.' },
+    { key: 'yearbook', icon: '📖', name: 'Yearbook',            defaultBlurb: 'Students photograph and document the entire school year for the annual Homestead yearbook. Class covers DSLR photography, InDesign layout, photo editing, and meeting print deadlines.' },
+    { key: 'sports',   icon: '🏟️', name: 'Sports Broadcasting', defaultBlurb: 'Students cover Homestead athletics through game writing, action photography, social media posts, and play-by-play broadcasting. Work is published to the school\'s athletics channels.' },
+    { key: 'indepth',  icon: '📺', name: 'HHS In-Depth',        defaultBlurb: 'Students produce long-form TV news — anchoring, field reporting, scripted packages, and documentary segments. Work airs on the school\'s broadcast channel and YouTube.' },
+  ];
+
+  const cards = INTRO_CLASSES.map(cls => {
+    const info = S.introClassInfo[cls.key] || {};
+    const blurb = info.blurb || cls.defaultBlurb;
+    const dropbox = info.dropbox || '';
+    const color = (LESSONS[cls.key] || {}).color || '#6b7280';
+    const isEditing = S.editingIntroClass === cls.key;
+
+    if (isEditing) {
+      return `
+        <div class="intro-class-info-card" style="border-top:4px solid ${color}">
+          <div class="intro-class-info-top">
+            <span class="intro-class-info-icon" style="background:${color}18;color:${color}">${cls.icon}</span>
+            <strong style="color:${color}">${cls.name}</strong>
+          </div>
+          <textarea id="intro-edit-blurb" class="form-input" rows="4" style="font-size:0.85rem;margin-top:10px;resize:vertical">${esc(blurb)}</textarea>
+          <input id="intro-edit-dropbox" class="form-input" placeholder="Dropbox folder link" value="${esc(dropbox)}" style="font-size:0.85rem;margin-top:8px">
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="btn-primary" data-intro-save="${cls.key}" style="font-size:0.82rem">Save</button>
+            <button class="btn-secondary" data-intro-cancel style="font-size:0.82rem">Cancel</button>
+          </div>
+        </div>`;
+    }
+
+    return `
+      <div class="intro-class-info-card" style="border-top:4px solid ${color}">
+        <div class="intro-class-info-top">
+          <span class="intro-class-info-icon" style="background:${color}18;color:${color}">${cls.icon}</span>
+          <strong style="color:${color};font-size:1rem">${cls.name}</strong>
+          ${S.teacherMode ? `<button class="btn-secondary intro-edit-btn" data-intro-edit="${cls.key}" style="margin-left:auto;font-size:0.75rem;padding:3px 9px">Edit</button>` : ''}
+        </div>
+        <p class="intro-class-info-blurb">${esc(blurb)}</p>
+        ${dropbox ? `<a href="${dropbox}" target="_blank" class="intro-dropbox-link">📁 Open Class Dropbox →</a>` : (S.teacherMode ? `<span style="font-size:0.75rem;color:var(--dim)">No dropbox link yet — click Edit to add one.</span>` : '')}
+      </div>`;
+  }).join('');
+
   return `
     ${navBar('intro')}
     <div class="class-page">
@@ -1123,10 +1168,9 @@ function renderIntro() {
       </div>
       <div class="page-grid">
         <div class="main-col">
-          <section class="card coming-soon-card">
-            <div class="coming-soon-icon">🎓</div>
-            <h2>Welcome, First Years</h2>
-            <p>This is your home base for the intro semester. Lessons, assignments, and resources will appear here.</p>
+          <section class="card">
+            <div class="card-header"><h2>Our Classes</h2></div>
+            <div class="intro-class-info-list">${cards}</div>
           </section>
         </div>
         <div class="side-col">
@@ -2751,6 +2795,27 @@ function attachListeners() {
       go('lessons');
     }));
 
+  // ── Intro class info edit handlers ──────────────────────────
+  document.querySelectorAll('[data-intro-edit]').forEach(btn => {
+    btn.addEventListener('click', () => { S.editingIntroClass = btn.dataset.introEdit; render(); });
+  });
+  const introCancelBtn = document.querySelector('[data-intro-cancel]');
+  if (introCancelBtn) introCancelBtn.addEventListener('click', () => { S.editingIntroClass = null; render(); });
+  document.querySelectorAll('[data-intro-save]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const key     = btn.dataset.introSave;
+      const blurb   = document.getElementById('intro-edit-blurb')?.value.trim();
+      const dropbox = document.getElementById('intro-edit-dropbox')?.value.trim();
+      const db = getDB();
+      if (!db) return;
+      trackUsage('writes');
+      await db.collection('hm_intro_classes').doc(key).set({ blurb, dropbox }, { merge: true });
+      S.introClassInfo[key] = { ...(S.introClassInfo[key] || {}), blurb, dropbox };
+      S.editingIntroClass = null;
+      render();
+    });
+  });
+
   // ── Lesson delete / hide handlers ───────────────────────────
   document.querySelectorAll('[data-delete-lesson]').forEach(btn => {
     btn.addEventListener('click', async e => {
@@ -3332,6 +3397,18 @@ async function loadCanvaLessons() {
   } catch(e) {}
 }
 
+async function loadIntroClassInfo() {
+  const db = getDB();
+  if (!db) return;
+  try {
+    const snap = await db.collection('hm_intro_classes').get();
+    trackUsage('reads', snap.size || 1);
+    const map = {};
+    snap.forEach(doc => { map[doc.id] = doc.data(); });
+    S.introClassInfo = map;
+  } catch(e) {}
+}
+
 async function loadHiddenLessons() {
   const db = getDB();
   if (!db) return;
@@ -3344,7 +3421,7 @@ async function loadHiddenLessons() {
 
 // ── Init ──────────────────────────────────────────────────────
 async function init() {
-  await Promise.all([loadFromFirebase(), loadCustomYbEvents(), loadYearbookCoverage(), loadCalendarYbEvents(), loadCanvaLessons(), loadHiddenLessons()]);
+  await Promise.all([loadFromFirebase(), loadCustomYbEvents(), loadYearbookCoverage(), loadCalendarYbEvents(), loadCanvaLessons(), loadHiddenLessons(), loadIntroClassInfo()]);
   render();
   document.addEventListener('keydown', e => {
     if (!S.lessonId) return;
