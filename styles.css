@@ -16,6 +16,7 @@
   --yearbook: #a855f7;
   --sports: #f97316;
   --indepth: #3b82f6;
+  --intro: #f59e0b;
   --success: #22c55e;
   --danger: #ef4444;
   --radius: 12px;
@@ -215,6 +216,7 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 .yearbook-card::before { background: var(--yearbook); }
 .sports-card::before   { background: var(--sports); }
 .indepth-card::before  { background: var(--indepth); }
+.intro-card::before    { background: var(--intro); }
 
 .class-card:hover {
   border-color: #444;
@@ -230,6 +232,7 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 .yearbook-card:hover .class-enter { color: var(--yearbook); }
 .sports-card:hover   .class-enter { color: var(--sports); }
 .indepth-card:hover  .class-enter { color: var(--indepth); }
+.intro-card:hover    .class-enter { color: var(--intro); }
 
 /* ── Class Pages ─────────────────────────────────────────── */
 .class-page {

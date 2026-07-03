@@ -113,6 +113,7 @@ function render() {
     case 'yearbook':      app.innerHTML = renderYearbook();      break;
     case 'sports':        app.innerHTML = renderSports();        break;
     case 'indepth':       app.innerHTML = renderInDepth();       break;
+    case 'intro':         app.innerHTML = renderIntro();         break;
     case 'beats':         app.innerHTML = renderBeats();         break;
     case 'iasb':          app.innerHTML = renderIASB();          break;
     case 'iasb-category': app.innerHTML = renderIASBCategory();  break;
@@ -134,6 +135,7 @@ function navBar(active) {
         <a class="${active === 'sports'   ? 'active' : ''}" data-nav="sports">🏟️ Sports</a>
         <a class="${active === 'yearbook' ? 'active' : ''}" data-nav="yearbook">📖 Yearbook</a>
         <a class="${active === 'indepth'  ? 'active' : ''}" data-nav="indepth">📺 In-Depth</a>
+        <a class="${active === 'intro'    ? 'active' : ''}" data-nav="intro">🎓 Intro</a>
         <a class="${active === 'lessons'  ? 'active' : ''}" data-nav="lessons">📚 Lessons</a>
         ${S.teacherMode ? `<a class="${active === 'dashboard' ? 'active' : ''}" data-nav="dashboard" style="color:var(--radio)">📊 Dashboard</a>` : ''}
         <button class="teacher-btn ${S.teacherMode ? 'active' : ''}" id="teacher-toggle">
@@ -180,6 +182,12 @@ function renderHome() {
           <div class="class-icon">📺</div>
           <div class="class-name">HHS In-Depth</div>
           <div class="class-desc">TV news production — anchoring, reporting, packages, and live shots.</div>
+          <div class="class-enter">Enter →</div>
+        </div>
+        <div class="class-card intro-card" data-nav="intro">
+          <div class="class-icon">🎓</div>
+          <div class="class-name">Intro to Media</div>
+          <div class="class-desc">First-year orientation to the Homestead Media program.</div>
           <div class="class-enter">Enter →</div>
         </div>
       </div>
@@ -1100,6 +1108,37 @@ function renderRundownCell(wk, role, isCurrent = false) {
     return `<td class="rd-cell rd-cell-ro${colCls}">${val ? `<span class="rd-plain-val">${esc(val).replace(/\n/g,'<br>')}</span>` : '<span class="rd-empty">—</span>'}</td>`;
   }
   return `<td class="rd-cell${colCls}"><textarea class="rd-input" data-week="${wk}" data-role="${role.key}" rows="2">${esc(val)}</textarea></td>`;
+}
+
+function renderIntro() {
+  return `
+    ${navBar('intro')}
+    <div class="class-page">
+      <div class="class-header">
+        <div class="class-header-icon" style="font-size:3rem">🎓</div>
+        <div>
+          <h1>Intro to Media</h1>
+          <p>First-year orientation to the Homestead Media program.</p>
+        </div>
+      </div>
+      <div class="page-grid">
+        <div class="main-col">
+          <section class="card coming-soon-card">
+            <div class="coming-soon-icon">🎓</div>
+            <h2>Welcome, First Years</h2>
+            <p>This is your home base for the intro semester. Lessons, assignments, and resources will appear here.</p>
+          </section>
+        </div>
+        <div class="side-col">
+          <section class="card action-card" style="--ac:#f59e0b">
+            <div class="action-icon">📚</div>
+            <h3>Lessons</h3>
+            <p>View intro lessons and course materials.</p>
+            <button class="btn-primary" style="background:#f59e0b;color:#000" data-lesson-course="intro">Go to Lessons →</button>
+          </section>
+        </div>
+      </div>
+    </div>`;
 }
 
 function renderInDepth() {
