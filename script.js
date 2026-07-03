@@ -48,6 +48,7 @@ const S = {
   hiddenLessons: new Set(),
   introClassInfo: {},
   editingIntroClass: null,
+  expandedIntroClass: null,
   yearbookCoverage: [],
   customYbEvents: [],
   calendarYbEvents: [],
@@ -1127,32 +1128,40 @@ function renderIntro() {
     const dropbox = info.dropbox || '';
     const color = (LESSONS[cls.key] || {}).color || '#6b7280';
     const isEditing = S.editingIntroClass === cls.key;
+    const isOpen = S.expandedIntroClass === cls.key;
 
     if (isEditing) {
       return `
-        <div class="intro-class-info-card" style="border-top:4px solid ${color}">
-          <div class="intro-class-info-top">
+        <div class="intro-acc-card" style="border-left:4px solid ${color}">
+          <div class="intro-acc-header">
             <span class="intro-class-info-icon" style="background:${color}18;color:${color}">${cls.icon}</span>
             <strong style="color:${color}">${cls.name}</strong>
           </div>
-          <textarea id="intro-edit-blurb" class="form-input" rows="4" style="font-size:0.85rem;margin-top:10px;resize:vertical">${esc(blurb)}</textarea>
-          <input id="intro-edit-dropbox" class="form-input" placeholder="Dropbox folder link" value="${esc(dropbox)}" style="font-size:0.85rem;margin-top:8px">
-          <div style="display:flex;gap:8px;margin-top:10px">
-            <button class="btn-primary" data-intro-save="${cls.key}" style="font-size:0.82rem">Save</button>
-            <button class="btn-secondary" data-intro-cancel style="font-size:0.82rem">Cancel</button>
+          <div class="intro-acc-body">
+            <textarea id="intro-edit-blurb" class="form-input" rows="4" style="font-size:0.82rem;resize:vertical">${esc(blurb)}</textarea>
+            <input id="intro-edit-dropbox" class="form-input" placeholder="Dropbox / Drive folder link" value="${esc(dropbox)}" style="font-size:0.82rem;margin-top:8px">
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button class="btn-primary" data-intro-save="${cls.key}" style="font-size:0.8rem">Save</button>
+              <button class="btn-secondary" data-intro-cancel style="font-size:0.8rem">Cancel</button>
+            </div>
           </div>
         </div>`;
     }
 
     return `
-      <div class="intro-class-info-card" style="border-top:4px solid ${color}">
-        <div class="intro-class-info-top">
+      <div class="intro-acc-card ${isOpen ? 'intro-acc-open' : ''}" style="border-left:4px solid ${color}">
+        <button class="intro-acc-header" data-intro-expand="${cls.key}">
           <span class="intro-class-info-icon" style="background:${color}18;color:${color}">${cls.icon}</span>
-          <strong style="color:${color};font-size:1rem">${cls.name}</strong>
-          ${S.teacherMode ? `<button class="btn-secondary intro-edit-btn" data-intro-edit="${cls.key}" style="margin-left:auto;font-size:0.75rem;padding:3px 9px">Edit</button>` : ''}
-        </div>
-        <p class="intro-class-info-blurb">${esc(blurb)}</p>
-        ${dropbox ? `<a href="${dropbox}" target="_blank" class="intro-dropbox-link">📁 Open Class Dropbox →</a>` : (S.teacherMode ? `<span style="font-size:0.75rem;color:var(--dim)">No dropbox link yet — click Edit to add one.</span>` : '')}
+          <span class="intro-acc-name" style="color:${color}">${cls.name}</span>
+          <span class="intro-acc-chevron">${isOpen ? '▲' : '▼'}</span>
+        </button>
+        ${isOpen ? `
+        <div class="intro-acc-body">
+          <p class="intro-class-info-blurb">${esc(blurb)}</p>
+          ${dropbox ? `<a href="${dropbox}" target="_blank" class="intro-dropbox-link">📁 Open Class Dropbox →</a>` : ''}
+          ${S.teacherMode ? `<button class="btn-secondary" data-intro-edit="${cls.key}" style="font-size:0.75rem;padding:3px 10px;margin-top:8px">Edit</button>` : ''}
+          ${S.teacherMode && !dropbox ? `<p style="font-size:0.72rem;color:var(--dim);margin:6px 0 0">No dropbox link yet — click Edit to add one.</p>` : ''}
+        </div>` : ''}
       </div>`;
   }).join('');
 
@@ -1168,12 +1177,17 @@ function renderIntro() {
       </div>
       <div class="page-grid">
         <div class="main-col">
-          <section class="card">
-            <div class="card-header"><h2>Our Classes</h2></div>
-            <div class="intro-class-info-list">${cards}</div>
+          <section class="card coming-soon-card">
+            <div class="coming-soon-icon">🎓</div>
+            <h2>Welcome, First Years</h2>
+            <p>This is your home base for the intro semester. Lessons, assignments, and resources will appear here.</p>
           </section>
         </div>
         <div class="side-col">
+          <section class="card">
+            <div class="card-header"><h2>Our Classes</h2></div>
+            <div class="intro-acc-list">${cards}</div>
+          </section>
           <section class="card action-card" style="--ac:#f59e0b">
             <div class="action-icon">📚</div>
             <h3>Lessons</h3>
@@ -2796,6 +2810,14 @@ function attachListeners() {
     }));
 
   // ── Intro class info edit handlers ──────────────────────────
+  document.querySelectorAll('[data-intro-expand]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.introExpand;
+      S.expandedIntroClass = S.expandedIntroClass === key ? null : key;
+      render();
+    });
+  });
+
   document.querySelectorAll('[data-intro-edit]').forEach(btn => {
     btn.addEventListener('click', () => { S.editingIntroClass = btn.dataset.introEdit; render(); });
   });

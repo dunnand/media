@@ -234,15 +234,18 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 .indepth-card:hover  .class-enter { color: var(--indepth); }
 .intro-card:hover    .class-enter { color: var(--intro); }
 
-/* ── Intro Class Info Cards ──────────────────────────────────── */
-.intro-class-info-list { display: flex; flex-direction: column; gap: 16px; margin-top: 8px; }
-.intro-class-info-card { background: var(--surface2); border-radius: 12px; padding: 16px; border-top: 4px solid var(--border); }
-.intro-class-info-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-.intro-class-info-icon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
-.intro-class-info-blurb { font-size: 0.85rem; color: var(--dim); margin: 0 0 12px; line-height: 1.55; }
-.intro-dropbox-link { display: inline-flex; align-items: center; gap: 6px; font-size: 0.82rem; font-weight: 600; color: var(--accent); text-decoration: none; padding: 6px 12px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border); transition: background 0.15s; }
+/* ── Intro Class Accordion ───────────────────────────────────── */
+.intro-acc-list { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.intro-acc-card { border-radius: 10px; border-left: 4px solid var(--border); background: var(--surface2); overflow: hidden; }
+.intro-acc-header { display: flex; align-items: center; gap: 10px; width: 100%; background: none; border: none; padding: 10px 12px; cursor: pointer; text-align: left; }
+.intro-acc-header:hover { background: var(--border); }
+.intro-class-info-icon { width: 30px; height: 30px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+.intro-acc-name { font-size: 0.85rem; font-weight: 600; flex: 1; }
+.intro-acc-chevron { font-size: 0.65rem; color: var(--dim); margin-left: auto; }
+.intro-acc-body { padding: 0 12px 12px; }
+.intro-class-info-blurb { font-size: 0.82rem; color: var(--dim); margin: 0 0 10px; line-height: 1.5; }
+.intro-dropbox-link { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 600; color: var(--accent); text-decoration: none; padding: 5px 11px; background: var(--surface); border-radius: 7px; border: 1px solid var(--border); transition: background 0.15s; }
 .intro-dropbox-link:hover { background: var(--border); }
-.intro-edit-btn { flex-shrink: 0; }
 
 /* ── Class Pages ─────────────────────────────────────────── */
 .class-page {
