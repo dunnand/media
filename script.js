@@ -1768,7 +1768,7 @@ function inferYbType(title) {
 }
 
 // Sport types that always show regardless of home/away filter
-const YB_ALWAYS_SHOW = new Set(['dance', 'nhs', 'showchoir', 'graduation', 'other']);
+const YB_ALWAYS_SHOW = new Set(['dance', 'nhs', 'showchoir', 'graduation', 'other', 'marching_band', 'jazz_band', 'color_guard', 'indoor_percussion', 'winter_guard', 'homecoming', 'cheer', 'dance_team']);
 
 // Detects home/away using three signals in priority order:
 // 1. Description contains "home" or "away" keyword
