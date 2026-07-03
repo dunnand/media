@@ -2,6 +2,23 @@
 // HOMESTEAD MEDIA — Main Application Script
 // ============================================================
 
+// ── Version / CDN cache buster ───────────────────────────────
+// When this value changes, users are auto-redirected to a URL
+// the CDN has never cached, forcing a fully fresh load.
+const APP_VERSION = '20270703';
+(function() {
+  const k = 'hm_version';
+  if (localStorage.getItem(k) === APP_VERSION) return;
+  const url = new URL(location.href);
+  if (url.searchParams.get('_v') === APP_VERSION) {
+    localStorage.setItem(k, APP_VERSION);
+    return;
+  }
+  localStorage.setItem(k, APP_VERSION);
+  url.searchParams.set('_v', APP_VERSION);
+  location.replace(url.toString());
+})();
+
 // ── Firebase ─────────────────────────────────────────────────
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyADo4bTrSIgnLwQkYXsIIbivyZSPcNHATM",
@@ -49,6 +66,8 @@ const S = {
   introClassInfo: {},
   editingIntroClass: null,
   expandedIntroClass: null,
+  showQuickLinks: true,
+  broadcastChecklist: {},
   yearbookCoverage: [],
   customYbEvents: [],
   calendarYbEvents: [],
@@ -99,6 +118,7 @@ function go(view, extra) {
   if (view === 'yearbook')  loadYearbookCoverage();
   if (view === 'beats')   loadBeatAssignments();
   if (view === 'indepth') loadRundownData();
+  if (view === 'broadcast' && S.broadcastId) loadBroadcastChecklist(S.broadcastId);
 }
 
 // ── Render ────────────────────────────────────────────────────
@@ -675,6 +695,35 @@ function renderLive() {
               ${LIVE_ROLES.map(r => `<div class="role-chip">${r}</div>`).join('')}
             </div>
           </section>
+          <section class="card live-ref-card">
+            <h2>🎨 Graphics Basics</h2>
+            <div class="live-ref-grid">
+              <div class="live-ref-item"><span class="live-ref-label">Size</span><span class="live-ref-val">1920 × 1080 px</span></div>
+              <div class="live-ref-item"><span class="live-ref-label">DPI</span><span class="live-ref-val">300</span></div>
+              <div class="live-ref-item"><span class="live-ref-label">Mode</span><span class="live-ref-val">RGB</span></div>
+              <div class="live-ref-item"><span class="live-ref-label">BG</span><span class="live-ref-val">Transparent</span></div>
+              <div class="live-ref-item"><span class="live-ref-label">Font</span><span class="live-ref-val">Industry</span></div>
+              <div class="live-ref-item live-ref-rule"><span class="live-ref-label">Rule #1</span><span class="live-ref-val all-caps-badge">ALL CAPS</span></div>
+            </div>
+            <div class="live-ref-links">
+              <a href="https://drive.google.com/drive/folders/1Au4CFu82rCkzyhEPzzHPjWtA9nSX2vxk?usp=drive_link" target="_blank" class="live-ref-link">📐 Safe Area Templates ↗</a>
+              <a href="https://drive.google.com/file/d/1dMTaMixqSfk8yHo9ShjAhlK6whOMa0qC/view" target="_blank" class="live-ref-link">📄 Style Guide PDF ↗</a>
+            </div>
+          </section>
+          <section class="card live-quicklinks-card">
+            <div class="card-header live-ql-header" id="ql-toggle" style="cursor:pointer">
+              <h2>🔗 Quick Links</h2>
+              <span class="live-ql-chevron">${S.showQuickLinks ? '▲' : '▼'}</span>
+            </div>
+            ${S.showQuickLinks ? `
+            <div class="live-ql-sections">
+              ${LIVE_QUICK_LINKS.map(section => `
+                <div class="live-ql-section">
+                  <div class="live-ql-section-heading">${esc(section.heading)}</div>
+                  ${section.links.map(l => `<a href="${l.url}" target="_blank" class="live-ql-link">${esc(l.label)} ↗</a>`).join('')}
+                </div>`).join('')}
+            </div>` : ''}
+          </section>
         </div>
       </div>
     </div>`;
@@ -839,6 +888,31 @@ function renderBroadcast() {
                 </div>`).join('')}
             </div>
           </section>
+          ${(() => {
+            const gcItems = BROADCAST_CHECKLISTS[b.type];
+            if (!gcItems) return '';
+            const checked = S.broadcastChecklist[b.id] || new Set();
+            const done = gcItems.filter(i => checked.has(i.id)).length;
+            const pct = Math.round((done / gcItems.length) * 100);
+            return `
+            <section class="card gc-card">
+              <div class="card-header">
+                <h2>🎨 Graphics Checklist</h2>
+                <span class="gc-progress-badge">${done}/${gcItems.length}</span>
+              </div>
+              <div class="gc-progress-bar-wrap"><div class="gc-progress-bar" style="width:${pct}%"></div></div>
+              <div class="gc-list">
+                ${gcItems.map(item => `
+                  <label class="gc-item${checked.has(item.id) ? ' gc-checked' : ''}">
+                    <input type="checkbox" class="gc-check" data-gc-toggle="${item.id}" data-gc-bid="${b.id}" ${checked.has(item.id) ? 'checked' : ''}>
+                    <div class="gc-item-body">
+                      <div class="gc-item-label">${esc(item.label)}</div>
+                      ${item.sub ? `<div class="gc-item-sub">${esc(item.sub)}</div>` : ''}
+                    </div>
+                  </label>`).join('')}
+              </div>
+            </section>`;
+          })()}
         </div>
         <div class="side-col">
           ${renderAvailabilityCard(b)}
@@ -2838,6 +2912,25 @@ function attachListeners() {
     });
   });
 
+  const qlToggle = document.getElementById('ql-toggle');
+  if (qlToggle) qlToggle.addEventListener('click', () => { S.showQuickLinks = !S.showQuickLinks; render(); });
+
+  // ── Broadcast graphics checklist toggles ────────────────────
+  document.querySelectorAll('[data-gc-toggle]').forEach(cb => {
+    cb.addEventListener('change', async () => {
+      const bid  = cb.dataset.gcBid;
+      const item = cb.dataset.gcToggle;
+      const set  = S.broadcastChecklist[bid] || new Set();
+      cb.checked ? set.add(item) : set.delete(item);
+      S.broadcastChecklist[bid] = set;
+      const db = getDB();
+      if (db) {
+        trackUsage('writes');
+        await db.collection('hm_broadcast_gc').doc(bid).set({ checked: [...set] }, { merge: true });
+      }
+    });
+  });
+
   // ── Lesson delete / hide handlers ───────────────────────────
   document.querySelectorAll('[data-delete-lesson]').forEach(btn => {
     btn.addEventListener('click', async e => {
@@ -3439,6 +3532,18 @@ async function loadHiddenLessons() {
     trackUsage('reads', snap.size || 1);
     S.hiddenLessons = new Set(snap.docs.map(d => d.id));
   } catch(e) {}
+}
+
+async function loadBroadcastChecklist(bid) {
+  if (S.broadcastChecklist[bid]) { render(); return; }
+  const db = getDB();
+  if (!db) return;
+  try {
+    const doc = await db.collection('hm_broadcast_gc').doc(bid).get();
+    trackUsage('reads', 1);
+    S.broadcastChecklist[bid] = new Set(doc.exists ? (doc.data().checked || []) : []);
+  } catch(e) { S.broadcastChecklist[bid] = new Set(); }
+  render();
 }
 
 // ── Init ──────────────────────────────────────────────────────

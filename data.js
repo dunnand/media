@@ -193,6 +193,119 @@ const YB_DROPBOX_FOLDERS = {
   key_club:          '1fimQpUr_O9zxAqR4XxQcdPdY5GQoM_M4',
 };
 
+// ── Homestead Live — Quick Links ──────────────────────────────
+const LIVE_QUICK_LINKS = [
+  { heading: '📅 Calendar', links: [
+    { label: 'Add to Google Calendar', url: 'https://calendar.google.com/calendar/embed?src=thepoint91fm%40gmail.com&ctz=America%2FIndiana%2FIndianapolis' },
+    { label: 'iCal / Apple Calendar', url: 'https://calendar.google.com/calendar/ical/thepoint91fm%40gmail.com/public/basic.ics' },
+  ]},
+  { heading: '📋 Production Sheets', links: [
+    { label: 'Boys Basketball', url: 'https://docs.google.com/document/d/1vGGuJxumEk0B6Br0VR4iZt4GV3A6LAm0Ebg-uZ67IBQ/edit?usp=drive_link' },
+    { label: 'Girls Basketball', url: 'https://docs.google.com/document/d/1lp7vD4rdBB18dNg9VU99TwFGxw4y8dz5bsM0wVtIxjQ/edit?usp=drive_link' },
+    { label: 'Football', url: 'https://docs.google.com/document/d/1Bp_Yg7c97YroLEQ264LyM2G7qDAuBgrFn27TrM0Ont8/edit?usp=drive_link' },
+    { label: 'Volleyball', url: 'https://docs.google.com/document/d/1fkT8ySHm13vNjJWUsjT0vj6lf1_vEt4XxH0c7t7ceCY/edit?usp=drive_link' },
+  ]},
+  { heading: '📊 Spot Charts', links: [
+    { label: 'Football', url: 'https://docs.google.com/spreadsheets/d/1zEtSXB_eoldnErFlL8IY62f8iVDAeGkcbYhANM8bfF8/edit?gid=1232846000#gid=1232846000' },
+    { label: 'Boys Basketball', url: 'https://docs.google.com/spreadsheets/d/1TAqanNcbNq-_2LSBR8WbrLKku5SYIuXB3KLQ3bee5vg/edit#gid=684224407' },
+    { label: 'Girls Basketball', url: 'https://docs.google.com/spreadsheets/d/10wpNX-SLpU4jtjBTXlI7W2CZcXNeu0c6eYnd-2SR3KA/edit?gid=1847088814' },
+    { label: 'Volleyball', url: 'https://docs.google.com/spreadsheets/d/1xooug44OmFHuxMvN44Y0bpYwH6HB13h1f8_m1dGURok/edit?gid=1847088814' },
+  ]},
+  { heading: '📁 Google Drive', links: [
+    { label: 'Assets (Logos, Stock, Stats)', url: 'https://drive.google.com/drive/u/0/folders/0AKKODezhtTg2Uk9PVA' },
+    { label: 'Homestead Live CLASS', url: 'https://drive.google.com/drive/u/0/folders/0AJfm1_t6EpJjUk9PVA' },
+    { label: 'Livestream Computer (Completed Graphics)', url: 'https://drive.google.com/drive/u/0/folders/0AMt6Hze2xzJPUk9PVA' },
+    { label: 'Graphic Checklist & Schedule', url: 'https://docs.google.com/spreadsheets/d/1erBfJz-t7TNa8LV4mhjJUrVf7WWKnaXcTkRqpFqFNKQ/edit?gid=740781133' },
+    { label: 'Safe Area Templates', url: 'https://drive.google.com/drive/folders/1Au4CFu82rCkzyhEPzzHPjWtA9nSX2vxk?usp=drive_link' },
+    { label: 'Style Guide PDF', url: 'https://drive.google.com/file/d/1dMTaMixqSfk8yHo9ShjAhlK6whOMa0qC/view' },
+  ]},
+  { heading: '📈 Stats & Scores', links: [
+    { label: 'MaxPreps — All Sports', url: 'https://www.maxpreps.com/in/fort-wayne/homestead-spartans/' },
+    { label: 'Football Rankings & Standings', url: 'https://scoreboard.homestead.com/football/teams.htm' },
+    { label: 'Boys Basketball Rankings', url: 'http://www.johnharrell.net/boys.html' },
+    { label: 'Girls Basketball Rankings', url: 'https://indianagirlsbasketball.homestead.com/' },
+    { label: 'Area Scores Spreadsheet', url: 'https://docs.google.com/spreadsheets/d/1WuJgWJoVVqDaPKLueE71wMRttiowiHx8j46Rcl3Dkmw/edit?gid=508178785' },
+    { label: 'W/L History (Basketball & Football)', url: 'https://docs.google.com/spreadsheets/d/1BPFhuh1XOj04DvI6R4uMMxHZ1gnSjvu0goEudoaVnuI/copy' },
+  ]},
+  { heading: '🎨 Style Resources', links: [
+    { label: 'Transparent Textures', url: 'https://www.transparenttextures.com/' },
+    { label: 'Poly Haven Textures', url: 'https://polyhaven.com/textures' },
+  ]},
+  { heading: '📺 YouTube', links: [
+    { label: 'Homestead High School Media', url: 'https://www.youtube.com/c/homesteadhighschoolmedia' },
+  ]},
+];
+
+// ── Homestead Live — Graphics Checklists per sport ────────────
+const BROADCAST_CHECKLISTS = {
+  football: [
+    { id: 'fb-scoreboard',  label: 'Main Scoreboard',        sub: 'Record Overall · Conference · State Standing' },
+    { id: 'fb-schedule',    label: 'Home & Away Schedule',   sub: 'Scores + W/L for each played game' },
+    { id: 'fb-establishing',label: 'Establishing Graphic',   sub: 'Record Overall · State Standing' },
+    { id: 'fb-lastgame',    label: 'Home & Away Last Game',  sub: 'Score · Star Player Highlight Stat' },
+    { id: 'fb-coach',       label: 'Home & Away Coach',      sub: 'Overall record' },
+    { id: 'fb-player',      label: 'Player Lower 3rd',       sub: 'Name · Position · Grade · Number · Stats' },
+    { id: 'fb-broadcast',   label: 'Broadcast Team',         sub: 'All talent names' },
+    { id: 'fb-sac',         label: 'SAC Standings',          sub: 'Both divisions · Conference + Overall record' },
+    { id: 'fb-waiting',     label: 'Waiting Screen',         sub: 'Updated footage from this season' },
+    { id: 'fb-thumbnail',   label: 'YouTube Thumbnail',      sub: '' },
+    { id: 'fb-matchups',    label: 'SAC Matchups',           sub: '' },
+    { id: 'fb-nextgame',    label: 'Next Broadcast',         sub: '' },
+    { id: 'fb-tobreak',     label: 'To Break Scoreboard',    sub: '' },
+    { id: 'fb-stats',       label: 'Stats Graphic',          sub: '' },
+    { id: 'fb-weather',     label: 'Weather',                sub: '' },
+    { id: 'fb-touchdown',   label: 'Touchdown Graphic',      sub: '' },
+    { id: 'fb-areascores',  label: 'Area Scores',            sub: '' },
+  ],
+  basketball_boys: [
+    { id: 'bb-scoreboard',  label: 'Main Scoreboard',        sub: 'Record Overall · Conference · State Standing' },
+    { id: 'bb-last5',       label: 'Home & Away Last 5',     sub: 'Scores + W/L' },
+    { id: 'bb-sac',         label: 'SAC Standings',          sub: '' },
+    { id: 'bb-lastgames',   label: 'Home & Away Last Games', sub: '' },
+    { id: 'bb-establishing',label: 'Establishing Graphic',   sub: '' },
+    { id: 'bb-nextgame',    label: 'Next Game',              sub: '' },
+    { id: 'bb-coach',       label: 'Home & Away Coach',      sub: '' },
+    { id: 'bb-lineup',      label: 'Starting Lineup',        sub: '' },
+    { id: 'bb-broadcast',   label: 'Broadcasters',           sub: 'All talent names' },
+    { id: 'bb-tobreak',     label: 'To Break Scoreboard',    sub: '' },
+    { id: 'bb-stats',       label: 'Game Stats',             sub: '' },
+    { id: 'bb-thumbnail',   label: 'YouTube Thumbnail',      sub: '' },
+    { id: 'bb-aroundsac',   label: 'Around SAC',             sub: '' },
+    { id: 'bb-freethrow',   label: 'Free Throw Graphic',     sub: 'Home & Away' },
+    { id: 'bb-areascores',  label: 'Area Scores',            sub: '' },
+  ],
+  basketball_girls: [
+    { id: 'bg-scoreboard',  label: 'Main Scoreboard',        sub: 'Record Overall · Conference · State Standing' },
+    { id: 'bg-last5',       label: 'Home & Away Last 5',     sub: 'Scores + W/L' },
+    { id: 'bg-sac',         label: 'SAC Standings',          sub: '' },
+    { id: 'bg-lastgames',   label: 'Home & Away Last Games', sub: '' },
+    { id: 'bg-establishing',label: 'Establishing Graphic',   sub: '' },
+    { id: 'bg-nextgame',    label: 'Next Game',              sub: '' },
+    { id: 'bg-coach',       label: 'Home & Away Coach',      sub: '' },
+    { id: 'bg-lineup',      label: 'Starting Lineup',        sub: '' },
+    { id: 'bg-broadcast',   label: 'Broadcasters',           sub: 'All talent names' },
+    { id: 'bg-tobreak',     label: 'To Break Scoreboard',    sub: '' },
+    { id: 'bg-stats',       label: 'Game Stats',             sub: '' },
+    { id: 'bg-thumbnail',   label: 'YouTube Thumbnail',      sub: '' },
+    { id: 'bg-aroundsac',   label: 'Around SAC',             sub: '' },
+    { id: 'bg-freethrow',   label: 'Free Throw Graphic',     sub: 'Home & Away' },
+    { id: 'bg-areascores',  label: 'Area Scores',            sub: '' },
+  ],
+  volleyball: [
+    { id: 'vb-scoreboard',  label: 'Main Scoreboard',        sub: 'Record Overall' },
+    { id: 'vb-last5',       label: 'Home & Away Last 5',     sub: 'Scores + W/L' },
+    { id: 'vb-establishing',label: 'Establishing Graphic',   sub: 'Record Overall' },
+    { id: 'vb-coach',       label: 'Home & Away Coach',      sub: 'Name · Overall record' },
+    { id: 'vb-starplayer',  label: 'Home & Away Star Player',sub: 'Name · Year · Position' },
+    { id: 'vb-lineup',      label: 'Starting Lineup',        sub: 'Name · Number · Position · Grade' },
+    { id: 'vb-broadcast',   label: 'Broadcasters',           sub: 'All talent names' },
+    { id: 'vb-previous',    label: 'Previous Match Results', sub: 'Teams · Date · Scores' },
+    { id: 'vb-tobreak',     label: 'Current Match — To Break', sub: '' },
+    { id: 'vb-nextgame',    label: 'Next Game',              sub: '' },
+    { id: 'vb-thumbnail',   label: 'YouTube Thumbnail',      sub: '' },
+  ],
+};
+
 // Google Drive folder links — Dropbox 2027 in Audio Broadcasting shared drive
 const IASB_DROPBOX_URL = 'https://drive.google.com/drive/folders/1Kg4UYcKzOLNYYqoEOG3fo2xbwNQtZCIY';
 
@@ -1677,6 +1790,59 @@ const LESSONS = {
         id: 'u1',
         title: 'Unit 1 — Broadcast Graphics',
         lessons: [
+          {
+            id: 'graphics-basics',
+            title: 'Graphics Basics',
+            duration: '1–2 classes',
+            summary: 'Photoshop setup, font rules, safe area standards, and the full-game graphic requirements for every Homestead Live broadcast.',
+            sections: [
+              { type: 'intro', content: 'Every graphic you make for Homestead Live follows the same set of standards. Learn these once and they apply to Football, Basketball, Volleyball — every sport. This lesson covers Photoshop setup, the Industry font family, safe area rules, and what scoreboards need to pull every game.' },
+              { type: 'callout', label: '🔤 The #1 Rule', items: [
+                '<strong>CAPITALIZE EVERYTHING.</strong> All team names, player names, locations, and labels must be in ALL CAPS on every graphic. No exceptions.',
+              ]},
+              { type: 'keyterms', title: 'Photoshop Document Setup', terms: [
+                { term: 'Resolution', def: '1920 × 1080 px — standard HD broadcast resolution. Never smaller.' },
+                { term: 'DPI', def: '300 DPI for print-quality sharpness, even for video graphics.' },
+                { term: 'Color Mode', def: 'RGB — not CMYK. Video displays use RGB color.' },
+                { term: 'Background', def: 'Transparent — not white or black. Transparency lets graphics layer over video in the switcher.' },
+              ]},
+              { type: 'keyterms', title: 'Font Family', terms: [
+                { term: 'Industry', def: 'The official Homestead Live font family. Used for all scoreboard numbers, team names, labels, and lower thirds. Download from the Assets drive.' },
+                { term: 'Industry Bold', def: 'Use for scores, records, key stats — anything that needs to punch at a distance.' },
+                { term: 'Industry Book', def: 'Use for secondary labels, sub-headings, and supporting text.' },
+              ]},
+              { type: 'text', title: '📐 Safe Area', content: 'The <strong>safe title area</strong> is the rectangle inside the frame where all critical text and logos must stay. Anything outside it risks being cut off on older TVs or broadcast monitors. Use the <a href="https://drive.google.com/drive/folders/1Au4CFu82rCkzyhEPzzHPjWtA9nSX2vxk?usp=drive_link" target="_blank">Safe Area Templates in the CLASS Drive ↗</a> as your starting layer for every graphic.' },
+              { type: 'list', title: '📊 Scoreboard Essentials — What to Pull Every Game', items: [
+                '<strong>Scores</strong> — live, always accurate',
+                '<strong>Game Clock</strong> — quarter/period/set remaining',
+                '<strong>Quarter / Period / Set indicator</strong>',
+                '<strong>Fouls</strong> (basketball) — include Bonus indicator',
+                '<strong>Timeouts remaining</strong> — 5 per team (basketball)',
+                '<strong>Possession Arrow</strong> (basketball)',
+                '<strong>Record</strong> — Overall W/L for both teams',
+                '<strong>Conference Record</strong> — separate from overall',
+                '<strong>State Rankings</strong> — pull from sport-specific poll before each game',
+                '<strong>Area Scoreboard</strong> — other SAC games happening the same night',
+              ]},
+              { type: 'list', title: '🔍 Pre-Game Updates (pull before every broadcast)', items: [
+                'Overall record (both teams) — MaxPreps or spot chart',
+                'Conference record (both teams)',
+                'State rankings — check the correct class (1A–4A) and the correct poll (football, boys/girls basketball)',
+                'Area scoreboard — get game times for other SAC matchups to list in area scores graphic',
+              ]},
+              { type: 'keyterms', title: '📏 SAC (Summit Athletic Conference) Teams', terms: [
+                { term: 'Large Schools', def: 'Homestead · Carroll · Concordia · Snider · Wayne · North Side · South Side · Northrop' },
+                { term: 'Small Schools', def: 'Bishop Luers · Bishop Dwenger · Canterbury · Churubusco · East Noble · Elmhurst · Huntington · Norwell · Leo · Woodlan · East Allen County · New Haven · Heritage · Adams Central · Bellmont · Bluffton' },
+              ]},
+              { type: 'callout', label: '📁 Key Resources', items: [
+                '<a href="https://drive.google.com/drive/u/0/folders/0AKKODezhtTg2Uk9PVA" target="_blank">Assets Drive — Logos, Stock Footage, Templates ↗</a>',
+                '<a href="https://drive.google.com/drive/u/0/folders/0AJfm1_t6EpJjUk9PVA" target="_blank">Homestead Live CLASS Drive — Assignments & Templates ↗</a>',
+                '<a href="https://drive.google.com/drive/u/0/folders/0AMt6Hze2xzJPUk9PVA" target="_blank">Livestream Computer Drive — Completed Graphics ↗</a>',
+                '<a href="https://drive.google.com/drive/folders/1Au4CFu82rCkzyhEPzzHPjWtA9nSX2vxk?usp=drive_link" target="_blank">Safe Area Templates ↗</a>',
+                '<a href="https://drive.google.com/file/d/1dMTaMixqSfk8yHo9ShjAhlK6whOMa0qC/view" target="_blank">Style Guide PDF ↗</a>',
+              ]},
+            ]
+          },
           {
             id: 'basketball-scoreboard',
             title: 'Basketball Main Scoreboard',
