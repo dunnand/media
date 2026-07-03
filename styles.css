@@ -1387,20 +1387,6 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 .lesson-delete-btn { background: none; border: none; color: var(--dim); font-size: 1rem; cursor: pointer; padding: 4px 6px; border-radius: 6px; line-height: 1; }
 .lesson-delete-btn:hover { background: #ef444422; color: #ef4444; }
 
-/* ── Intro Course Sidebar ────────────────────────────────────── */
-.intro-course-grid { display: grid; grid-template-columns: 1fr 280px; gap: 24px; align-items: start; }
-@media (max-width: 720px) { .intro-course-grid { grid-template-columns: 1fr; } }
-.intro-sidebar { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px; position: sticky; top: 16px; }
-.intro-sidebar-header { font-size: 0.7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
-.intro-sidebar-sub { font-size: 0.78rem; color: var(--dim); margin: 0 0 14px; line-height: 1.4; }
-.intro-class-cards { display: flex; flex-direction: column; gap: 10px; }
-.intro-class-card { background: var(--surface2); border-radius: 10px; padding: 12px 12px 12px 14px; border-left: 4px solid var(--border); }
-.intro-class-card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
-.intro-class-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
-.intro-class-name { font-size: 0.85rem; font-weight: 600; line-height: 1.2; }
-.intro-class-meta { font-size: 0.72rem; color: var(--dim); margin-top: 2px; }
-.intro-class-desc { font-size: 0.78rem; color: var(--dim); margin: 0; line-height: 1.4; }
-
 /* ── Lesson Slideshow ────────────────────────────────────────── */
 .ls-show {
   display: flex; flex-direction: column;
