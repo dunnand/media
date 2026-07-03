@@ -1527,7 +1527,65 @@ const LESSONS = {
     name: 'Homestead Live',
     color: '#06b6d4',
     icon: '🎬',
-    units: []
+    units: [
+      {
+        id: 'u1',
+        title: 'Unit 1 — Broadcast Graphics',
+        lessons: [
+          {
+            id: 'basketball-scoreboard',
+            title: 'Basketball Main Scoreboard',
+            duration: '2–3 classes',
+            summary: 'Design the on-screen scoreboard for Homestead Live basketball broadcasts using Photoshop and the safe title area template.',
+            sections: [
+              { type: 'intro', content: 'The main scoreboard is the most-watched graphic on every basketball broadcast. It stays on screen for the entire game and communicates score, time, fouls, timeouts, and team identity to every viewer. Your job is to design one from scratch using the HHS Media template — professional, clean, and broadcast-ready.' },
+              { type: 'callout', label: '📋 Assignment', items: [
+                'Start with: <strong>Homestead vs Northridge</strong> — Homestead on the left',
+                'Download and open the <a href="https://drive.google.com/file/d/1_zO0X9xnj1UcvoSZksVEOd4PKhiq9S6C/view?usp=drive_link" target="_blank">Homestead Media Graphics Template (.psdt) ↗</a>',
+                'First Draft Due: <strong>Monday, September 29</strong>',
+                'Submit finished file to the <a href="https://drive.google.com/drive/folders/1HP0GQvtbRI1kq2QUi8H3qOzfV-6QYw6y?usp=drive_link" target="_blank">Dropbox folder ↗</a>',
+              ]},
+              { type: 'text', title: '📐 What Is the Safe Title Area?', content: 'The <strong>safe title area</strong> is a designated rectangular zone within a video frame where text and graphics are guaranteed to be visible on all screens, regardless of display type or manufacturer. It sits far enough from the edges so nothing gets cut off or distorted. <strong>Every critical element on your scoreboard must live inside this zone.</strong> This is a professional broadcast standard — not optional.' },
+              { type: 'list', title: '✅ Required Scoreboard Elements', items: [
+                'FOULS — with space to indicate "Bonus"',
+                'SCORE BOX',
+                'GAME CLOCK',
+                'QUARTER INDICATOR',
+                'Possession Arrow',
+                '<a href="https://drive.google.com/drive/folders/1i2t01gZpjHKMT3PlgOBptH-7rtV1XPH5?usp=drive_link" target="_blank">OPS Logo ↗</a>',
+                '<a href="https://drive.google.com/drive/folders/1i2t01gZpjHKMT3PlgOBptH-7rtV1XPH5?usp=drive_link" target="_blank">FWO Logo ↗</a>',
+                'Remaining Timeouts — 5 per team',
+                'HOME: Logo & Colors · Ranking · Full School Name · Overall Record · Conference Record',
+                'AWAY: Logo & Colors · Ranking · Full School Name · Overall Record · Conference Record',
+              ]},
+              { type: 'keyterms', title: 'Team Names, Logos & Colors', terms: [
+                { term: 'Team Names', def: 'ALL CAPITAL LETTERS. Check the <a href="https://docs.google.com/spreadsheets/d/1erBfJz-t7TNa8LV4mhjJUrVf7WWKnaXcTkRqpFqFNKQ/edit#gid=0" target="_blank">Broadcast Templates spreadsheet ↗</a> for correct spellings. Plan for long names — "HUNTINGTON NORTH" needs to fit.' },
+                { term: 'Team Logos', def: 'All logos are in <a href="https://drive.google.com/drive/folders/14_ckEoSLMSD0wuQvDYS5BY7d-aptIo-x?usp=drive_link" target="_blank">Shared Drive → Livestream Computer → ~All Logos ↗</a>.' },
+                { term: 'SAC Team Colors', def: 'Use <a href="https://drive.google.com/file/d/1A5c2LmeUksu2NEtgESuBl9-npelhClF_/view?usp=drive_link" target="_blank">~SAC Color Palette.psd ↗</a> and <a href="https://drive.google.com/file/d/16GG0QOolatHRjuIq0efGHyWTFCAgMAwu/view?usp=drive_link" target="_blank">~SAC Secondary Palette.psd ↗</a>.' },
+                { term: 'Out-of-Conference Colors', def: 'Use the Photoshop Eyedropper tool to sample colors directly from the team logo.' },
+              ]},
+              { type: 'keyterms', title: '🏆 Finding Team Rankings', terms: [
+                { term: 'Step 1', def: 'Find what class (1A–4A) the opponent is in — rankings are class-specific. Search the team name to determine their classification.' },
+                { term: 'Football', def: '<a href="https://scoreboard.homestead.com/football/teams.htm" target="_blank">scoreboard.homestead.com/football ↗</a>' },
+                { term: 'Boys Basketball (AP Poll)', def: '<a href="http://scoreboard.homestead.com/boys/top10x4A.htm" target="_blank">4A</a> · <a href="http://scoreboard.homestead.com/boys/top10x3A.htm" target="_blank">3A</a> · <a href="http://scoreboard.homestead.com/boys/top10x2A.htm" target="_blank">2A</a> · <a href="http://scoreboard.homestead.com/boys/top10x1A.htm" target="_blank">1A</a>' },
+                { term: 'Girls Basketball (ICGSA)', def: '<a href="http://scoreboard.homestead.com/girls/top104A.htm" target="_blank">4A</a> · <a href="http://scoreboard.homestead.com/girls/top103A.htm" target="_blank">3A</a> · <a href="http://scoreboard.homestead.com/girls/top102A.htm" target="_blank">2A</a> · <a href="http://scoreboard.homestead.com/girls/top101A.htm" target="_blank">1A</a>' },
+              ]},
+              { type: 'keyterms', title: '📊 Team Records', terms: [
+                { term: 'Format', def: 'Show Overall record first, then Conference record. Placement on the graphic matters — be consistent with every team.' },
+                { term: 'Boys Basketball', def: '<a href="https://www.maxpreps.com/in/fort-wayne/homestead-spartans/basketball/" target="_blank">Homestead Boys Varsity — MaxPreps ↗</a>' },
+                { term: 'Girls Basketball', def: '<a href="https://www.maxpreps.com/in/fort-wayne/homestead-spartans/basketball/girls/" target="_blank">Homestead Girls Varsity — MaxPreps ↗</a>' },
+              ]},
+              { type: 'callout', label: '🎨 Design Considerations', items: [
+                '<strong>Lower thirds:</strong> Think about how other graphics interact with your scoreboard — they should complement, not clash.',
+                '<strong>Position & size:</strong> Less screen space is better, but long names like "HUNTINGTON NORTH" must still be readable.',
+                '<strong>Contrast:</strong> The scoreboard needs to be readable at a glance on any TV — test your color choices.',
+                '<strong>Study the pros:</strong> Look at ESPN, Fox Sports, and local TV news scoreboards for layout inspiration.',
+              ]},
+            ]
+          },
+        ]
+      },
+    ]
   },
   yearbook: {
     name: 'Yearbook',
