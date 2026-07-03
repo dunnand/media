@@ -1009,10 +1009,10 @@ function renderSports() {
             <button class="btn-primary" style="background:var(--sports);color:#000" data-nav="availability">Sign Up →</button>
           </section>
           <section class="card action-card" style="--ac:var(--sports)">
-            <div class="action-icon">📚</div>
-            <h3>Sports Lessons</h3>
-            <p>Play-by-play technique, color commentary, and broadcast prep.</p>
-            <button class="btn-primary" style="background:var(--sports);color:#000" data-lesson-course="sports">Go to Lessons →</button>
+            <div class="action-icon">🏆</div>
+            <h3>IASB</h3>
+            <p>Indiana Association of School Broadcasters — competition entries and resources.</p>
+            <button class="btn-primary" style="background:var(--sports);color:#000" data-nav="iasb">Go to IASB →</button>
           </section>
         </div>
       </div>
