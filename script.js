@@ -595,6 +595,27 @@ function renderLive() {
       <div class="page-grid">
         <div class="main-col">
           ${countdownBlock}
+          ${(() => {
+            const liveCourse = LESSONS.live;
+            if (!liveCourse || !liveCourse.units.length) return '';
+            const allLessons = liveCourse.units.flatMap(u => u.lessons.map(l => ({ ...l, unitTitle: u.title, unitId: u.id })));
+            if (!allLessons.length) return '';
+            return `
+            <section class="card">
+              <div class="card-header"><h2>📚 Lessons</h2></div>
+              <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+                ${allLessons.map(l => `
+                  <div class="lesson-item" data-lesson-course="live" data-lesson-unit="${l.unitId}" data-lesson-id="${l.id}" style="cursor:pointer">
+                    <div class="lesson-item-icon">${LESSON_ICONS[l.id] || '🎬'}</div>
+                    <div class="lesson-item-info">
+                      <div class="lesson-item-title">${esc(l.title)}</div>
+                      <div class="lesson-item-meta">${esc(l.unitTitle)} &nbsp;·&nbsp; ${esc(l.duration || '')}</div>
+                    </div>
+                    <div class="lesson-item-arrow">→</div>
+                  </div>`).join('')}
+              </div>
+            </section>`;
+          })()}
           <section class="card">
             <div class="card-header">
               <h2>Next 5 Broadcasts</h2>
