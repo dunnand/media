@@ -1768,7 +1768,7 @@ function inferYbType(title) {
 }
 
 // Sport types that always show regardless of home/away filter
-const YB_ALWAYS_SHOW = new Set(['dance', 'nhs', 'showchoir', 'graduation', 'other', 'marching_band', 'jazz_band', 'color_guard', 'indoor_percussion', 'winter_guard', 'homecoming', 'cheer', 'dance_team']);
+const YB_ALWAYS_SHOW = new Set(['dance', 'nhs', 'showchoir', 'graduation', 'other', 'marching_band', 'jazz_band', 'color_guard', 'indoor_percussion', 'winter_guard', 'homecoming', 'cheer', 'dance_team', 'arts', 'fine_arts', 'school', 'academic', 'club', 'orchestra', 'theater', 'elite_choir', 'speech_debate', 'robotics', 'student_gov', 'prom', 'key_club']);
 
 // Detects home/away using three signals in priority order:
 // 1. Description contains "home" or "away" keyword

@@ -118,7 +118,7 @@ const SPECIAL_EVENTS = [
   { id: 'grad27-0607', title: 'Graduation',             date: '2027-06-07', type: 'graduation', gameTime: '',         roles: {}, checks: {}, notes: 'TBD — time to be announced' },
 ];
 
-const YB_ICONS = { football: '🏈', basketball_boys: '🏀', basketball_girls: '🏀', volleyball: '🏐', soccer_boys: '⚽', soccer_girls: '⚽', golf_boys: '⛳', golf_girls: '⛳', baseball: '⚾', softball: '🥎', cross_country: '🏃', swimming: '🏊', tennis_boys: '🎾', tennis_girls: '🎾', track: '🏃', wrestling: '🤼', gymnastics: '🤸', lacrosse_boys: '🥍', lacrosse_girls: '🥍', bowling_boys: '🎳', bowling_girls: '🎳', dance_team: '💃', cheer: '📣', showchoir: '🎤', arts: '🎭', fine_arts: '🎨', nhs: '🎓', dance: '🪩', school: '🏫', academic: '🏆', club: '🏅', graduation: '🎓', other: '📸', marching_band: '🥁', jazz_band: '🎺', color_guard: '🎨', indoor_percussion: '🥁', winter_guard: '🎀', homecoming: '🎊' };
+const YB_ICONS = { football: '🏈', basketball_boys: '🏀', basketball_girls: '🏀', volleyball: '🏐', volleyball_boys: '🏐', soccer_boys: '⚽', soccer_girls: '⚽', golf_boys: '⛳', golf_girls: '⛳', baseball: '⚾', softball: '🥎', cross_country: '🏃', swimming: '🏊', tennis_boys: '🎾', tennis_girls: '🎾', track: '🏃', wrestling: '🤼', gymnastics: '🤸', lacrosse_boys: '🥍', lacrosse_girls: '🥍', bowling_boys: '🎳', bowling_girls: '🎳', dance_team: '💃', cheer: '📣', showchoir: '🎤', arts: '🎭', fine_arts: '🎨', nhs: '🎓', dance: '🪩', school: '🏫', academic: '🏆', club: '🏅', graduation: '🎓', other: '📸', marching_band: '🥁', jazz_band: '🎺', color_guard: '🎨', indoor_percussion: '🥁', winter_guard: '🎀', homecoming: '🎊', orchestra: '🎻', theater: '🎭', elite_choir: '🎵', speech_debate: '🗣️', robotics: '🤖', student_gov: '🏛️', prom: '🎩', key_club: '🔑' };
 const YEARBOOK_EVENTS = [
   ...FOOTBALL_HOME_GAMES,
   ...BASKETBALL_HOME_GAMES,
@@ -176,6 +176,21 @@ const YB_DROPBOX_FOLDERS = {
   bowling_girls:     '1FKKWAJJ_dO_S08D137IEx3rVos7JzDv2',
   cheer:             '1cama0X2XMQphcWNaqnQA_UiwYu5GS-kS',
   dance_team:        '1gHYz8jkZO4TXiUhMc3EInVjQ3IcDUD1X',
+  fine_arts:         '1yJIKQTq-EMXNHdQB_UqxgTkgrZVauR8F',
+  arts:              '1BIdyc_i3AgONZFCBbrw3aQgSOjJoJnpy',
+  school:            '187sIPJGTdi8-ksgnjhEoJpa7mfjYiqIl',
+  academic:          '1g3Dkzeyylkwjun7M_0g0C0OKjwL1uFRZ',
+  club:              '12YmVmvUf7FHA-GP-VLbcbmJ72GH9fmo2',
+  other:             '1RSh2YvHNKrkeiYloKUCqOe-fidjBT1Ba',
+  orchestra:         '1tu6NtXpT1PRcIes7Npd2Png0lWFi5j8u',
+  theater:           '184DqtDCmkO4YAPRr2-xH4IaMit02hcWz',
+  elite_choir:       '1zeP5j4TVny2fhkDmNMjdJFnpM-UnNhCd',
+  speech_debate:     '13FIe2fVcVPmDmYVV8EJCvhzDa1WQSUz2',
+  robotics:          '1Jflwlen7g9iMBkW2Bp1zQZ9ld2qoQ3p-',
+  student_gov:       '1eI5YmV4W-vEHFcAEp2JmoNCkUPPH20U6',
+  prom:              '1DE4AejbYGQbh9URCTO_fUT17HQuFsYJn',
+  volleyball_boys:   '13IDB3FVZ4mql_5K-gVFc7gDjEre9XU8r',
+  key_club:          '1fimQpUr_O9zxAqR4XxQcdPdY5GQoM_M4',
 };
 
 // Google Drive folder links — Dropbox 2027 in Audio Broadcasting shared drive
