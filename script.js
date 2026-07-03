@@ -2858,6 +2858,41 @@ function renderLessonCourse() {
       </div>`;
   }).join('');
 
+  // Custom Canva lessons for this course
+  const customCanvaItems = Object.entries(S.canvaLessons)
+    .filter(([,d]) => d.isCustom && d.course === S.lessonCourse)
+    .map(([id, d]) => `
+      <div class="lesson-item" data-lesson-course="${S.lessonCourse}" data-lesson-unit="${d.unit || 'u1'}" data-lesson-id="${id}">
+        <div class="lesson-item-icon">🎨</div>
+        <div class="lesson-item-body">
+          <div class="lesson-item-num">Canva Lesson</div>
+          <div class="lesson-item-title">${esc(d.title || 'Untitled')}</div>
+          <div class="lesson-item-summary">${esc(d.summary || '')}</div>
+        </div>
+        <div class="lesson-item-right">
+          <span class="lesson-duration-chip">${esc(d.duration || '')}</span>
+          <span class="lesson-item-arrow">→</span>
+        </div>
+      </div>`).join('');
+
+  const canvaSection = customCanvaItems || S.teacherMode ? `
+    <div class="lesson-unit-block">
+      <div class="lesson-unit-header" style="border-left:4px solid ${course.color};color:${course.color}">Canva Lessons</div>
+      <div class="lesson-items-list">${customCanvaItems}</div>
+      ${S.teacherMode ? (S.showCanvaForm ? `
+        <div style="margin-top:12px;padding:14px;background:var(--surface2);border-radius:10px;display:flex;flex-direction:column;gap:10px">
+          <input id="canva-title" class="form-input" placeholder="Lesson title" style="font-size:0.9rem">
+          <input id="canva-duration" class="form-input" placeholder="Duration (e.g. 2 classes)" style="font-size:0.9rem">
+          <input id="canva-url" class="form-input" placeholder="Canva share link (canva.com/design/...)" style="font-size:0.9rem">
+          <div style="display:flex;gap:8px">
+            <button class="btn-primary" id="canva-save-btn" style="font-size:0.85rem">Add Lesson</button>
+            <button class="btn-secondary" id="canva-cancel-btn" style="font-size:0.85rem">Cancel</button>
+          </div>
+        </div>` : `
+        <button class="btn-secondary" id="canva-add-btn" style="margin-top:10px;font-size:0.82rem;width:100%">+ Add Canva Lesson</button>`)
+      : ''}
+    </div>` : '';
+
   return `
     ${navBar('lessons')}
     <div class="class-page">
@@ -2869,7 +2904,7 @@ function renderLessonCourse() {
           <p>${course.units.length} unit${course.units.length !== 1 ? 's' : ''} · ${course.units.reduce((s, u) => s + u.lessons.length, 0)} lessons</p>
         </div>
       </div>
-      <div class="lesson-units-list">${units}</div>
+      <div class="lesson-units-list">${units}${canvaSection}</div>
     </div>`;
 }
 
