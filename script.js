@@ -43,6 +43,8 @@ const S = {
   lessonUnit: null,
   lessonId: null,
   lessonSlide: 0,
+  canvaLessons: {},
+  showCanvaForm: false,
   yearbookCoverage: [],
   customYbEvents: [],
   calendarYbEvents: [],
@@ -597,27 +599,42 @@ function renderLive() {
           ${countdownBlock}
           ${(() => {
             const liveCourse = LESSONS.live;
-            if (!liveCourse || !liveCourse.units.length) return '';
-            const allLessons = liveCourse.units.flatMap(u => u.lessons.map(l => ({ ...l, unitTitle: u.title, unitId: u.id })));
-            if (!allLessons.length) return '';
+            const fromData = (liveCourse?.units || []).flatMap(u => u.lessons.map(l => ({ ...l, unitTitle: u.title, unitId: u.id })));
+            const fromCanva = Object.entries(S.canvaLessons)
+              .filter(([,d]) => d.isCustom && d.course === 'live')
+              .map(([id, d]) => ({ id, title: d.title, duration: d.duration || '', summary: d.summary || '', unitId: d.unit || 'u1', unitTitle: 'Canva Lesson' }));
+            const allLessons = [...fromData, ...fromCanva];
+            const renderLessonCard = l => `
+              <div class="lesson-item" data-lesson-course="live" data-lesson-unit="${l.unitId}" data-lesson-id="${l.id}">
+                <div class="lesson-item-icon">${S.canvaLessons[l.id]?.url ? '🎨' : (LESSON_ICONS[l.id] || '🎬')}</div>
+                <div class="lesson-item-body">
+                  <div class="lesson-item-num">${esc(l.unitTitle)}</div>
+                  <div class="lesson-item-title">${esc(l.title)}</div>
+                  <div class="lesson-item-summary">${esc(l.summary || '')}</div>
+                </div>
+                <div class="lesson-item-right">
+                  <span class="lesson-duration-chip">${esc(l.duration || '')}</span>
+                  <span class="lesson-item-arrow">→</span>
+                </div>
+              </div>`;
             return `
             <section class="card">
               <div class="card-header"><h2>📚 Lessons</h2></div>
-              <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
-                ${allLessons.map(l => `
-                  <div class="lesson-item" data-lesson-course="live" data-lesson-unit="${l.unitId}" data-lesson-id="${l.id}">
-                    <div class="lesson-item-icon">${LESSON_ICONS[l.id] || '🎬'}</div>
-                    <div class="lesson-item-body">
-                      <div class="lesson-item-num">${esc(l.unitTitle)}</div>
-                      <div class="lesson-item-title">${esc(l.title)}</div>
-                      <div class="lesson-item-summary">${esc(l.summary)}</div>
-                    </div>
-                    <div class="lesson-item-right">
-                      <span class="lesson-duration-chip">${esc(l.duration || '')}</span>
-                      <span class="lesson-item-arrow">→</span>
-                    </div>
-                  </div>`).join('')}
+              <div style="display:flex;flex-direction:column;gap:0;margin-top:4px">
+                ${allLessons.map(renderLessonCard).join('')}
               </div>
+              ${S.teacherMode ? (S.showCanvaForm ? `
+                <div style="margin-top:12px;padding:14px;background:var(--surface2);border-radius:10px;display:flex;flex-direction:column;gap:10px">
+                  <input id="canva-title" class="form-input" placeholder="Lesson title" style="font-size:0.9rem">
+                  <input id="canva-duration" class="form-input" placeholder="Duration (e.g. 2 classes)" style="font-size:0.9rem">
+                  <input id="canva-url" class="form-input" placeholder="Canva share link (canva.com/design/...)" style="font-size:0.9rem">
+                  <div style="display:flex;gap:8px">
+                    <button class="btn-primary" id="canva-save-btn" style="font-size:0.85rem">Add Lesson</button>
+                    <button class="btn-secondary" id="canva-cancel-btn" style="font-size:0.85rem">Cancel</button>
+                  </div>
+                </div>` : `
+                <button class="btn-secondary" id="canva-add-btn" style="margin-top:10px;font-size:0.82rem;width:100%">+ Add Canva Lesson</button>`)
+              : ''}
             </section>`;
           })()}
           <section class="card">
@@ -2692,6 +2709,49 @@ function attachListeners() {
       go('lessons');
     }));
 
+  // ── Canva lesson handlers ────────────────────────────────────
+  const lsConnectCanva = document.getElementById('ls-connect-canva');
+  if (lsConnectCanva) lsConnectCanva.addEventListener('click', async () => {
+    const url = prompt('Paste your Canva share link:', S.canvaLessons[S.lessonId]?.url || '');
+    if (url === null) return;
+    if (url && !url.includes('canva.com')) { showToast('That doesn\'t look like a Canva link.'); return; }
+    const db = getDB();
+    if (!db) return;
+    trackUsage('writes');
+    await db.collection('hm_canva_lessons').doc(S.lessonId).set({ url }, { merge: true });
+    S.canvaLessons[S.lessonId] = { ...(S.canvaLessons[S.lessonId] || {}), url };
+    render();
+  });
+
+  const canvaAddBtn = document.getElementById('canva-add-btn');
+  if (canvaAddBtn) canvaAddBtn.addEventListener('click', () => {
+    S.showCanvaForm = true; render();
+  });
+
+  const canvaCancelBtn = document.getElementById('canva-cancel-btn');
+  if (canvaCancelBtn) canvaCancelBtn.addEventListener('click', () => {
+    S.showCanvaForm = false; render();
+  });
+
+  const canvaSaveBtn = document.getElementById('canva-save-btn');
+  if (canvaSaveBtn) canvaSaveBtn.addEventListener('click', async () => {
+    const title    = document.getElementById('canva-title')?.value.trim();
+    const duration = document.getElementById('canva-duration')?.value.trim();
+    const url      = document.getElementById('canva-url')?.value.trim();
+    if (!title || !url) { showToast('Title and Canva link are required.'); return; }
+    if (!url.includes('canva.com')) { showToast('That doesn\'t look like a Canva link.'); return; }
+    const db = getDB();
+    if (!db) return;
+    trackUsage('writes');
+    const ref  = db.collection('hm_canva_lessons').doc();
+    const data = { url, title, duration, course: 'live', unit: 'u1', isCustom: true, order: Date.now() };
+    await ref.set(data);
+    S.canvaLessons[ref.id] = data;
+    S.showCanvaForm = false;
+    showToast('Canva lesson added!');
+    render();
+  });
+
   document.querySelectorAll('[data-lesson-back]').forEach(el =>
     el.addEventListener('click', () => {
       const dest = el.dataset.lessonBack;
@@ -3001,17 +3061,48 @@ function renderLessonSlide(slide, lesson, lessonNum, icon, course, next) {
 function renderLessonPage() {
   const course = LESSONS[S.lessonCourse];
   if (!course) return renderLessonsHub();
-  const unit = course.units.find(u => u.id === S.lessonUnit);
-  if (!unit) return renderLessonCourse();
-  const lesson = unit.lessons.find(l => l.id === S.lessonId);
+
+  // Support custom Canva-only lessons not in data.js
+  const canvaData = S.canvaLessons[S.lessonId] || {};
+  let unit    = course.units.find(u => u.id === S.lessonUnit);
+  let lesson  = unit?.lessons.find(l => l.id === S.lessonId);
+
+  if (!lesson && canvaData.isCustom) {
+    lesson = { id: S.lessonId, title: canvaData.title || 'Untitled', duration: canvaData.duration || '', summary: canvaData.summary || '', sections: [] };
+    unit   = unit || course.units[0] || { id: 'u1', title: '', lessons: [] };
+  }
   if (!lesson) return renderLessonCourse();
 
-  const allLessons = course.units.flatMap(u => u.lessons.map(l => ({ ...l, unitId: u.id })));
-  const lessonIdx = allLessons.findIndex(l => l.id === S.lessonId && l.unitId === S.lessonUnit);
-  const next = allLessons[lessonIdx + 1] || null;
+  const canvaUrl = canvaData.url;
+  const allLessons = [
+    ...course.units.flatMap(u => u.lessons.map(l => ({ ...l, unitId: u.id }))),
+    ...Object.entries(S.canvaLessons).filter(([,d]) => d.isCustom && d.course === S.lessonCourse).map(([id,d]) => ({ id, title: d.title, unitId: d.unit || 'u1' }))
+  ];
+  const lessonIdx = allLessons.findIndex(l => l.id === S.lessonId);
   const lessonNum = lessonIdx + 1;
-  const icon = LESSON_ICONS[lesson.id] || course.icon;
 
+  // ── Canva embed ──────────────────────────────────────────────
+  if (canvaUrl) {
+    return `
+      <div class="ls-show" style="--clr:${course.color}">
+        <iframe src="${esc(canvaEmbedUrl(canvaUrl))}" class="ls-canva-frame" allowfullscreen allow="fullscreen"></iframe>
+        <div class="ls-controls">
+          <div class="ls-ctrl-left">
+            <button class="ls-back-btn" data-lesson-back="course">← ${esc(course.name)}</button>
+          </div>
+          <div class="ls-ctrl-center">
+            <div class="ls-lesson-label">🎨 ${esc(lesson.title)}</div>
+          </div>
+          <div class="ls-ctrl-right">
+            ${S.teacherMode ? `<button id="ls-connect-canva" class="btn-secondary" style="font-size:0.75rem;padding:4px 10px">✏️ Change Canva URL</button>` : ''}
+          </div>
+        </div>
+      </div>`;
+  }
+
+  // ── Original slideshow ───────────────────────────────────────
+  const icon   = LESSON_ICONS[lesson.id] || course.icon;
+  const next   = allLessons[lessonIdx + 1] || null;
   const slides = [{ type: '_title' }, ...(lesson.sections || []), { type: '_end' }];
   const total  = slides.length;
   const idx    = Math.max(0, Math.min(S.lessonSlide || 0, total - 1));
@@ -3024,7 +3115,7 @@ function renderLessonPage() {
       </div>
       <div class="ls-controls">
         <div class="ls-ctrl-left">
-          <button class="ls-back-btn" data-lesson-back="course">← ${course.name}</button>
+          <button class="ls-back-btn" data-lesson-back="course">← ${esc(course.name)}</button>
         </div>
         <div class="ls-ctrl-center">
           <div class="ls-nav">
@@ -3033,9 +3124,10 @@ function renderLessonPage() {
             <button class="ls-nav-btn" data-lesson-slide="next" ${idx === total - 1 ? 'disabled' : ''}>&#8594;</button>
           </div>
           <div class="ls-progress-wrap"><div class="ls-progress-fill" style="width:${pct}%"></div></div>
-          <div class="ls-lesson-label">${icon} ${lesson.title}</div>
+          <div class="ls-lesson-label">${icon} ${esc(lesson.title)}</div>
         </div>
         <div class="ls-ctrl-right">
+          ${S.teacherMode ? `<button id="ls-connect-canva" class="btn-secondary" style="font-size:0.75rem;padding:4px 10px">🎨 Connect Canva</button>` : ''}
           <span class="ls-lesson-num">L${lessonNum}</span>
         </div>
       </div>
@@ -3119,9 +3211,26 @@ async function loadFromFirebase() {
   } catch(e) {}
 }
 
+function canvaEmbedUrl(url) {
+  if (!url) return '';
+  return url.split('?')[0] + '?embed';
+}
+
+async function loadCanvaLessons() {
+  const db = getDB();
+  if (!db) return;
+  try {
+    const snap = await db.collection('hm_canva_lessons').get();
+    trackUsage('reads', snap.size || 1);
+    const map = {};
+    snap.forEach(doc => { map[doc.id] = doc.data(); });
+    S.canvaLessons = map;
+  } catch(e) {}
+}
+
 // ── Init ──────────────────────────────────────────────────────
 async function init() {
-  await Promise.all([loadFromFirebase(), loadCustomYbEvents(), loadYearbookCoverage(), loadCalendarYbEvents()]);
+  await Promise.all([loadFromFirebase(), loadCustomYbEvents(), loadYearbookCoverage(), loadCalendarYbEvents(), loadCanvaLessons()]);
   render();
   document.addEventListener('keydown', e => {
     if (!S.lessonId) return;

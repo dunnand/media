@@ -1420,6 +1420,12 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 .ls-end-next-card { max-width: 480px; margin-top: 8px; }
 .ls-end-back  { margin-top: 16px; }
 
+/* Canva embed */
+.ls-canva-frame {
+  flex: 1; width: 100%; border: none;
+  min-height: calc(100vh - 64px);
+}
+
 /* Controls bar */
 .ls-controls {
   height: 64px; background: var(--surface); border-top: 1px solid var(--border);
