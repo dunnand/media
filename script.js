@@ -605,13 +605,17 @@ function renderLive() {
               <div class="card-header"><h2>📚 Lessons</h2></div>
               <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
                 ${allLessons.map(l => `
-                  <div class="lesson-item" data-lesson-course="live" data-lesson-unit="${l.unitId}" data-lesson-id="${l.id}" style="cursor:pointer">
+                  <div class="lesson-item" data-lesson-course="live" data-lesson-unit="${l.unitId}" data-lesson-id="${l.id}">
                     <div class="lesson-item-icon">${LESSON_ICONS[l.id] || '🎬'}</div>
-                    <div class="lesson-item-info">
+                    <div class="lesson-item-body">
+                      <div class="lesson-item-num">${esc(l.unitTitle)}</div>
                       <div class="lesson-item-title">${esc(l.title)}</div>
-                      <div class="lesson-item-meta">${esc(l.unitTitle)} &nbsp;·&nbsp; ${esc(l.duration || '')}</div>
+                      <div class="lesson-item-summary">${esc(l.summary)}</div>
                     </div>
-                    <div class="lesson-item-arrow">→</div>
+                    <div class="lesson-item-right">
+                      <span class="lesson-duration-chip">${esc(l.duration || '')}</span>
+                      <span class="lesson-item-arrow">→</span>
+                    </div>
                   </div>`).join('')}
               </div>
             </section>`;
