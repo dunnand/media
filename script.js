@@ -5,7 +5,7 @@
 // ── Version / CDN cache buster ───────────────────────────────
 // When this value changes, users are auto-redirected to a URL
 // the CDN has never cached, forcing a fully fresh load.
-const APP_VERSION = '20270703';
+const APP_VERSION = '20270704';
 (function() {
   const k = 'hm_version';
   if (localStorage.getItem(k) === APP_VERSION) return;
@@ -68,6 +68,9 @@ const S = {
   expandedIntroClass: null,
   showQuickLinks: true,
   broadcastChecklist: {},
+  rundowns: {},
+  editingRundown: false,
+  rundownEditBackup: null,
   yearbookCoverage: [],
   customYbEvents: [],
   calendarYbEvents: [],
@@ -118,7 +121,7 @@ function go(view, extra) {
   if (view === 'yearbook')  loadYearbookCoverage();
   if (view === 'beats')   loadBeatAssignments();
   if (view === 'indepth') loadRundownData();
-  if (view === 'broadcast' && S.broadcastId) loadBroadcastChecklist(S.broadcastId);
+  if (view === 'broadcast' && S.broadcastId) { loadBroadcastChecklist(S.broadcastId); loadRundown(S.broadcastId); }
 }
 
 // ── Render ────────────────────────────────────────────────────
@@ -937,6 +940,7 @@ function renderBroadcast() {
           </section>
         </div>
       </div>
+      ${renderRundownSection(b)}
     </div>`;
 }
 
@@ -2931,6 +2935,52 @@ function attachListeners() {
     });
   });
 
+  // ── Rundown handlers ─────────────────────────────────────────
+  const rdEditBtn = document.getElementById('rd-edit-btn');
+  if (rdEditBtn) rdEditBtn.addEventListener('click', () => {
+    const bid = rdEditBtn.dataset.rdBid;
+    S.rundownEditBackup = JSON.parse(JSON.stringify(S.rundowns[bid]?.rows || []));
+    S.editingRundown = true;
+    render();
+  });
+
+  const rdCancelBtn = document.getElementById('rd-cancel-btn');
+  if (rdCancelBtn) rdCancelBtn.addEventListener('click', () => {
+    const bid = rdCancelBtn.dataset.rdBid;
+    if (S.rundownEditBackup) S.rundowns[bid] = { rows: S.rundownEditBackup };
+    S.editingRundown = false;
+    S.rundownEditBackup = null;
+    render();
+  });
+
+  const rdSaveBtn = document.getElementById('rd-save-btn');
+  if (rdSaveBtn) rdSaveBtn.addEventListener('click', () => saveRundown(rdSaveBtn.dataset.rdBid));
+
+  const rdPrintBtn = document.getElementById('rd-print-btn');
+  if (rdPrintBtn) rdPrintBtn.addEventListener('click', () => {
+    const bid = rdPrintBtn.dataset.rdBid;
+    const b = (S.broadcasts || []).find(x => x.id === bid);
+    if (b) printRundown(b, S.rundowns[bid]?.rows || []);
+  });
+
+  const rdAddRow = document.getElementById('rd-add-row');
+  if (rdAddRow) rdAddRow.addEventListener('click', () => {
+    const bid = rdAddRow.dataset.rdBid;
+    const rows = readRundownRowsFromDom();
+    rows.push({ id: 'r' + Date.now(), slug: '', pbp: '', color: '', gfx: '', cam: '' });
+    S.rundowns[bid] = { rows };
+    render();
+  });
+
+  document.querySelectorAll('[data-rd-del]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const bid = btn.dataset.rdBid;
+      const rows = readRundownRowsFromDom().filter(r => r.id !== btn.dataset.rdDel);
+      S.rundowns[bid] = { rows };
+      render();
+    });
+  });
+
   // ── Lesson delete / hide handlers ───────────────────────────
   document.querySelectorAll('[data-delete-lesson]').forEach(btn => {
     btn.addEventListener('click', async e => {
@@ -3532,6 +3582,167 @@ async function loadHiddenLessons() {
     trackUsage('reads', snap.size || 1);
     S.hiddenLessons = new Set(snap.docs.map(d => d.id));
   } catch(e) {}
+}
+
+// ── Broadcast Rundown ─────────────────────────────────────────
+function getRundownTemplate(type) {
+  return (RUNDOWN_TEMPLATES[type] || RUNDOWN_TEMPLATES._default)
+    .map((r, i) => ({ ...r, id: 'r' + i }));
+}
+
+async function loadRundown(bid) {
+  S.editingRundown = false;
+  S.rundownEditBackup = null;
+  if (S.rundowns[bid]) { render(); return; }
+  const db = getDB();
+  if (!db) { S.rundowns[bid] = { rows: [] }; render(); return; }
+  try {
+    const snap = await db.collection('hm_rundowns').doc(bid).get();
+    trackUsage('reads', 1);
+    if (snap.exists && snap.data().rows?.length) {
+      S.rundowns[bid] = { rows: snap.data().rows };
+    } else {
+      const b = (S.broadcasts || []).find(x => x.id === bid);
+      S.rundowns[bid] = { rows: getRundownTemplate(b?.type) };
+    }
+  } catch(e) { S.rundowns[bid] = { rows: [] }; }
+  render();
+}
+
+function readRundownRowsFromDom() {
+  const rows = [];
+  document.querySelectorAll('.rd-row[data-rd-id]').forEach(tr => {
+    rows.push({
+      id:    tr.dataset.rdId,
+      slug:  tr.querySelector('[data-col="slug"]')?.value?.trim() || '',
+      pbp:   tr.querySelector('[data-col="pbp"]')?.value?.trim() || '',
+      color: tr.querySelector('[data-col="color"]')?.value?.trim() || '',
+      gfx:   tr.querySelector('[data-col="gfx"]')?.value?.trim() || '',
+      cam:   tr.querySelector('[data-col="cam"]')?.value?.trim() || '',
+    });
+  });
+  return rows;
+}
+
+async function saveRundown(bid) {
+  const rows = readRundownRowsFromDom();
+  S.rundowns[bid] = { rows };
+  S.editingRundown = false;
+  S.rundownEditBackup = null;
+  const db = getDB();
+  if (db) {
+    trackUsage('writes');
+    try { await db.collection('hm_rundowns').doc(bid).set({ rows }); } catch(e) {}
+  }
+  render();
+}
+
+function printRundown(b, rows) {
+  const w = window.open('', '_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>${esc(b.title)} — Rundown</title><style>
+    *{box-sizing:border-box}body{font-family:Arial,sans-serif;font-size:10.5px;margin:1.5cm 1cm;color:#000}
+    h1{font-size:15px;font-weight:800;margin:0 0 3px}
+    .meta{color:#555;font-size:10px;margin-bottom:14px}
+    table{width:100%;border-collapse:collapse;table-layout:fixed}
+    th{background:#1a1a1a;color:#fff;padding:5px 6px;text-align:left;font-size:9px;letter-spacing:.05em;text-transform:uppercase;font-weight:700}
+    td{padding:6px;border-bottom:1px solid #e0e0e0;vertical-align:top;word-wrap:break-word;font-size:10px;line-height:1.45}
+    .cn{color:#999;width:28px;text-align:center}
+    .cs{width:12%;font-weight:700}
+    .cp{width:26%}
+    .cc{width:17%}
+    .cg{width:16%;font-family:monospace;color:#c02;font-weight:700}
+    .ck{width:16%;color:#165}
+    .blank{color:#ccc}
+    tr:nth-child(even) td{background:#f7f7f7}
+  </style></head><body>
+  <h1>${esc(b.title)}</h1>
+  <div class="meta">${fmtDate(b.date, true)}${b.gameTime ? ' &middot; ' + esc(b.gameTime) : ''} &middot; Broadcast Rundown</div>
+  <table>
+    <thead><tr>
+      <th class="cn">#</th><th class="cs">SEGMENT</th><th class="cp">PBP SCRIPT</th>
+      <th class="cc">COLOR NOTES</th><th class="cg">GFX CUE</th><th class="ck">CAMERA</th>
+    </tr></thead>
+    <tbody>${rows.map((r, i) => `<tr>
+      <td class="cn">${i + 1}</td>
+      <td class="cs">${esc(r.slug) || '<span class="blank">—</span>'}</td>
+      <td class="cp">${esc(r.pbp)  || '<span class="blank">—</span>'}</td>
+      <td class="cc">${esc(r.color)|| '<span class="blank">—</span>'}</td>
+      <td class="cg">${esc(r.gfx)  || '<span class="blank">—</span>'}</td>
+      <td class="ck">${esc(r.cam)  || '<span class="blank">—</span>'}</td>
+    </tr>`).join('')}</tbody>
+  </table>
+  <script>window.onload=function(){window.print()}<\/script></body></html>`);
+  w.document.close();
+}
+
+function renderRundownSection(b) {
+  const rd = S.rundowns[b.id];
+  if (!rd) return `
+    <section class="card rd-card">
+      <div class="card-header"><h2>📋 Broadcast Rundown</h2></div>
+      <p style="font-size:.875rem;color:var(--dim);padding:4px 0">Loading rundown...</p>
+    </section>`;
+
+  const rows = rd.rows || [];
+  const editing = S.editingRundown;
+
+  const viewCell = (val, cls) =>
+    `<td class="${cls}">${val ? esc(val) : '<span class="rd-empty">—</span>'}</td>`;
+  const editInput = (val, col) =>
+    `<td><input class="rd-input" type="text" data-col="${col}" value="${esc(val)}"></td>`;
+  const editTA = (val, col) =>
+    `<td><textarea class="rd-input rd-ta" data-col="${col}" rows="2">${esc(val)}</textarea></td>`;
+
+  return `
+    <section class="card rd-card">
+      <div class="card-header">
+        <h2>📋 Broadcast Rundown</h2>
+        <div class="rd-actions">
+          <button class="btn-secondary" id="rd-print-btn" data-rd-bid="${b.id}">🖨️ Print</button>
+          ${S.teacherMode ? (editing
+            ? `<button class="btn-primary"   id="rd-save-btn"   data-rd-bid="${b.id}">Save</button>
+               <button class="btn-secondary" id="rd-cancel-btn" data-rd-bid="${b.id}">Cancel</button>`
+            : `<button class="btn-secondary" id="rd-edit-btn"   data-rd-bid="${b.id}">✏️ Edit</button>`)
+          : ''}
+        </div>
+      </div>
+      <div class="rd-wrap">
+        <table class="rd-table">
+          <thead><tr>
+            <th class="rd-th-n">#</th>
+            <th class="rd-th-slug">SEGMENT</th>
+            <th class="rd-th-pbp">PBP SCRIPT</th>
+            <th class="rd-th-col">COLOR NOTES</th>
+            <th class="rd-th-gfx">GFX CUE</th>
+            <th class="rd-th-cam">CAMERA</th>
+            ${editing ? `<th class="rd-th-act"></th>` : ''}
+          </tr></thead>
+          <tbody>
+            ${rows.map((r, i) => `
+              <tr class="rd-row" data-rd-id="${r.id}">
+                <td class="rd-n">${i + 1}</td>
+                ${editing ? `
+                  ${editInput(r.slug,  'slug')}
+                  ${editTA(r.pbp,   'pbp')}
+                  ${editTA(r.color, 'color')}
+                  ${editInput(r.gfx,  'gfx')}
+                  ${editInput(r.cam,  'cam')}
+                  <td class="rd-act-cell">
+                    <button class="rd-del" data-rd-del="${r.id}" data-rd-bid="${b.id}" title="Remove row">✕</button>
+                  </td>` : `
+                  ${viewCell(r.slug,  'rd-slug')}
+                  ${viewCell(r.pbp,   'rd-pbp')}
+                  ${viewCell(r.color, 'rd-col')}
+                  ${viewCell(r.gfx,   'rd-gfx')}
+                  ${viewCell(r.cam,   'rd-cam')}`}
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+      ${editing ? `
+        <button class="btn-secondary" id="rd-add-row" data-rd-bid="${b.id}"
+          style="margin-top:10px;font-size:.82rem;width:100%">+ Add Row</button>` : ''}
+    </section>`;
 }
 
 async function loadBroadcastChecklist(bid) {

@@ -1713,6 +1713,35 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 .gc-item-label { font-size: 0.88rem; font-weight: 600; color: var(--text); }
 .gc-item-sub { font-size: 0.77rem; color: var(--dim); margin-top: 1px; }
 
+/* ── Broadcast Rundown ───────────────────────────────────────── */
+.rd-card { margin-top: 20px; }
+.rd-actions { display: flex; align-items: center; gap: 6px; }
+.rd-wrap { overflow-x: auto; margin-top: 10px; }
+.rd-table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 680px; }
+.rd-table thead th { background: var(--surface2); color: var(--dim); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 7px 8px; text-align: left; border-bottom: 2px solid var(--border); white-space: nowrap; }
+.rd-th-n    { width: 32px; }
+.rd-th-slug { width: 13%; }
+.rd-th-pbp  { width: 27%; }
+.rd-th-col  { width: 18%; }
+.rd-th-gfx  { width: 16%; }
+.rd-th-cam  { width: 16%; }
+.rd-th-act  { width: 36px; }
+.rd-table tbody tr { border-bottom: 1px solid var(--border); }
+.rd-table tbody tr:hover { background: color-mix(in srgb, var(--surface2) 60%, transparent); }
+.rd-n    { padding: 9px 6px; color: var(--dim); font-size: 0.75rem; text-align: center; vertical-align: top; }
+.rd-slug { padding: 9px 8px; font-weight: 700; font-size: 0.82rem; color: var(--text); vertical-align: top; }
+.rd-pbp  { padding: 9px 8px; font-size: 0.82rem; color: var(--text); vertical-align: top; line-height: 1.5; white-space: pre-wrap; }
+.rd-col  { padding: 9px 8px; font-size: 0.82rem; color: var(--dim); vertical-align: top; line-height: 1.5; white-space: pre-wrap; }
+.rd-gfx  { padding: 9px 8px; font-size: 0.8rem; font-family: monospace; color: #f87171; vertical-align: top; font-weight: 600; }
+.rd-cam  { padding: 9px 8px; font-size: 0.82rem; color: #34d399; vertical-align: top; }
+.rd-empty { color: var(--border); }
+.rd-input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 5px 7px; font-size: 0.8rem; font-family: inherit; outline: none; box-sizing: border-box; }
+.rd-input:focus { border-color: var(--live); }
+.rd-ta { resize: vertical; min-height: 48px; }
+.rd-act-cell { padding: 4px; vertical-align: top; }
+.rd-del { background: none; border: none; color: var(--dim); cursor: pointer; font-size: 0.9rem; padding: 5px 6px; border-radius: 4px; }
+.rd-del:hover { color: #f87171; background: rgba(248,113,113,.12); }
+
 @media (max-width: 700px) {
   .lesson-item { padding: 16px; gap: 12px; }
   .lesson-item-icon { width: 44px; height: 44px; font-size: 1.5rem; }

@@ -193,6 +193,72 @@ const YB_DROPBOX_FOLDERS = {
   key_club:          '1fimQpUr_O9zxAqR4XxQcdPdY5GQoM_M4',
 };
 
+// ── Homestead Live — Broadcast Rundown Templates ─────────────
+const RUNDOWN_TEMPLATES = {
+  football: [
+    { slug: 'PRE-SHOW',          pbp: '', color: '', gfx: 'GFX: WAITING-SCREEN',  cam: 'Wide field establishing' },
+    { slug: 'SPONSOR OPEN',      pbp: '', color: '', gfx: 'GFX: SPONSOR-OPEN',    cam: '' },
+    { slug: 'OPEN / WELCOME',    pbp: '', color: '', gfx: 'LOGO BUG ON',           cam: 'Broadcast desk 2-shot' },
+    { slug: 'WEATHER',           pbp: '', color: '', gfx: 'GFX: WEATHER',          cam: '' },
+    { slug: 'STARTING LINEUP',   pbp: '', color: '', gfx: 'GFX: STARTING-LINEUP', cam: 'CU head coach' },
+    { slug: 'COIN TOSS',         pbp: '', color: '', gfx: '',                      cam: 'Wide field — coin toss' },
+    { slug: 'KICKOFF',           pbp: '', color: '', gfx: 'SCOREBUG ON',           cam: 'Wide kick' },
+    { slug: 'TO BREAK 1',        pbp: '', color: '', gfx: 'GFX: TO-BREAK',         cam: 'CU PBP' },
+    { slug: 'OUT OF BREAK 1',    pbp: '', color: '', gfx: 'SCOREBUG ON',           cam: 'Wide field' },
+    { slug: 'TO BREAK 2',        pbp: '', color: '', gfx: 'GFX: TO-BREAK',         cam: 'CU PBP' },
+    { slug: 'HALFTIME OPEN',     pbp: '', color: '', gfx: 'GFX: HALFTIME',         cam: 'Wide field' },
+    { slug: 'HALFTIME STATS',    pbp: '', color: '', gfx: 'GFX: HALFTIME-STATS',   cam: '2-shot desk' },
+    { slug: 'SAC MATCHUPS',      pbp: '', color: '', gfx: 'GFX: SAC-MATCHUPS',     cam: '' },
+    { slug: 'SECOND HALF KICK',  pbp: '', color: '', gfx: 'SCOREBUG ON',           cam: 'Wide kick' },
+    { slug: 'TO BREAK 3',        pbp: '', color: '', gfx: 'GFX: TO-BREAK',         cam: 'CU PBP' },
+    { slug: 'OUT OF BREAK 3',    pbp: '', color: '', gfx: 'SCOREBUG ON',           cam: 'Wide field' },
+    { slug: 'TO BREAK 4',        pbp: '', color: '', gfx: 'GFX: TO-BREAK',         cam: 'CU PBP' },
+    { slug: 'FINAL',             pbp: '', color: '', gfx: 'GFX: FINAL-SCORE',      cam: 'Wide field celebration' },
+    { slug: 'NEXT BROADCAST',    pbp: '', color: '', gfx: 'GFX: NEXT-BROADCAST',   cam: '' },
+  ],
+  basketball_boys: [
+    { slug: 'PRE-SHOW',          pbp: '', color: '', gfx: 'GFX: WAITING-SCREEN',  cam: 'Wide arena establishing' },
+    { slug: 'SPONSOR OPEN',      pbp: '', color: '', gfx: 'GFX: SPONSOR-OPEN',    cam: '' },
+    { slug: 'OPEN / WELCOME',    pbp: '', color: '', gfx: 'LOGO BUG ON',           cam: 'Broadcast desk 2-shot' },
+    { slug: 'STARTING LINEUP',   pbp: '', color: '', gfx: 'GFX: STARTING-LINEUP', cam: 'CU head coach' },
+    { slug: 'KEYS TO THE GAME',  pbp: '', color: '', gfx: '',                      cam: 'CU color' },
+    { slug: 'TIP-OFF',           pbp: '', color: '', gfx: 'SCOREBUG ON',           cam: 'Wide court' },
+    { slug: 'TO BREAK 1',        pbp: '', color: '', gfx: 'GFX: TO-BREAK',         cam: 'CU PBP' },
+    { slug: 'OUT OF BREAK 1',    pbp: '', color: '', gfx: 'SCOREBUG ON',           cam: 'Wide court' },
+    { slug: 'TO BREAK 2',        pbp: '', color: '', gfx: 'GFX: TO-BREAK',         cam: 'CU PBP' },
+    { slug: 'HALFTIME OPEN',     pbp: '', color: '', gfx: 'GFX: HALFTIME',         cam: 'Wide court' },
+    { slug: 'HALFTIME STATS',    pbp: '', color: '', gfx: 'GFX: HALFTIME-STATS',   cam: '2-shot desk' },
+    { slug: 'SECOND HALF TIP',   pbp: '', color: '', gfx: 'SCOREBUG ON',           cam: 'Wide court' },
+    { slug: 'TO BREAK 3',        pbp: '', color: '', gfx: 'GFX: TO-BREAK',         cam: 'CU PBP' },
+    { slug: 'OUT OF BREAK 3',    pbp: '', color: '', gfx: 'SCOREBUG ON',           cam: 'Wide court' },
+    { slug: 'TO BREAK 4',        pbp: '', color: '', gfx: 'GFX: TO-BREAK',         cam: 'CU PBP' },
+    { slug: 'FINAL',             pbp: '', color: '', gfx: 'GFX: FINAL-SCORE',      cam: 'Wide celebration' },
+    { slug: 'NEXT BROADCAST',    pbp: '', color: '', gfx: 'GFX: NEXT-BROADCAST',   cam: '' },
+  ],
+  volleyball: [
+    { slug: 'PRE-SHOW',           pbp: '', color: '', gfx: 'GFX: WAITING-SCREEN',  cam: 'Wide gym establishing' },
+    { slug: 'OPEN / WELCOME',     pbp: '', color: '', gfx: 'LOGO BUG ON',           cam: 'Broadcast desk 2-shot' },
+    { slug: 'STARTING LINEUP',    pbp: '', color: '', gfx: 'GFX: STARTING-LINEUP', cam: 'CU head coach' },
+    { slug: 'KEYS TO THE MATCH',  pbp: '', color: '', gfx: '',                      cam: 'CU color' },
+    { slug: 'SET 1 BEGIN',        pbp: '', color: '', gfx: 'SCOREBUG ON',           cam: 'Wide court' },
+    { slug: 'BETWEEN SETS 1–2',   pbp: '', color: '', gfx: 'GFX: SET-SCORE',        cam: '2-shot desk' },
+    { slug: 'SET 2 BEGIN',        pbp: '', color: '', gfx: 'SCOREBUG ON',           cam: 'Wide court' },
+    { slug: 'BETWEEN SETS 2–3',   pbp: '', color: '', gfx: 'GFX: SET-SCORE',        cam: '2-shot desk' },
+    { slug: 'SET 3 BEGIN',        pbp: '', color: '', gfx: 'SCOREBUG ON',           cam: 'Wide court' },
+    { slug: 'MATCH FINAL',        pbp: '', color: '', gfx: 'GFX: FINAL-SCORE',      cam: 'Wide celebration' },
+    { slug: 'NEXT BROADCAST',     pbp: '', color: '', gfx: 'GFX: NEXT-BROADCAST',   cam: '' },
+  ],
+  _default: [
+    { slug: 'PRE-SHOW',       pbp: '', color: '', gfx: 'GFX: WAITING-SCREEN', cam: 'Wide establishing' },
+    { slug: 'OPEN / WELCOME', pbp: '', color: '', gfx: 'LOGO BUG ON',         cam: 'Broadcast desk 2-shot' },
+    { slug: 'START',          pbp: '', color: '', gfx: 'SCOREBUG ON',          cam: 'Wide' },
+    { slug: 'TO BREAK',       pbp: '', color: '', gfx: 'GFX: TO-BREAK',        cam: 'CU PBP' },
+    { slug: 'FINAL',          pbp: '', color: '', gfx: 'GFX: FINAL-SCORE',     cam: '' },
+    { slug: 'NEXT BROADCAST', pbp: '', color: '', gfx: 'GFX: NEXT-BROADCAST',  cam: '' },
+  ],
+};
+RUNDOWN_TEMPLATES.basketball_girls = RUNDOWN_TEMPLATES.basketball_boys;
+
 // ── Homestead Live — Quick Links ──────────────────────────────
 const LIVE_QUICK_LINKS = [
   { heading: '📅 Calendar', links: [
