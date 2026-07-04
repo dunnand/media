@@ -5,7 +5,7 @@
 // ── Version / CDN cache buster ───────────────────────────────
 // When this value changes, users are auto-redirected to a URL
 // the CDN has never cached, forcing a fully fresh load.
-const APP_VERSION = '20270713';
+const APP_VERSION = '20270714';
 (function() {
   try {
     const k = 'hm_version';
@@ -3802,6 +3802,7 @@ function printRundown(b, rows) {
     </tr>`).join('')}</tbody>
   </table>
   <p style="margin-top:10px;font-size:9px;color:#666"><strong>PBP</strong> = Play-by-Play script &nbsp;·&nbsp; <strong>COLOR</strong> = Color commentator notes &nbsp;·&nbsp; <strong>GFX</strong> = Graphics cue (PSD filename) &nbsp;·&nbsp; <strong>CAM</strong> = Camera shot</p>
+  <p style="margin-top:3px;font-size:9px;color:#666"><strong>Camera shots:</strong> &nbsp;<strong>WIDE</strong> = wide establishing shot &nbsp;·&nbsp; <strong>CU</strong> = close-up &nbsp;·&nbsp; <strong>KICK</strong> = low-angle kick/sideline wide</p>
   <script>window.onload=function(){window.print()}<\/script></body></html>`);
   w.document.close();
 }
