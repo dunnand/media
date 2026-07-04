@@ -1,9 +1,10 @@
 const RADIO_SLOTS = 10;
 
 const LIVE_ROLES = [
-  'Producer', 'Technical Director', 'Main Camera',
+  'Play-by-Play', 'Color Analyst', 'Sideline Reporter',
+  'Producer', 'Technical Director', 'Director', 'Main Camera',
   'Camera 2', 'Camera 3', 'Roam 1', 'Roam 2',
-  'Jumbotron', 'Director'
+  'Jumbotron'
 ];
 
 const EVENT_TYPES = {
