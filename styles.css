@@ -1741,6 +1741,8 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 .rd-act-cell { padding: 4px; vertical-align: top; }
 .rd-del { background: none; border: none; color: var(--dim); cursor: pointer; font-size: 0.9rem; padding: 5px 6px; border-radius: 4px; }
 .rd-del:hover { color: #f87171; background: rgba(248,113,113,.12); }
+.rd-legend { font-size: 0.75rem; color: var(--dim); margin-top: 10px; line-height: 1.6; }
+.rd-legend strong { color: var(--text); }
 
 @media (max-width: 700px) {
   .lesson-item { padding: 16px; gap: 12px; }

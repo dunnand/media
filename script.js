@@ -5,7 +5,7 @@
 // ── Version / CDN cache buster ───────────────────────────────
 // When this value changes, users are auto-redirected to a URL
 // the CDN has never cached, forcing a fully fresh load.
-const APP_VERSION = '20270704';
+const APP_VERSION = '20270705';
 (function() {
   const k = 'hm_version';
   if (localStorage.getItem(k) === APP_VERSION) return;
@@ -3671,6 +3671,7 @@ function printRundown(b, rows) {
       <td class="ck">${esc(r.cam)  || '<span class="blank">—</span>'}</td>
     </tr>`).join('')}</tbody>
   </table>
+  <p style="margin-top:10px;font-size:9px;color:#666"><strong>PBP</strong> = Play-by-Play script &nbsp;·&nbsp; <strong>COLOR</strong> = Color commentator notes &nbsp;·&nbsp; <strong>GFX</strong> = Graphics cue (PSD filename) &nbsp;·&nbsp; <strong>CAM</strong> = Camera shot</p>
   <script>window.onload=function(){window.print()}<\/script></body></html>`);
   w.document.close();
 }
@@ -3710,11 +3711,11 @@ function renderRundownSection(b) {
         <table class="rd-table">
           <thead><tr>
             <th class="rd-th-n">#</th>
-            <th class="rd-th-slug">SEGMENT</th>
-            <th class="rd-th-pbp">PBP SCRIPT</th>
-            <th class="rd-th-col">COLOR NOTES</th>
-            <th class="rd-th-gfx">GFX CUE</th>
-            <th class="rd-th-cam">CAMERA</th>
+            <th class="rd-th-slug" title="Segment — the name of this moment in the broadcast">SEGMENT</th>
+            <th class="rd-th-pbp"  title="PBP — Play-by-Play: what the play-by-play announcer says">PBP</th>
+            <th class="rd-th-col"  title="COLOR — Color commentator notes and talking points">COLOR</th>
+            <th class="rd-th-gfx"  title="GFX — Graphics Cue: the Photoshop file the graphics operator loads and fires">GFX</th>
+            <th class="rd-th-cam"  title="CAM — Camera shot for the director to call">CAM</th>
             ${editing ? `<th class="rd-th-act"></th>` : ''}
           </tr></thead>
           <tbody>
@@ -3739,6 +3740,12 @@ function renderRundownSection(b) {
           </tbody>
         </table>
       </div>
+      <p class="rd-legend">
+        <strong>PBP</strong> = Play-by-Play script &nbsp;·&nbsp;
+        <strong>COLOR</strong> = Color commentator notes &nbsp;·&nbsp;
+        <strong>GFX</strong> = Graphics cue (PSD filename) &nbsp;·&nbsp;
+        <strong>CAM</strong> = Camera shot
+      </p>
       ${editing ? `
         <button class="btn-secondary" id="rd-add-row" data-rd-bid="${b.id}"
           style="margin-top:10px;font-size:.82rem;width:100%">+ Add Row</button>` : ''}
