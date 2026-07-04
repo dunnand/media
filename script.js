@@ -5,7 +5,7 @@
 // ── Version / CDN cache buster ───────────────────────────────
 // When this value changes, users are auto-redirected to a URL
 // the CDN has never cached, forcing a fully fresh load.
-const APP_VERSION = '20270705';
+const APP_VERSION = '20270706';
 (function() {
   const k = 'hm_version';
   if (localStorage.getItem(k) === APP_VERSION) return;
@@ -68,8 +68,10 @@ const S = {
   expandedIntroClass: null,
   showQuickLinks: true,
   broadcastChecklist: {},
-  rundowns: {},
+  sportTemplates: {},     // sport → rows[] (master template, shared across all games)
+  rundownOverrides: {},   // broadcastId → rows[] | null (null = use sport template)
   editingRundown: false,
+  editingRundownType: null,  // 'template' | 'game'
   rundownEditBackup: null,
   yearbookCoverage: [],
   customYbEvents: [],
@@ -121,7 +123,7 @@ function go(view, extra) {
   if (view === 'yearbook')  loadYearbookCoverage();
   if (view === 'beats')   loadBeatAssignments();
   if (view === 'indepth') loadRundownData();
-  if (view === 'broadcast' && S.broadcastId) { loadBroadcastChecklist(S.broadcastId); loadRundown(S.broadcastId); }
+  if (view === 'broadcast' && S.broadcastId) { loadBroadcastChecklist(S.broadcastId); loadRundownData(S.broadcastId); }
 }
 
 // ── Render ────────────────────────────────────────────────────
@@ -2936,19 +2938,39 @@ function attachListeners() {
   });
 
   // ── Rundown handlers ─────────────────────────────────────────
-  const rdEditBtn = document.getElementById('rd-edit-btn');
-  if (rdEditBtn) rdEditBtn.addEventListener('click', () => {
-    const bid = rdEditBtn.dataset.rdBid;
-    S.rundownEditBackup = JSON.parse(JSON.stringify(S.rundowns[bid]?.rows || []));
+  const rdEditTemplateBtn = document.getElementById('rd-edit-template-btn');
+  if (rdEditTemplateBtn) rdEditTemplateBtn.addEventListener('click', () => {
+    const sport = rdEditTemplateBtn.dataset.rdSport;
+    S.rundownEditBackup = JSON.parse(JSON.stringify(S.sportTemplates[sport] || []));
     S.editingRundown = true;
+    S.editingRundownType = 'template';
+    render();
+  });
+
+  const rdEditGameBtn = document.getElementById('rd-edit-game-btn');
+  if (rdEditGameBtn) rdEditGameBtn.addEventListener('click', () => {
+    const bid = rdEditGameBtn.dataset.rdBid;
+    const b = (S.broadcasts || []).find(x => x.id === bid);
+    const rows = S.rundownOverrides[bid] ?? (S.sportTemplates[b?.type] || []);
+    S.rundownEditBackup = JSON.parse(JSON.stringify(rows));
+    // Start game edit from a copy of current rows (template or existing override)
+    S.rundownOverrides[bid] = JSON.parse(JSON.stringify(rows));
+    S.editingRundown = true;
+    S.editingRundownType = 'game';
     render();
   });
 
   const rdCancelBtn = document.getElementById('rd-cancel-btn');
   if (rdCancelBtn) rdCancelBtn.addEventListener('click', () => {
     const bid = rdCancelBtn.dataset.rdBid;
-    if (S.rundownEditBackup) S.rundowns[bid] = { rows: S.rundownEditBackup };
+    const b = (S.broadcasts || []).find(x => x.id === bid);
+    if (S.editingRundownType === 'template' && b?.type) {
+      S.sportTemplates[b.type] = S.rundownEditBackup;
+    } else {
+      S.rundownOverrides[bid] = S.rundownEditBackup?.length ? S.rundownEditBackup : null;
+    }
     S.editingRundown = false;
+    S.editingRundownType = null;
     S.rundownEditBackup = null;
     render();
   });
@@ -2956,27 +2978,45 @@ function attachListeners() {
   const rdSaveBtn = document.getElementById('rd-save-btn');
   if (rdSaveBtn) rdSaveBtn.addEventListener('click', () => saveRundown(rdSaveBtn.dataset.rdBid));
 
+  const rdResetBtn = document.getElementById('rd-reset-btn');
+  if (rdResetBtn) rdResetBtn.addEventListener('click', () => {
+    if (confirm('Reset this game to the master template? Your custom edits will be removed.'))
+      resetRundownToTemplate(rdResetBtn.dataset.rdBid);
+  });
+
   const rdPrintBtn = document.getElementById('rd-print-btn');
   if (rdPrintBtn) rdPrintBtn.addEventListener('click', () => {
     const bid = rdPrintBtn.dataset.rdBid;
     const b = (S.broadcasts || []).find(x => x.id === bid);
-    if (b) printRundown(b, S.rundowns[bid]?.rows || []);
+    if (!b) return;
+    const rows = S.rundownOverrides[bid] ?? (S.sportTemplates[b.type] || []);
+    printRundown(b, rows);
   });
 
   const rdAddRow = document.getElementById('rd-add-row');
   if (rdAddRow) rdAddRow.addEventListener('click', () => {
     const bid = rdAddRow.dataset.rdBid;
+    const b = (S.broadcasts || []).find(x => x.id === bid);
     const rows = readRundownRowsFromDom();
     rows.push({ id: 'r' + Date.now(), slug: '', pbp: '', color: '', gfx: '', cam: '' });
-    S.rundowns[bid] = { rows };
+    if (S.editingRundownType === 'template' && b?.type) {
+      S.sportTemplates[b.type] = rows;
+    } else {
+      S.rundownOverrides[bid] = rows;
+    }
     render();
   });
 
   document.querySelectorAll('[data-rd-del]').forEach(btn => {
     btn.addEventListener('click', () => {
       const bid = btn.dataset.rdBid;
+      const b = (S.broadcasts || []).find(x => x.id === bid);
       const rows = readRundownRowsFromDom().filter(r => r.id !== btn.dataset.rdDel);
-      S.rundowns[bid] = { rows };
+      if (S.editingRundownType === 'template' && b?.type) {
+        S.sportTemplates[b.type] = rows;
+      } else {
+        S.rundownOverrides[bid] = rows;
+      }
       render();
     });
   });
@@ -3590,22 +3630,40 @@ function getRundownTemplate(type) {
     .map((r, i) => ({ ...r, id: 'r' + i }));
 }
 
-async function loadRundown(bid) {
+// Loads both the sport master template and any per-game override
+async function loadRundownData(bid) {
   S.editingRundown = false;
   S.rundownEditBackup = null;
-  if (S.rundowns[bid]) { render(); return; }
+  const b = (S.broadcasts || []).find(x => x.id === bid);
+  const sport = b?.type;
   const db = getDB();
-  if (!db) { S.rundowns[bid] = { rows: [] }; render(); return; }
-  try {
-    const snap = await db.collection('hm_rundowns').doc(bid).get();
-    trackUsage('reads', 1);
-    if (snap.exists && snap.data().rows?.length) {
-      S.rundowns[bid] = { rows: snap.data().rows };
-    } else {
-      const b = (S.broadcasts || []).find(x => x.id === bid);
-      S.rundowns[bid] = { rows: getRundownTemplate(b?.type) };
-    }
-  } catch(e) { S.rundowns[bid] = { rows: [] }; }
+  const loads = [];
+
+  if (sport && !(sport in S.sportTemplates)) {
+    loads.push((async () => {
+      try {
+        const snap = await db.collection('hm_rundown_templates').doc(sport).get();
+        trackUsage('reads', 1);
+        S.sportTemplates[sport] = snap.exists && snap.data().rows?.length
+          ? snap.data().rows
+          : getRundownTemplate(sport);
+      } catch(e) { S.sportTemplates[sport] = getRundownTemplate(sport); }
+    })());
+  }
+
+  if (!(bid in S.rundownOverrides)) {
+    loads.push((async () => {
+      try {
+        const snap = await db.collection('hm_rundowns').doc(bid).get();
+        trackUsage('reads', 1);
+        S.rundownOverrides[bid] = snap.exists && snap.data().rows?.length
+          ? snap.data().rows
+          : null;
+      } catch(e) { S.rundownOverrides[bid] = null; }
+    })());
+  }
+
+  await Promise.all(loads);
   render();
 }
 
@@ -3625,15 +3683,27 @@ function readRundownRowsFromDom() {
 }
 
 async function saveRundown(bid) {
+  const b = (S.broadcasts || []).find(x => x.id === bid);
+  const sport = b?.type;
   const rows = readRundownRowsFromDom();
-  S.rundowns[bid] = { rows };
   S.editingRundown = false;
   S.rundownEditBackup = null;
   const db = getDB();
-  if (db) {
-    trackUsage('writes');
-    try { await db.collection('hm_rundowns').doc(bid).set({ rows }); } catch(e) {}
+  if (S.editingRundownType === 'template' && sport) {
+    S.sportTemplates[sport] = rows;
+    if (db) { trackUsage('writes'); try { await db.collection('hm_rundown_templates').doc(sport).set({ rows }); } catch(e) {} }
+  } else {
+    S.rundownOverrides[bid] = rows;
+    if (db) { trackUsage('writes'); try { await db.collection('hm_rundowns').doc(bid).set({ rows }); } catch(e) {} }
   }
+  S.editingRundownType = null;
+  render();
+}
+
+async function resetRundownToTemplate(bid) {
+  S.rundownOverrides[bid] = null;
+  const db = getDB();
+  if (db) { trackUsage('writes'); try { await db.collection('hm_rundowns').doc(bid).delete(); } catch(e) {} }
   render();
 }
 
@@ -3677,15 +3747,20 @@ function printRundown(b, rows) {
 }
 
 function renderRundownSection(b) {
-  const rd = S.rundowns[b.id];
-  if (!rd) return `
+  const sport = b.type;
+  const templateLoaded = sport in S.sportTemplates;
+  const overrideLoaded = b.id in S.rundownOverrides;
+  if (!templateLoaded || !overrideLoaded) return `
     <section class="card rd-card">
       <div class="card-header"><h2>📋 Broadcast Rundown</h2></div>
       <p style="font-size:.875rem;color:var(--dim);padding:4px 0">Loading rundown...</p>
     </section>`;
 
-  const rows = rd.rows || [];
+  const hasOverride = S.rundownOverrides[b.id] !== null;
+  const rows = hasOverride ? S.rundownOverrides[b.id] : (S.sportTemplates[sport] || []);
   const editing = S.editingRundown;
+  const editType = S.editingRundownType;
+  const sportLabel = (EVENT_TYPES[sport] || EVENT_TYPES.other).label;
 
   const viewCell = (val, cls) =>
     `<td class="${cls}">${val ? esc(val) : '<span class="rd-empty">—</span>'}</td>`;
@@ -3700,13 +3775,24 @@ function renderRundownSection(b) {
         <h2>📋 Broadcast Rundown</h2>
         <div class="rd-actions">
           <button class="btn-secondary" id="rd-print-btn" data-rd-bid="${b.id}">🖨️ Print</button>
-          ${S.teacherMode ? (editing
-            ? `<button class="btn-primary"   id="rd-save-btn"   data-rd-bid="${b.id}">Save</button>
-               <button class="btn-secondary" id="rd-cancel-btn" data-rd-bid="${b.id}">Cancel</button>`
-            : `<button class="btn-secondary" id="rd-edit-btn"   data-rd-bid="${b.id}">✏️ Edit</button>`)
-          : ''}
+          ${S.teacherMode && !editing ? `
+            <button class="btn-secondary rd-tmpl-btn" id="rd-edit-template-btn" data-rd-bid="${b.id}" data-rd-sport="${sport}"
+              title="Edit master template — updates all ${sportLabel} games">✏️ Edit Template</button>
+            <button class="btn-secondary" id="rd-edit-game-btn" data-rd-bid="${b.id}"
+              title="Edit this game only">✎ This Game</button>
+            ${hasOverride ? `<button class="btn-secondary rd-reset-btn" id="rd-reset-btn" data-rd-bid="${b.id}">↩ Reset to Template</button>` : ''}
+          ` : ''}
+          ${editing ? `
+            <button class="btn-primary"   id="rd-save-btn"   data-rd-bid="${b.id}">Save</button>
+            <button class="btn-secondary" id="rd-cancel-btn" data-rd-bid="${b.id}">Cancel</button>` : ''}
         </div>
       </div>
+      ${editing && editType === 'template' ? `
+        <div class="rd-template-banner">⚠️ Editing <strong>${sportLabel} master template</strong> — saves to all ${sportLabel} games without custom edits</div>` : ''}
+      ${!editing && hasOverride ? `
+        <div class="rd-override-banner">✎ This game has custom edits</div>` : ''}
+      ${!editing && !hasOverride ? `
+        <div class="rd-template-banner rd-template-info">📋 Using <strong>${sportLabel} master template</strong></div>` : ''}
       <div class="rd-wrap">
         <table class="rd-table">
           <thead><tr>

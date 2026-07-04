@@ -1743,6 +1743,11 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 .rd-del:hover { color: #f87171; background: rgba(248,113,113,.12); }
 .rd-legend { font-size: 0.75rem; color: var(--dim); margin-top: 10px; line-height: 1.6; }
 .rd-legend strong { color: var(--text); }
+.rd-template-banner { font-size: 0.8rem; padding: 7px 12px; border-radius: 8px; margin: 8px 0 4px; background: rgba(245,158,11,.12); color: #f59e0b; }
+.rd-template-info { background: rgba(6,182,212,.08); color: var(--live); }
+.rd-override-banner { font-size: 0.8rem; padding: 7px 12px; border-radius: 8px; margin: 8px 0 4px; background: rgba(99,102,241,.1); color: #818cf8; }
+.rd-tmpl-btn { border-color: var(--live) !important; color: var(--live) !important; }
+.rd-reset-btn { color: var(--dim) !important; font-size: 0.78rem !important; }
 
 @media (max-width: 700px) {
   .lesson-item { padding: 16px; gap: 12px; }
