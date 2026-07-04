@@ -5,7 +5,7 @@
 // ── Version / CDN cache buster ───────────────────────────────
 // When this value changes, users are auto-redirected to a URL
 // the CDN has never cached, forcing a fully fresh load.
-const APP_VERSION = '20270707';
+const APP_VERSION = '20270708';
 (function() {
   try {
     const k = 'hm_version';
@@ -50,6 +50,7 @@ const S = {
   view: 'home',
   broadcastId: null,
   teacherMode: false,
+  showTeacherPin: false,
   stationSchedule: emptyStationSchedule(),
   broadcasts: [],
   plannerStep: 0,
@@ -172,7 +173,18 @@ function navBar(active) {
           ${S.teacherMode ? '🔓 Teacher' : '🔑'}
         </button>
       </div>
-    </nav>`;
+    </nav>
+    ${S.showTeacherPin ? `
+    <div class="teacher-pin-overlay" id="teacher-pin-overlay">
+      <div class="teacher-pin-box">
+        <div class="teacher-pin-title">🔑 Teacher Mode</div>
+        <input type="password" id="teacher-pin-input" class="form-input" placeholder="Enter PIN" autocomplete="off">
+        <div class="teacher-pin-btns">
+          <button class="btn-primary" id="teacher-pin-submit">Unlock</button>
+          <button class="btn-secondary" id="teacher-pin-cancel">Cancel</button>
+        </div>
+      </div>
+    </div>` : ''}`;
 }
 
 // ── HOME ──────────────────────────────────────────────────────
@@ -2570,11 +2582,40 @@ function attachListeners() {
       if (S.view === 'dashboard') go('home');
       else render();
     } else {
-      const pin = prompt('Enter teacher PIN:');
-      if (pin === null) return;
-      if (pin === TEACHER_PIN) { S.teacherMode = true; render(); }
-      else showToast('Incorrect PIN.');
+      S.showTeacherPin = true;
+      render();
     }
+  });
+
+  const teacherPinInput  = document.getElementById('teacher-pin-input');
+  const teacherPinSubmit = document.getElementById('teacher-pin-submit');
+  const teacherPinCancel = document.getElementById('teacher-pin-cancel');
+  const teacherPinOverlay = document.getElementById('teacher-pin-overlay');
+
+  if (teacherPinInput) teacherPinInput.focus();
+
+  if (teacherPinSubmit) teacherPinSubmit.addEventListener('click', () => {
+    const pin = teacherPinInput?.value || '';
+    if (pin === TEACHER_PIN) {
+      S.teacherMode = true; S.showTeacherPin = false; render();
+    } else {
+      teacherPinInput.value = '';
+      teacherPinInput.placeholder = 'Incorrect PIN — try again';
+      teacherPinInput.focus();
+    }
+  });
+
+  if (teacherPinCancel) teacherPinCancel.addEventListener('click', () => {
+    S.showTeacherPin = false; render();
+  });
+
+  if (teacherPinInput) teacherPinInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') teacherPinSubmit?.click();
+    if (e.key === 'Escape') teacherPinCancel?.click();
+  });
+
+  if (teacherPinOverlay) teacherPinOverlay.addEventListener('click', e => {
+    if (e.target === teacherPinOverlay) { S.showTeacherPin = false; render(); }
   });
 
   const sp = document.getElementById('start-planner');

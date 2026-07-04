@@ -88,6 +88,11 @@ body {
 .teacher-btn:hover { color: var(--text); }
 .teacher-btn.active { color: var(--radio); border-color: var(--radio); }
 
+.teacher-pin-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+.teacher-pin-box { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 28px 24px; width: 280px; display: flex; flex-direction: column; gap: 14px; }
+.teacher-pin-title { font-size: 1rem; font-weight: 700; color: var(--text); }
+.teacher-pin-btns { display: flex; gap: 8px; }
+
 /* ── Home ────────────────────────────────────────────────── */
 .home-page {
   min-height: 100vh;
