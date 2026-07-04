@@ -5,7 +5,7 @@
 // ── Version / CDN cache buster ───────────────────────────────
 // When this value changes, users are auto-redirected to a URL
 // the CDN has never cached, forcing a fully fresh load.
-const APP_VERSION = '20270716';
+const APP_VERSION = '20270717';
 (function() {
   try {
     const k = 'hm_version';
@@ -3781,6 +3781,7 @@ function printRundown(b, rows) {
 
 
 function rdDeleteRow(rowId, bid) {
+  showToast('DEL fired: ' + rowId + ' | type=' + S.editingRundownType);
   const b = (S.broadcasts || []).find(x => x.id === bid);
   const sport = b?.type;
   if (S.editingRundownType === 'template' && sport) {
@@ -3792,6 +3793,7 @@ function rdDeleteRow(rowId, bid) {
 }
 
 function rdAddRow(bid) {
+  showToast('ADD fired | type=' + S.editingRundownType);
   const b = (S.broadcasts || []).find(x => x.id === bid);
   const sport = b?.type;
   const newRow = { id: 'r' + Date.now(), slug: '', pbp: '', color: '', gfx: '', cam: '' };
