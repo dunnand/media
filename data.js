@@ -259,6 +259,18 @@ const RUNDOWN_TEMPLATES = {
 };
 RUNDOWN_TEMPLATES.basketball_girls = RUNDOWN_TEMPLATES.basketball_boys;
 
+// ── Broadcast Crew Roles ──────────────────────────────────────
+const BROADCAST_CREW_ROLES = [
+  { key: 'pbp',      label: 'Play-by-Play' },
+  { key: 'color',    label: 'Color' },
+  { key: 'director', label: 'Director' },
+  { key: 'graphics', label: 'Graphics' },
+  { key: 'camera1',  label: 'Camera 1' },
+  { key: 'camera2',  label: 'Camera 2' },
+  { key: 'producer', label: 'Producer' },
+  { key: 'audio',    label: 'Audio' },
+];
+
 // ── Homestead Live — Quick Links ──────────────────────────────
 const LIVE_QUICK_LINKS = [
   { heading: '📅 Calendar', links: [

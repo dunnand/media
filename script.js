@@ -5,7 +5,7 @@
 // ── Version / CDN cache buster ───────────────────────────────
 // When this value changes, users are auto-redirected to a URL
 // the CDN has never cached, forcing a fully fresh load.
-const APP_VERSION = '20270709';
+const APP_VERSION = '20270710';
 (function() {
   try {
     const k = 'hm_version';
@@ -70,6 +70,7 @@ const S = {
   editingIntroClass: null,
   expandedIntroClass: null,
   showQuickLinks: true,
+  broadcastCrew: {},
   broadcastChecklist: {},
   sportTemplates: {},     // sport → rows[] (master template, shared across all games)
   rundownOverrides: {},   // broadcastId → rows[] | null (null = use sport template)
@@ -126,7 +127,7 @@ function go(view, extra) {
   if (view === 'yearbook')  loadYearbookCoverage();
   if (view === 'beats')   loadBeatAssignments();
   if (view === 'indepth') loadRundownData();
-  if (view === 'broadcast' && S.broadcastId) { loadBroadcastChecklist(S.broadcastId); loadRundownData(S.broadcastId); }
+  if (view === 'broadcast' && S.broadcastId) { loadBroadcastChecklist(S.broadcastId); loadRundownData(S.broadcastId); loadBroadcastCrew(S.broadcastId); }
 }
 
 // ── Render ────────────────────────────────────────────────────
@@ -956,6 +957,7 @@ function renderBroadcast() {
           </section>
         </div>
       </div>
+      ${renderCrewCard(b)}
       ${renderRundownSection(b)}
     </div>`;
 }
@@ -2519,6 +2521,12 @@ function esc(str) {
   return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+function chunk(arr, size) {
+  const out = [];
+  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
+  return out;
+}
+
 function val(id) {
   const el = document.getElementById(id);
   return el ? el.value.trim() : '';
@@ -2976,6 +2984,21 @@ function attachListeners() {
       if (db) {
         trackUsage('writes');
         await db.collection('hm_broadcast_gc').doc(bid).set({ checked: [...set] }, { merge: true });
+      }
+    });
+  });
+
+  // ── Broadcast crew inputs (auto-save on blur) ───────────────
+  document.querySelectorAll('.crew-input').forEach(input => {
+    input.addEventListener('blur', async () => {
+      const bid  = input.dataset.crewBid;
+      const role = input.dataset.crewRole;
+      if (!S.broadcastCrew[bid]) S.broadcastCrew[bid] = {};
+      S.broadcastCrew[bid][role] = input.value.trim();
+      const db = getDB();
+      if (db) {
+        trackUsage('writes');
+        await db.collection('hm_broadcast_crew').doc(bid).set(S.broadcastCrew[bid]);
       }
     });
   });
@@ -3753,11 +3776,26 @@ async function resetRundownToTemplate(bid) {
 }
 
 function printRundown(b, rows) {
+  const crew = S.broadcastCrew[b.id] || {};
+  const crewRows = BROADCAST_CREW_ROLES.filter(r => crew[r.key]);
+  const crewHtml = crewRows.length ? `
+  <table class="crew-tbl">
+    <thead><tr><th colspan="4">BROADCAST CREW</th></tr></thead>
+    <tbody>${chunk(crewRows, 2).map(pair => `<tr>
+      ${pair.map(r => `<td class="cr-lbl">${r.label}</td><td class="cr-val">${esc(crew[r.key])}</td>`).join('')}
+      ${pair.length < 2 ? '<td></td><td></td>' : ''}
+    </tr>`).join('')}</tbody>
+  </table>` : '';
   const w = window.open('', '_blank');
   w.document.write(`<!DOCTYPE html><html><head><title>${esc(b.title)} — Rundown</title><style>
     *{box-sizing:border-box}body{font-family:Arial,sans-serif;font-size:10.5px;margin:1.5cm 1cm;color:#000}
     h1{font-size:15px;font-weight:800;margin:0 0 3px}
-    .meta{color:#555;font-size:10px;margin-bottom:14px}
+    .meta{color:#555;font-size:10px;margin-bottom:10px}
+    .crew-tbl{width:100%;border-collapse:collapse;margin-bottom:14px}
+    .crew-tbl th{background:#1a1a1a;color:#fff;padding:5px 8px;font-size:9px;letter-spacing:.05em;text-transform:uppercase;font-weight:700}
+    .crew-tbl td{padding:4px 8px;border:1px solid #ddd;font-size:10px}
+    .cr-lbl{color:#555;font-weight:700;width:12%;white-space:nowrap}
+    .cr-val{width:38%;font-weight:600}
     table{width:100%;border-collapse:collapse;table-layout:fixed}
     th{background:#1a1a1a;color:#fff;padding:5px 6px;text-align:left;font-size:9px;letter-spacing:.05em;text-transform:uppercase;font-weight:700}
     td{padding:6px;border-bottom:1px solid #e0e0e0;vertical-align:top;word-wrap:break-word;font-size:10px;line-height:1.45}
@@ -3772,6 +3810,7 @@ function printRundown(b, rows) {
   </style></head><body>
   <h1>${esc(b.title)}</h1>
   <div class="meta">${fmtDate(b.date, true)}${b.gameTime ? ' &middot; ' + esc(b.gameTime) : ''} &middot; Broadcast Rundown</div>
+  ${crewHtml}
   <table>
     <thead><tr>
       <th class="cn">#</th><th class="cs">SEGMENT</th><th class="cp">PBP SCRIPT</th>
@@ -3789,6 +3828,25 @@ function printRundown(b, rows) {
   <p style="margin-top:10px;font-size:9px;color:#666"><strong>PBP</strong> = Play-by-Play script &nbsp;·&nbsp; <strong>COLOR</strong> = Color commentator notes &nbsp;·&nbsp; <strong>GFX</strong> = Graphics cue (PSD filename) &nbsp;·&nbsp; <strong>CAM</strong> = Camera shot</p>
   <script>window.onload=function(){window.print()}<\/script></body></html>`);
   w.document.close();
+}
+
+function renderCrewCard(b) {
+  const crew = S.broadcastCrew[b.id];
+  if (!crew) return `<section class="card crew-card"><div class="card-header"><h2>🎙️ Broadcast Crew</h2></div><p class="dim" style="padding:12px 16px">Loading...</p></section>`;
+  return `
+  <section class="card crew-card">
+    <div class="card-header"><h2>🎙️ Broadcast Crew</h2><span class="crew-hint">Fill in who's on each role — shows on the print sheet</span></div>
+    <div class="crew-grid">
+      ${BROADCAST_CREW_ROLES.map(role => `
+        <div class="crew-row">
+          <label class="crew-label">${role.label}</label>
+          <input class="crew-input form-input" type="text"
+            data-crew-bid="${b.id}" data-crew-role="${role.key}"
+            value="${esc(crew[role.key] || '')}"
+            placeholder="Name...">
+        </div>`).join('')}
+    </div>
+  </section>`;
 }
 
 function renderRundownSection(b) {
@@ -3892,6 +3950,21 @@ async function loadBroadcastChecklist(bid) {
     trackUsage('reads', 1);
     S.broadcastChecklist[bid] = new Set(doc.exists ? (doc.data().checked || []) : []);
   } catch(e) { S.broadcastChecklist[bid] = new Set(); }
+  render();
+}
+
+async function loadBroadcastCrew(bid) {
+  if (S.broadcastCrew[bid]) { render(); return; }
+  const db = getDB();
+  try {
+    if (db) {
+      const doc = await db.collection('hm_broadcast_crew').doc(bid).get();
+      trackUsage('reads', 1);
+      S.broadcastCrew[bid] = doc.exists ? (doc.data() || {}) : {};
+    } else {
+      S.broadcastCrew[bid] = {};
+    }
+  } catch(e) { S.broadcastCrew[bid] = {}; }
   render();
 }
 

@@ -1718,6 +1718,14 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 .gc-item-label { font-size: 0.88rem; font-weight: 600; color: var(--text); }
 .gc-item-sub { font-size: 0.77rem; color: var(--dim); margin-top: 1px; }
 
+/* ── Broadcast Crew ─────────────────────────────────────────── */
+.crew-card { margin-top: 20px; }
+.crew-hint { font-size: 0.78rem; color: var(--dim); margin-left: auto; }
+.crew-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; padding: 14px 16px; }
+.crew-row { display: flex; flex-direction: column; gap: 4px; }
+.crew-label { font-size: 0.75rem; font-weight: 700; color: var(--dim); text-transform: uppercase; letter-spacing: .04em; }
+.crew-input { font-size: 0.9rem; }
+
 /* ── Broadcast Rundown ───────────────────────────────────────── */
 .rd-card { margin-top: 20px; }
 .rd-actions { display: flex; align-items: center; gap: 6px; }
