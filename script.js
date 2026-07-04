@@ -7,16 +7,18 @@
 // the CDN has never cached, forcing a fully fresh load.
 const APP_VERSION = '20270706';
 (function() {
-  const k = 'hm_version';
-  if (localStorage.getItem(k) === APP_VERSION) return;
-  const url = new URL(location.href);
-  if (url.searchParams.get('_v') === APP_VERSION) {
+  try {
+    const k = 'hm_version';
+    if (localStorage.getItem(k) === APP_VERSION) return;
+    const url = new URL(location.href);
+    if (url.searchParams.get('_v') === APP_VERSION) {
+      localStorage.setItem(k, APP_VERSION);
+      return;
+    }
     localStorage.setItem(k, APP_VERSION);
-    return;
-  }
-  localStorage.setItem(k, APP_VERSION);
-  url.searchParams.set('_v', APP_VERSION);
-  location.replace(url.toString());
+    url.searchParams.set('_v', APP_VERSION);
+    location.replace(url.toString());
+  } catch(e) { /* localStorage blocked by browser — skip version check */ }
 })();
 
 // ── Firebase ─────────────────────────────────────────────────
