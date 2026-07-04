@@ -5,7 +5,7 @@
 // ── Version / CDN cache buster ───────────────────────────────
 // When this value changes, users are auto-redirected to a URL
 // the CDN has never cached, forcing a fully fresh load.
-const APP_VERSION = '20270714';
+const APP_VERSION = '20270715';
 (function() {
   try {
     const k = 'hm_version';
@@ -3044,35 +3044,7 @@ function attachListeners() {
     printRundown(b, rows);
   });
 
-  const rdAddRow = document.getElementById('rd-add-row');
-  if (rdAddRow) rdAddRow.addEventListener('click', () => {
-    const bid = rdAddRow.dataset.rdBid;
-    const b = (S.broadcasts || []).find(x => x.id === bid);
-    const rows = readRundownRowsFromDom();
-    rows.push({ id: 'r' + Date.now(), slug: '', pbp: '', color: '', gfx: '', cam: '' });
-    if (S.editingRundownType === 'template' && b?.type) {
-      S.sportTemplates[b.type] = rows;
-    } else {
-      S.rundownOverrides[bid] = rows;
-    }
-    render();
-  });
-
-  document.querySelectorAll('[data-rd-del]').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      const bid    = btn.dataset.rdBid;
-      const rowId  = btn.dataset.rdDel;
-      const b      = (S.broadcasts || []).find(x => x.id === bid);
-      const sport  = b?.type;
-      if (S.editingRundownType === 'template' && sport) {
-        S.sportTemplates[sport] = (S.sportTemplates[sport] || []).filter(r => r.id !== rowId);
-      } else {
-        S.rundownOverrides[bid] = (S.rundownOverrides[bid] || []).filter(r => r.id !== rowId);
-      }
-      render();
-    });
-  });
+  // rd-add-row and [data-rd-del] are handled via delegation in init()
 
   // ── Lesson delete / hide handlers ───────────────────────────
   document.querySelectorAll('[data-delete-lesson]').forEach(btn => {
@@ -3916,6 +3888,40 @@ async function loadBroadcastChecklist(bid) {
 async function init() {
   await Promise.all([loadFromFirebase(), loadCustomYbEvents(), loadYearbookCoverage(), loadCalendarYbEvents(), loadCanvaLessons(), loadHiddenLessons(), loadIntroClassInfo()]);
   render();
+
+  // Delegated — survive every re-render
+  document.addEventListener('click', e => {
+    const delBtn = e.target.closest('[data-rd-del]');
+    if (delBtn) {
+      e.stopPropagation();
+      const bid   = delBtn.dataset.rdBid;
+      const rowId = delBtn.dataset.rdDel;
+      const b     = (S.broadcasts || []).find(x => x.id === bid);
+      const sport = b?.type;
+      if (S.editingRundownType === 'template' && sport) {
+        S.sportTemplates[sport] = (S.sportTemplates[sport] || []).filter(r => r.id !== rowId);
+      } else {
+        S.rundownOverrides[bid] = (S.rundownOverrides[bid] || []).filter(r => r.id !== rowId);
+      }
+      render();
+      return;
+    }
+
+    const addBtn = e.target.closest('#rd-add-row');
+    if (addBtn) {
+      const bid   = addBtn.dataset.rdBid;
+      const b     = (S.broadcasts || []).find(x => x.id === bid);
+      const sport = b?.type;
+      const newRow = { id: 'r' + Date.now(), slug: '', pbp: '', color: '', gfx: '', cam: '' };
+      if (S.editingRundownType === 'template' && sport) {
+        S.sportTemplates[sport] = [...(S.sportTemplates[sport] || []), newRow];
+      } else {
+        S.rundownOverrides[bid] = [...(S.rundownOverrides[bid] || []), newRow];
+      }
+      render();
+      return;
+    }
+  });
   document.addEventListener('keydown', e => {
     if (!S.lessonId) return;
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
