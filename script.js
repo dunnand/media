@@ -5,7 +5,7 @@
 // ── Version / CDN cache buster ───────────────────────────────
 // When this value changes, users are auto-redirected to a URL
 // the CDN has never cached, forcing a fully fresh load.
-const APP_VERSION = '20270717';
+const APP_VERSION = '20270718';
 (function() {
   try {
     const k = 'hm_version';
@@ -3780,8 +3780,33 @@ function printRundown(b, rows) {
 }
 
 
+let _rdDragId = null;
+
+function rdDragStart(rowId) { _rdDragId = rowId; }
+function rdDragOver(e)       { e.preventDefault(); }
+function rdDrop(targetId, bid) {
+  if (!_rdDragId || _rdDragId === targetId) { _rdDragId = null; return; }
+  const b     = (S.broadcasts || []).find(x => x.id === bid);
+  const sport = b?.type;
+  const src   = S.editingRundownType === 'template' && sport
+    ? S.sportTemplates[sport] : S.rundownOverrides[bid];
+  if (!src) { _rdDragId = null; return; }
+  const rows  = [...src];
+  const from  = rows.findIndex(r => r.id === _rdDragId);
+  const to    = rows.findIndex(r => r.id === targetId);
+  if (from === -1 || to === -1) { _rdDragId = null; return; }
+  const [moved] = rows.splice(from, 1);
+  rows.splice(to, 0, moved);
+  if (S.editingRundownType === 'template' && sport) {
+    S.sportTemplates[sport] = rows;
+  } else {
+    S.rundownOverrides[bid] = rows;
+  }
+  _rdDragId = null;
+  render();
+}
+
 function rdDeleteRow(rowId, bid) {
-  showToast('DEL fired: ' + rowId + ' | type=' + S.editingRundownType);
   const b = (S.broadcasts || []).find(x => x.id === bid);
   const sport = b?.type;
   if (S.editingRundownType === 'template' && sport) {
@@ -3793,7 +3818,6 @@ function rdDeleteRow(rowId, bid) {
 }
 
 function rdAddRow(bid) {
-  showToast('ADD fired | type=' + S.editingRundownType);
   const b = (S.broadcasts || []).find(x => x.id === bid);
   const sport = b?.type;
   const newRow = { id: 'r' + Date.now(), slug: '', pbp: '', color: '', gfx: '', cam: '' };
@@ -3865,7 +3889,8 @@ function renderRundownSection(b) {
           </tr></thead>
           <tbody>
             ${rows.map((r, i) => `
-              <tr class="rd-row" data-rd-id="${r.id}">
+              <tr class="rd-row${editing ? ' rd-draggable' : ''}" data-rd-id="${r.id}"
+                ${editing ? `draggable="true" ondragstart="rdDragStart('${r.id}')" ondragover="rdDragOver(event)" ondrop="rdDrop('${r.id}','${b.id}')"` : ''}>
                 <td class="rd-n">${i + 1}</td>
                 ${editing ? `
                   ${editInput(r.slug,  'slug')}
@@ -3874,6 +3899,7 @@ function renderRundownSection(b) {
                   ${editInput(r.gfx,  'gfx')}
                   ${editInput(r.cam,  'cam')}
                   <td class="rd-act-cell">
+                    <span class="rd-drag-handle" title="Drag to reorder">⠿</span>
                     <button class="rd-del" onclick="rdDeleteRow('${r.id}','${b.id}')" title="Remove row">✕</button>
                   </td>` : `
                   ${viewCell(r.slug,  'rd-slug')}

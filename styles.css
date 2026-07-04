@@ -1746,6 +1746,10 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 .rd-act-cell { padding: 4px; vertical-align: top; }
 .rd-del { background: none; border: none; color: var(--dim); cursor: pointer; font-size: 0.9rem; padding: 5px 6px; border-radius: 4px; }
 .rd-del:hover { color: #f87171; background: rgba(248,113,113,.12); }
+.rd-drag-handle { color: var(--dim); cursor: grab; font-size: 1rem; padding: 5px 4px; user-select: none; }
+.rd-drag-handle:active { cursor: grabbing; }
+.rd-draggable { cursor: default; }
+.rd-draggable.rd-drag-over { outline: 2px solid var(--accent); outline-offset: -2px; }
 .rd-legend { font-size: 0.75rem; color: var(--dim); margin-top: 10px; line-height: 1.6; }
 .rd-legend strong { color: var(--text); }
 .rd-template-banner { font-size: 0.8rem; padding: 7px 12px; border-radius: 8px; margin: 8px 0 4px; background: rgba(245,158,11,.12); color: #f59e0b; }
