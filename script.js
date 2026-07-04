@@ -5,7 +5,7 @@
 // ── Version / CDN cache buster ───────────────────────────────
 // When this value changes, users are auto-redirected to a URL
 // the CDN has never cached, forcing a fully fresh load.
-const APP_VERSION = '20270715';
+const APP_VERSION = '20270716';
 (function() {
   try {
     const k = 'hm_version';
@@ -3780,6 +3780,29 @@ function printRundown(b, rows) {
 }
 
 
+function rdDeleteRow(rowId, bid) {
+  const b = (S.broadcasts || []).find(x => x.id === bid);
+  const sport = b?.type;
+  if (S.editingRundownType === 'template' && sport) {
+    S.sportTemplates[sport] = (S.sportTemplates[sport] || []).filter(r => r.id !== rowId);
+  } else {
+    S.rundownOverrides[bid] = (S.rundownOverrides[bid] || []).filter(r => r.id !== rowId);
+  }
+  render();
+}
+
+function rdAddRow(bid) {
+  const b = (S.broadcasts || []).find(x => x.id === bid);
+  const sport = b?.type;
+  const newRow = { id: 'r' + Date.now(), slug: '', pbp: '', color: '', gfx: '', cam: '' };
+  if (S.editingRundownType === 'template' && sport) {
+    S.sportTemplates[sport] = [...(S.sportTemplates[sport] || []), newRow];
+  } else {
+    S.rundownOverrides[bid] = [...(S.rundownOverrides[bid] || []), newRow];
+  }
+  render();
+}
+
 function renderRundownSection(b) {
   const sport = b.type;
   const templateLoaded = sport in S.sportTemplates;
@@ -3849,7 +3872,7 @@ function renderRundownSection(b) {
                   ${editInput(r.gfx,  'gfx')}
                   ${editInput(r.cam,  'cam')}
                   <td class="rd-act-cell">
-                    <button class="rd-del" data-rd-del="${r.id}" data-rd-bid="${b.id}" title="Remove row">✕</button>
+                    <button class="rd-del" onclick="rdDeleteRow('${r.id}','${b.id}')" title="Remove row">✕</button>
                   </td>` : `
                   ${viewCell(r.slug,  'rd-slug')}
                   ${viewCell(r.pbp,   'rd-pbp')}
@@ -3867,7 +3890,7 @@ function renderRundownSection(b) {
         <strong>CAM</strong> = Camera shot
       </p>
       ${editing ? `
-        <button class="btn-secondary" id="rd-add-row" data-rd-bid="${b.id}"
+        <button class="btn-secondary" onclick="rdAddRow('${b.id}')"
           style="margin-top:10px;font-size:.82rem;width:100%">+ Add Row</button>` : ''}
     </section>`;
 }
@@ -3889,39 +3912,6 @@ async function init() {
   await Promise.all([loadFromFirebase(), loadCustomYbEvents(), loadYearbookCoverage(), loadCalendarYbEvents(), loadCanvaLessons(), loadHiddenLessons(), loadIntroClassInfo()]);
   render();
 
-  // Delegated — survive every re-render
-  document.addEventListener('click', e => {
-    const delBtn = e.target.closest('[data-rd-del]');
-    if (delBtn) {
-      e.stopPropagation();
-      const bid   = delBtn.dataset.rdBid;
-      const rowId = delBtn.dataset.rdDel;
-      const b     = (S.broadcasts || []).find(x => x.id === bid);
-      const sport = b?.type;
-      if (S.editingRundownType === 'template' && sport) {
-        S.sportTemplates[sport] = (S.sportTemplates[sport] || []).filter(r => r.id !== rowId);
-      } else {
-        S.rundownOverrides[bid] = (S.rundownOverrides[bid] || []).filter(r => r.id !== rowId);
-      }
-      render();
-      return;
-    }
-
-    const addBtn = e.target.closest('#rd-add-row');
-    if (addBtn) {
-      const bid   = addBtn.dataset.rdBid;
-      const b     = (S.broadcasts || []).find(x => x.id === bid);
-      const sport = b?.type;
-      const newRow = { id: 'r' + Date.now(), slug: '', pbp: '', color: '', gfx: '', cam: '' };
-      if (S.editingRundownType === 'template' && sport) {
-        S.sportTemplates[sport] = [...(S.sportTemplates[sport] || []), newRow];
-      } else {
-        S.rundownOverrides[bid] = [...(S.rundownOverrides[bid] || []), newRow];
-      }
-      render();
-      return;
-    }
-  });
   document.addEventListener('keydown', e => {
     if (!S.lessonId) return;
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
