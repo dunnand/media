@@ -170,7 +170,7 @@ async function main() {
       try {
         await transporter.sendMail({
           from: `"Homestead Live" <${FROM_EMAIL}>`,
-          to: msg.to, subject: msg.subject, text: msg.text, html: msg.html,
+          to: msg.to, cc: 'adunn@sacs.k12.in.us', subject: msg.subject, text: msg.text, html: msg.html,
         });
         console.log(`  ✓ ${student.studentName} → ${student.email}`);
         totalSent++;
