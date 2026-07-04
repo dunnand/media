@@ -5,7 +5,7 @@
 // ── Version / CDN cache buster ───────────────────────────────
 // When this value changes, users are auto-redirected to a URL
 // the CDN has never cached, forcing a fully fresh load.
-const APP_VERSION = '20270708';
+const APP_VERSION = '20270709';
 (function() {
   try {
     const k = 'hm_version';
@@ -3051,14 +3051,16 @@ function attachListeners() {
   });
 
   document.querySelectorAll('[data-rd-del]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const bid = btn.dataset.rdBid;
-      const b = (S.broadcasts || []).find(x => x.id === bid);
-      const rows = readRundownRowsFromDom().filter(r => r.id !== btn.dataset.rdDel);
-      if (S.editingRundownType === 'template' && b?.type) {
-        S.sportTemplates[b.type] = rows;
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const bid    = btn.dataset.rdBid;
+      const rowId  = btn.dataset.rdDel;
+      const b      = (S.broadcasts || []).find(x => x.id === bid);
+      const sport  = b?.type;
+      if (S.editingRundownType === 'template' && sport) {
+        S.sportTemplates[sport] = (S.sportTemplates[sport] || []).filter(r => r.id !== rowId);
       } else {
-        S.rundownOverrides[bid] = rows;
+        S.rundownOverrides[bid] = (S.rundownOverrides[bid] || []).filter(r => r.id !== rowId);
       }
       render();
     });
