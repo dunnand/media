@@ -5,7 +5,7 @@
 // ── Version / CDN cache buster ───────────────────────────────
 // When this value changes, users are auto-redirected to a URL
 // the CDN has never cached, forcing a fully fresh load.
-const APP_VERSION = '20270712';
+const APP_VERSION = '20270713';
 (function() {
   try {
     const k = 'hm_version';
@@ -3763,24 +3763,15 @@ async function resetRundownToTemplate(bid) {
 function printRundown(b, rows) {
   const roles = b.roles || {};
   const assignedRoles = LIVE_ROLES.filter(r => roles[r]);
-  const crewHtml = assignedRoles.length ? `
-  <table class="crew-tbl">
-    <thead><tr><th colspan="4">BROADCAST CREW</th></tr></thead>
-    <tbody>${chunk(assignedRoles, 2).map(pair => `<tr>
-      ${pair.map(r => `<td class="cr-lbl">${esc(r)}</td><td class="cr-val">${esc(roles[r])}</td>`).join('')}
-      ${pair.length < 2 ? '<td></td><td></td>' : ''}
-    </tr>`).join('')}</tbody>
-  </table>` : '';
+  const crewHtml = assignedRoles.length
+    ? `<p class="crew-line">${assignedRoles.map(r => `<strong>${esc(r)}:</strong> ${esc(roles[r])}`).join(' &nbsp;&middot;&nbsp; ')}</p>`
+    : '';
   const w = window.open('', '_blank');
   w.document.write(`<!DOCTYPE html><html><head><title>${esc(b.title)} — Rundown</title><style>
     *{box-sizing:border-box}body{font-family:Arial,sans-serif;font-size:10.5px;margin:1.5cm 1cm;color:#000}
     h1{font-size:15px;font-weight:800;margin:0 0 3px}
-    .meta{color:#555;font-size:10px;margin-bottom:10px}
-    .crew-tbl{width:100%;border-collapse:collapse;margin-bottom:14px}
-    .crew-tbl th{background:#1a1a1a;color:#fff;padding:5px 8px;font-size:9px;letter-spacing:.05em;text-transform:uppercase;font-weight:700}
-    .crew-tbl td{padding:4px 8px;border:1px solid #ddd;font-size:10px}
-    .cr-lbl{color:#555;font-weight:700;width:12%;white-space:nowrap}
-    .cr-val{width:38%;font-weight:600}
+    .meta{color:#555;font-size:10px;margin-bottom:6px}
+    .crew-line{font-size:9px;color:#666;margin:0 0 12px}
     table{width:100%;border-collapse:collapse;table-layout:fixed}
     th{background:#1a1a1a;color:#fff;padding:5px 6px;text-align:left;font-size:9px;letter-spacing:.05em;text-transform:uppercase;font-weight:700}
     td{padding:6px;border-bottom:1px solid #e0e0e0;vertical-align:top;word-wrap:break-word;font-size:10px;line-height:1.45}
