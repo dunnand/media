@@ -87,6 +87,19 @@ body {
 }
 .teacher-btn:hover { color: var(--text); }
 .teacher-btn.active { color: var(--radio); border-color: var(--radio); }
+.nav-user { font-size: 0.78rem; color: var(--dim); max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nav-signout { background: none; border: 1px solid var(--border); color: var(--dim); border-radius: 6px; padding: 4px 10px; font-size: 0.78rem; cursor: pointer; }
+.nav-signout:hover { color: var(--text); border-color: var(--dim); }
+
+/* ── Login screen ────────────────────────────────────────────── */
+.login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--bg); }
+.login-card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 48px 40px; width: 340px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+.login-logo { font-size: 1.6rem; font-weight: 800; color: var(--text); line-height: 1.2; }
+.login-sub { font-size: 0.9rem; color: var(--dim); }
+.login-google-btn { display: flex; align-items: center; gap: 10px; background: #fff; color: #3c4043; border: 1px solid #dadce0; border-radius: 8px; padding: 10px 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; width: 100%; justify-content: center; margin-top: 6px; }
+.login-google-btn:hover { background: #f8f9fa; box-shadow: 0 1px 4px rgba(0,0,0,.2); }
+.login-hint { font-size: 0.75rem; color: var(--dim); }
+.login-error { font-size: 0.82rem; color: #f87171; background: rgba(248,113,113,.1); border-radius: 6px; padding: 8px 12px; width: 100%; }
 
 .teacher-pin-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 1000; display: flex; align-items: center; justify-content: center; }
 .teacher-pin-box { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 28px 24px; width: 280px; display: flex; flex-direction: column; gap: 14px; }
