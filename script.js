@@ -3996,6 +3996,7 @@ function renderLoginScreen(errorMsg) {
 let _appStarted = false;
 
 document.addEventListener('DOMContentLoaded', () => {
+  if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
   firebase.auth().onAuthStateChanged(user => {
     if (!user) {
       _appStarted = false;
