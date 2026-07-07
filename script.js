@@ -5,7 +5,7 @@
 // ── Version / CDN cache buster ───────────────────────────────
 // When this value changes, users are auto-redirected to a URL
 // the CDN has never cached, forcing a fully fresh load.
-const APP_VERSION = '20270720';
+const APP_VERSION = '20270721';
 (function() {
   try {
     const k = 'hm_version';
@@ -89,6 +89,7 @@ const S = {
   showSchedule: [],
   calMonthOffset: 0,
   dashSections: {},
+  quickLinks: {},
 };
 
 // ── Timing Helpers ────────────────────────────────────────────
@@ -313,6 +314,7 @@ function renderRadio() {
             <p>Review submitted Talk Show plans.</p>
             <button class="btn-secondary" id="view-submissions">View All</button>
           </section>` : ''}
+          ${renderQuickLinksCard('radio')}
         </div>
       </div>
     </div>`;
@@ -729,20 +731,7 @@ function renderLive() {
               <a href="https://drive.google.com/file/d/1dMTaMixqSfk8yHo9ShjAhlK6whOMa0qC/view" target="_blank" class="live-ref-link">📄 Style Guide PDF ↗</a>
             </div>
           </section>
-          <section class="card live-quicklinks-card">
-            <div class="card-header live-ql-header" id="ql-toggle" style="cursor:pointer">
-              <h2>🔗 Quick Links</h2>
-              <span class="live-ql-chevron">${S.showQuickLinks ? '▲' : '▼'}</span>
-            </div>
-            ${S.showQuickLinks ? `
-            <div class="live-ql-sections">
-              ${LIVE_QUICK_LINKS.map(section => `
-                <div class="live-ql-section">
-                  <div class="live-ql-section-heading">${esc(section.heading)}</div>
-                  ${section.links.map(l => `<a href="${l.url}" target="_blank" class="live-ql-link">${esc(l.label)} ↗</a>`).join('')}
-                </div>`).join('')}
-            </div>` : ''}
-          </section>
+          ${renderQuickLinksCard('live')}
         </div>
       </div>
     </div>`;
@@ -1108,6 +1097,7 @@ function renderSports() {
             <p>Indiana Association of School Broadcasters — competition entries and resources.</p>
             <button class="btn-primary" style="background:var(--sports);color:#000" data-nav="iasb">Go to IASB →</button>
           </section>
+          ${renderQuickLinksCard('sports')}
         </div>
       </div>
     </div>`;
@@ -1288,6 +1278,7 @@ function renderIntro() {
             <p>View intro lessons and course materials.</p>
             <button class="btn-primary" style="background:#f59e0b;color:#000" data-lesson-course="intro">Go to Lessons →</button>
           </section>
+          ${renderQuickLinksCard('intro')}
         </div>
       </div>
     </div>`;
@@ -1370,6 +1361,7 @@ function renderInDepth() {
             <p>Anchoring, reporting, script writing, and package production.</p>
             <button class="btn-primary" style="background:var(--indepth)" data-lesson-course="indepth">Go to Lessons →</button>
           </section>
+          ${renderQuickLinksCard('indepth')}
         </div>
       </div>
     </div>`;
@@ -1718,6 +1710,7 @@ function renderYearbook() {
             <p>Log in to build pages, submit layouts, and manage your section.</p>
             <a class="btn-primary" href="https://login.walsworthyearbooks.com/login" target="_blank" rel="noopener">Open Walsworth ↗</a>
           </section>
+          ${renderQuickLinksCard('yearbook')}
 
           <section class="card">
             <h3 style="font-size:1rem;font-weight:700;margin-bottom:4px">📷 Shot List Tips</h3>
@@ -3181,6 +3174,7 @@ function renderLessonsHub() {
         </div>
       </div>
       <div class="class-grid">${cards}</div>
+      ${(S.quickLinks['lessons']?.length || S.teacherMode) ? `<div style="max-width:600px;margin:0 auto">${renderQuickLinksCard('lessons')}</div>` : ''}
     </div>`;
 }
 
@@ -3649,6 +3643,154 @@ async function loadHiddenLessons() {
   } catch(e) {}
 }
 
+// ── Quick Links ───────────────────────────────────────────────
+const QL_VIEWS = ['radio', 'live', 'sports', 'yearbook', 'indepth', 'intro', 'lessons'];
+let _qlDraft = null;
+
+async function loadQuickLinks() {
+  const db = getDB();
+  if (!db) return;
+  try {
+    const snaps = await Promise.all(QL_VIEWS.map(v => db.collection('hm_quick_links').doc(v).get()));
+    trackUsage('reads', QL_VIEWS.length);
+    QL_VIEWS.forEach((v, i) => {
+      if (snaps[i].exists) {
+        S.quickLinks[v] = snaps[i].data().sections || [];
+      } else if (v === 'live') {
+        S.quickLinks[v] = LIVE_QUICK_LINKS;
+        db.collection('hm_quick_links').doc('live').set({ sections: LIVE_QUICK_LINKS });
+        trackUsage('writes', 1);
+      } else {
+        S.quickLinks[v] = [];
+      }
+    });
+  } catch(e) {
+    QL_VIEWS.forEach(v => { S.quickLinks[v] = v === 'live' ? LIVE_QUICK_LINKS : []; });
+  }
+}
+
+function qlSyncFromDom() {
+  if (!_qlDraft) return;
+  const sections = [];
+  document.querySelectorAll('.ql-edit-section').forEach(secEl => {
+    const heading = secEl.querySelector('.ql-section-heading').value.trim() || 'Section';
+    const links = [];
+    secEl.querySelectorAll('.ql-link-row').forEach(row => {
+      const label = row.querySelector('.ql-link-label').value.trim();
+      const url   = row.querySelector('.ql-link-url').value.trim();
+      links.push({ label, url });
+    });
+    sections.push({ heading, links });
+  });
+  _qlDraft.sections = sections;
+}
+
+function qlStartEdit(view) {
+  _qlDraft = { view, sections: JSON.parse(JSON.stringify(S.quickLinks[view] || [])) };
+  render();
+}
+
+function qlCancel() { _qlDraft = null; render(); }
+
+function qlAddSection(view) {
+  qlSyncFromDom();
+  _qlDraft.sections.push({ heading: '', links: [{ label: '', url: '' }] });
+  render();
+}
+
+function qlRemoveSection(idx) {
+  qlSyncFromDom();
+  _qlDraft.sections.splice(idx, 1);
+  render();
+}
+
+function qlAddLink(sIdx) {
+  qlSyncFromDom();
+  _qlDraft.sections[sIdx].links.push({ label: '', url: '' });
+  render();
+}
+
+function qlRemoveLink(sIdx, lIdx) {
+  qlSyncFromDom();
+  _qlDraft.sections[sIdx].links.splice(lIdx, 1);
+  render();
+}
+
+function qlSave(view) {
+  qlSyncFromDom();
+  const sections = (_qlDraft?.sections || [])
+    .map(s => ({ heading: s.heading, links: s.links.filter(l => l.label || l.url) }))
+    .filter(s => s.heading || s.links.length);
+  S.quickLinks[view] = sections;
+  _qlDraft = null;
+  const db = getDB();
+  if (db) { db.collection('hm_quick_links').doc(view).set({ sections }); trackUsage('writes', 1); }
+  render();
+}
+
+function renderQuickLinksCard(view) {
+  const sections  = S.quickLinks[view] || [];
+  const isEditing = _qlDraft?.view === view;
+  const draft     = isEditing ? _qlDraft.sections : sections;
+
+  if (isEditing) {
+    return `
+      <section class="card ql-card">
+        <div class="card-header">
+          <h2>🔗 Quick Links</h2>
+          <div style="display:flex;gap:6px">
+            <button class="btn-primary" onclick="qlSave('${view}')" style="padding:4px 12px;font-size:0.8rem">Save</button>
+            <button class="btn-secondary" onclick="qlCancel()" style="padding:4px 12px;font-size:0.8rem">Cancel</button>
+          </div>
+        </div>
+        <div class="ql-edit-body">
+          ${draft.map((sec, sIdx) => `
+            <div class="ql-edit-section">
+              <div class="ql-section-row">
+                <input class="ql-section-heading form-input" value="${esc(sec.heading)}" placeholder="Section heading" style="font-size:0.82rem;flex:1">
+                <button class="ql-rm-btn" onclick="qlRemoveSection(${sIdx})" title="Remove section">✕</button>
+              </div>
+              ${sec.links.map((l, lIdx) => `
+                <div class="ql-link-row">
+                  <input class="ql-link-label form-input" value="${esc(l.label)}" placeholder="Label" style="font-size:0.8rem;flex:1">
+                  <input class="ql-link-url form-input" value="${esc(l.url)}" placeholder="https://..." style="font-size:0.8rem;flex:2">
+                  <button class="ql-rm-btn" onclick="qlRemoveLink(${sIdx},${lIdx})" title="Remove">✕</button>
+                </div>`).join('')}
+              <button class="ql-add-link" onclick="qlAddLink(${sIdx})">+ Add Link</button>
+            </div>`).join('')}
+          <button class="btn-secondary" onclick="qlAddSection('${view}')" style="width:100%;margin-top:6px;font-size:0.82rem">+ Add Section</button>
+        </div>
+      </section>`;
+  }
+
+  if (!sections.length) {
+    if (!S.teacherMode) return '';
+    return `
+      <section class="card ql-card">
+        <div class="card-header">
+          <h2>🔗 Quick Links</h2>
+          <button class="btn-secondary" onclick="qlStartEdit('${view}')" style="padding:4px 12px;font-size:0.8rem">Edit Links</button>
+        </div>
+        <p style="color:var(--dim);font-size:0.84rem;padding:4px 0 8px">No links yet — click Edit Links to add some.</p>
+      </section>`;
+  }
+
+  return `
+    <section class="card ql-card">
+      <div class="card-header">
+        <h2>🔗 Quick Links</h2>
+        ${S.teacherMode ? `<button class="btn-secondary" onclick="qlStartEdit('${view}')" style="padding:4px 12px;font-size:0.8rem">Edit Links</button>` : ''}
+      </div>
+      <div class="live-ql-sections">
+        ${sections.map(sec => `
+          <div class="live-ql-section">
+            <div class="live-ql-section-heading">${esc(sec.heading)}</div>
+            ${sec.links.map(l => `<a href="${esc(l.url)}" target="_blank" rel="noopener" class="live-ql-link">${esc(l.label)} ↗</a>`).join('')}
+          </div>`).join('')}
+      </div>
+    </section>`;
+}
+
 // ── Broadcast Rundown ─────────────────────────────────────────
 function getRundownTemplate(type) {
   return (RUNDOWN_TEMPLATES[type] || RUNDOWN_TEMPLATES._default)
@@ -3937,7 +4079,7 @@ async function loadBroadcastChecklist(bid) {
 
 // ── Init ──────────────────────────────────────────────────────
 async function init() {
-  await Promise.all([loadFromFirebase(), loadCustomYbEvents(), loadYearbookCoverage(), loadCalendarYbEvents(), loadCanvaLessons(), loadHiddenLessons(), loadIntroClassInfo()]);
+  await Promise.all([loadFromFirebase(), loadCustomYbEvents(), loadYearbookCoverage(), loadCalendarYbEvents(), loadCanvaLessons(), loadHiddenLessons(), loadIntroClassInfo(), loadQuickLinks()]);
   render();
 
   document.addEventListener('keydown', e => {
