@@ -5,7 +5,7 @@
 // ── Version / CDN cache buster ───────────────────────────────
 // When this value changes, users are auto-redirected to a URL
 // the CDN has never cached, forcing a fully fresh load.
-const APP_VERSION = '20270721';
+const APP_VERSION = '20270722';
 (function() {
   try {
     const k = 'hm_version';
@@ -82,6 +82,7 @@ const S = {
   ybShowAway: false,
   ybDashView: 'event',
   beatId: null,
+  beatOverrides: {},
   expandedBeat: null,
   beatAssignments: {},
   rundownData: {},
@@ -1370,29 +1371,75 @@ function renderInDepth() {
 function renderBeats() {
   const seasonEmoji = { fall: '🍂', winter: '❄️', spring: '🌸' };
 
-  const beatRows = INDEPTH_BEATS.map(b => {
-    const assign  = S.beatAssignments[b.id] || {};
-    const pair    = [assign.student1, assign.student2].filter(Boolean).join(' & ') || '';
-    const seasons = b.seasons.map(s => seasonEmoji[s]).join('');
-    const open    = S.expandedBeat === b.id;
+  const beatRows = INDEPTH_BEATS.map(base => {
+    const b      = getBeat(base.id);
+    const assign = S.beatAssignments[b.id] || {};
+    const pair   = [assign.student1, assign.student2].filter(Boolean).join(' & ') || '';
+    const seasons = base.seasons.map(s => seasonEmoji[s]).join('');
+    const open   = S.expandedBeat === b.id;
+    const isEditing = _beatDraft?.id === b.id;
+
+    const contactsHtml = (b.contacts || []).map(c => {
+      if (typeof c === 'string') return c.includes('@') ? `<a href="mailto:${esc(c)}" class="beat-contact-link">${esc(c)}</a>` : esc(c);
+      return c.email ? `<a href="mailto:${esc(c.email)}" class="beat-contact-link">${esc(c.name)}</a>` : esc(c.name);
+    }).join('  ·  ');
+
+    const editForm = isEditing ? `
+      <div class="beat-edit-form">
+        <div class="beat-edit-row">
+          <label class="beat-edit-label">Beat Name</label>
+          <input id="beat-edit-name" class="form-input" value="${esc(_beatDraft.name)}" style="font-size:0.85rem">
+        </div>
+        <div class="beat-edit-row">
+          <label class="beat-edit-label">Covers</label>
+          <div class="beat-edit-covers">
+            ${_beatDraft.covers.map((cov, i) => `
+              <div style="display:flex;gap:4px;align-items:center">
+                <input class="beat-edit-cover-input form-input" value="${esc(cov)}" placeholder="Topic or club" style="font-size:0.8rem;flex:1">
+                <button class="ql-rm-btn" onclick="beatRemoveCover(${i})">✕</button>
+              </div>`).join('')}
+            <button class="ql-add-link" onclick="beatAddCover()">+ Add Cover</button>
+          </div>
+        </div>
+        <div class="beat-edit-row">
+          <label class="beat-edit-label">Contacts</label>
+          <div class="beat-edit-contacts">
+            ${_beatDraft.contacts.map((c, i) => `
+              <div class="beat-edit-contact-row" style="display:flex;gap:4px;align-items:center">
+                <input class="beat-contact-name form-input" value="${esc(c.name)}" placeholder="Name" style="font-size:0.8rem;flex:1">
+                <input class="beat-contact-email form-input" value="${esc(c.email)}" placeholder="email@sacs.k12.in.us" style="font-size:0.8rem;flex:1.5">
+                <button class="ql-rm-btn" onclick="beatRemoveContact(${i})">✕</button>
+              </div>`).join('')}
+            <button class="ql-add-link" onclick="beatAddContact()">+ Add Contact</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:10px">
+          <button class="btn-primary" onclick="beatSave(${b.id})" style="font-size:0.82rem;padding:5px 14px">Save</button>
+          <button class="btn-secondary" onclick="beatCancelEdit()" style="font-size:0.82rem;padding:5px 14px">Cancel</button>
+        </div>
+      </div>` : '';
 
     const expandedBody = open ? `
       <div class="beat-expanded">
-        <div class="beat-expanded-topics">${b.covers.join('  ·  ')}</div>
-        ${b.contacts.length ? `<div class="beat-expanded-contacts">${b.contacts.join('  ·  ')}</div>` : ''}
-        ${S.teacherMode ? `
-          <div class="beat-assign-inline">
-            <input class="form-input beat-s1-input" data-beat-id="${b.id}" placeholder="Student 1" value="${assign.student1 || ''}">
-            <input class="form-input beat-s2-input" data-beat-id="${b.id}" placeholder="Student 2" value="${assign.student2 || ''}">
-            <button class="btn-sm beat-save-btn" data-beat-id="${b.id}">Save</button>
-          </div>` : ''}
+        ${isEditing ? editForm : `
+          <div class="beat-expanded-topics">${(b.covers || []).map(esc).join('  ·  ')}</div>
+          ${contactsHtml ? `<div class="beat-expanded-contacts">${contactsHtml}</div>` : ''}
+          ${S.teacherMode ? `
+            <div class="beat-assign-inline">
+              <input class="form-input beat-s1-input" data-beat-id="${b.id}" placeholder="Student 1" value="${assign.student1 || ''}">
+              <input class="form-input beat-s2-input" data-beat-id="${b.id}" placeholder="Student 2" value="${assign.student2 || ''}">
+              <button class="btn-sm beat-save-btn" data-beat-id="${b.id}">Save</button>
+              <button class="btn-secondary" onclick="beatStartEdit(${b.id})" style="font-size:0.78rem;padding:4px 10px">Edit Beat</button>
+            </div>` : ''}
+        `}
       </div>` : '';
 
     return `
       <div class="beat-row ${open ? 'open' : ''}" data-beat-toggle="${b.id}">
         <div class="beat-row-main">
           <span class="beat-row-num">${String(b.id).padStart(2,'0')}</span>
-          <span class="beat-row-name">${b.name}</span>
+          <span class="beat-row-icon" style="color:${base.color}">${base.icon}</span>
+          <span class="beat-row-name">${esc(b.name)}</span>
           <span class="beat-row-seasons">${seasons}</span>
           <span class="beat-row-pair">${pair || '<span class="beat-row-empty">Unassigned</span>'}</span>
           <span class="beat-row-chevron">${open ? '▾' : '▸'}</span>
@@ -1486,6 +1533,112 @@ async function saveBeatAssignment(beatId, student1, student2) {
     showToast('Beat assignment saved.');
     render();
   } catch(e) { showToast('Save failed.'); console.error(e); }
+}
+
+async function loadBeatOverrides() {
+  const db = getDB();
+  if (!db) return;
+  try {
+    const snap = await db.collection('hm_beat_info').get();
+    trackUsage('reads', snap.size || 1);
+    const map = {};
+    snap.forEach(doc => { map[parseInt(doc.id)] = doc.data(); });
+    S.beatOverrides = map;
+  } catch(e) {}
+}
+
+function getBeat(id) {
+  const base = INDEPTH_BEATS.find(b => b.id === id) || {};
+  const over = S.beatOverrides[id] || {};
+  return {
+    ...base,
+    name:     over.name     ?? base.name,
+    covers:   over.covers   ?? base.covers,
+    contacts: over.contacts ?? base.contacts.map(c => typeof c === 'string'
+      ? (c.includes('@') ? { name: c, email: c } : { name: c, email: '' })
+      : c),
+  };
+}
+
+let _beatDraft = null;
+
+function beatSyncFromDom() {
+  if (!_beatDraft) return;
+  const nameEl = document.getElementById('beat-edit-name');
+  if (nameEl) _beatDraft.name = nameEl.value.trim();
+  const covers = [];
+  document.querySelectorAll('.beat-edit-cover-input').forEach(el => {
+    const v = el.value.trim();
+    if (v) covers.push(v);
+  });
+  _beatDraft.covers = covers;
+  const contacts = [];
+  document.querySelectorAll('.beat-edit-contact-row').forEach(el => {
+    const name  = el.querySelector('.beat-contact-name').value.trim();
+    const email = el.querySelector('.beat-contact-email').value.trim();
+    if (name || email) contacts.push({ name: name || email, email });
+  });
+  _beatDraft.contacts = contacts;
+}
+
+function beatStartEdit(id) {
+  const b = getBeat(id);
+  _beatDraft = {
+    id,
+    name: b.name,
+    covers: [...(b.covers || [])],
+    contacts: (b.contacts || []).map(c =>
+      typeof c === 'string'
+        ? (c.includes('@') ? { name: c, email: c } : { name: c, email: '' })
+        : { ...c }),
+  };
+  render();
+}
+
+function beatCancelEdit() { _beatDraft = null; render(); }
+
+function beatAddCover() {
+  beatSyncFromDom();
+  _beatDraft.covers.push('');
+  render();
+  setTimeout(() => {
+    const inputs = document.querySelectorAll('.beat-edit-cover-input');
+    if (inputs.length) inputs[inputs.length - 1].focus();
+  }, 50);
+}
+
+function beatRemoveCover(idx) {
+  beatSyncFromDom();
+  _beatDraft.covers.splice(idx, 1);
+  render();
+}
+
+function beatAddContact() {
+  beatSyncFromDom();
+  _beatDraft.contacts.push({ name: '', email: '' });
+  render();
+  setTimeout(() => {
+    const rows = document.querySelectorAll('.beat-edit-contact-row');
+    if (rows.length) rows[rows.length - 1].querySelector('.beat-contact-name').focus();
+  }, 50);
+}
+
+function beatRemoveContact(idx) {
+  beatSyncFromDom();
+  _beatDraft.contacts.splice(idx, 1);
+  render();
+}
+
+async function beatSave(id) {
+  beatSyncFromDom();
+  if (!_beatDraft) return;
+  const data = { name: _beatDraft.name, covers: _beatDraft.covers, contacts: _beatDraft.contacts };
+  S.beatOverrides[id] = data;
+  _beatDraft = null;
+  const db = getDB();
+  if (db) { await db.collection('hm_beat_info').doc(String(id)).set(data); trackUsage('writes', 1); }
+  showToast('Beat updated.');
+  render();
 }
 
 // ── YEARBOOK ──────────────────────────────────────────────────
@@ -4079,7 +4232,7 @@ async function loadBroadcastChecklist(bid) {
 
 // ── Init ──────────────────────────────────────────────────────
 async function init() {
-  await Promise.all([loadFromFirebase(), loadCustomYbEvents(), loadYearbookCoverage(), loadCalendarYbEvents(), loadCanvaLessons(), loadHiddenLessons(), loadIntroClassInfo(), loadQuickLinks()]);
+  await Promise.all([loadFromFirebase(), loadCustomYbEvents(), loadYearbookCoverage(), loadCalendarYbEvents(), loadCanvaLessons(), loadHiddenLessons(), loadIntroClassInfo(), loadQuickLinks(), loadBeatOverrides()]);
   render();
 
   document.addEventListener('keydown', e => {
