@@ -293,7 +293,7 @@ function renderRadio() {
             <div class="action-icon">🎙️</div>
             <h3>DJ Panel</h3>
             <p>Set your on-air status — On Air, On Break, or End Show.</p>
-            <p class="action-cred">Password: <code>Homestead911-2.0</code></p>
+            ${S.teacherMode ? `<p class="action-cred">Password: <code>Homestead911-2.0</code></p>` : ''}
             <a class="btn-primary" href="https://wcyt.org/dj" target="_blank" rel="noopener">Open DJ Panel ↗</a>
           </section>
           <section class="card action-card radio-action">
