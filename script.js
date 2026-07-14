@@ -3419,121 +3419,86 @@ function renderLessonCourse() {
     </div>`;
 }
 
+// First image found in a lesson's sections — used as the title-slide backdrop
+function lessonHeroImg(lesson) {
+  for (const s of (lesson.sections || [])) {
+    if (s.sideImg) return s.sideImg;
+    if (s.images && s.images.length) return s.images[0].src;
+  }
+  return '';
+}
+
 function renderLessonSection(sec, courseColor) {
   let inner = '';
 
   switch (sec.type) {
 
     case 'intro':
-      inner = `
-        <div class="lesson-intro-block">
-          <div class="lesson-intro-icon">💡</div>
-          <p class="lesson-intro-para">${sec.content}</p>
-        </div>`;
+      inner = `<p class="ls-intro-statement">${sec.content}</p>`;
       break;
 
     case 'callout': {
-      const isWarn = sec.warning;
-      const icon   = isWarn ? '⚠️' : '✅';
-      const cls    = isWarn ? 'lesson-callout-warn' : 'lesson-callout-tip';
-      const body   = sec.content
+      const cls  = sec.warning ? 'lesson-callout-warn' : 'lesson-callout-tip';
+      const body = sec.content
         ? `<p class="lesson-callout-text">${sec.content}</p>`
         : `<ul class="lesson-callout-list">${(sec.items || []).map(i => `<li>${i}</li>`).join('')}</ul>`;
-      inner = `
-        <div class="lesson-callout ${cls}">
-          <div class="lesson-callout-head">
-            <span class="lesson-callout-icon">${icon}</span>
-            <span class="lesson-callout-label">${sec.label}</span>
-          </div>
-          ${body}
-        </div>`;
+      inner = `<div class="lesson-callout ${cls}">${body}</div>`;
       break;
     }
 
     case 'keyterms':
       inner = `
-        <div class="lesson-block">
-          ${sec.title ? `
-            <div class="lesson-block-head">
-              <span class="lesson-block-icon">📖</span>
-              <h3 class="lesson-block-title">${sec.title}</h3>
-            </div>` : ''}
-          <div class="lesson-keyterms">
-            ${(sec.terms || []).map(t => `
-              <div class="keyterm-row">
-                <div class="keyterm-key">${t.term}</div>
-                <div class="keyterm-val">${t.def}</div>
-              </div>`).join('')}
-          </div>
+        <div class="lesson-keyterms">
+          ${(sec.terms || []).map(t => `
+            <div class="keyterm-row">
+              <div class="keyterm-key">${t.term}</div>
+              <div class="keyterm-val">${t.def}</div>
+            </div>`).join('')}
         </div>`;
       break;
 
     case 'list':
       inner = `
-        <div class="lesson-block">
-          ${sec.title ? `
-            <div class="lesson-block-head">
-              <span class="lesson-block-icon">📋</span>
-              <h3 class="lesson-block-title">${sec.title}</h3>
-            </div>` : ''}
-          <ul class="lesson-list">
-            ${(sec.items || []).map(i => `<li>${i}</li>`).join('')}
-          </ul>
-        </div>`;
+        <ul class="lesson-list">
+          ${(sec.items || []).map(i => `<li>${i}</li>`).join('')}
+        </ul>`;
       break;
 
     case 'text':
-      inner = `
-        <div class="lesson-block">
-          ${sec.title ? `
-            <div class="lesson-block-head">
-              <span class="lesson-block-icon">📝</span>
-              <h3 class="lesson-block-title">${sec.title}</h3>
-            </div>` : ''}
-          <p class="lesson-text-para">${sec.content}</p>
-        </div>`;
+      inner = `<p class="lesson-text-para">${sec.content}</p>`;
       break;
 
     case 'gallery':
       inner = `
-        <div class="lesson-block">
-          ${sec.label ? `<div class="lesson-block-head"><span class="lesson-block-icon">🖼️</span><h3 class="lesson-block-title">${sec.label}</h3></div>` : ''}
-          <div class="lesson-gallery">
-            ${(sec.images || []).map(img => `
-              <div class="lesson-gallery-item">
-                <img src="${img.src}" alt="${img.alt || ''}" loading="lazy">
-                ${img.alt ? `<p class="lesson-gallery-cap">${img.alt}</p>` : ''}
-              </div>`).join('')}
-          </div>
+        <div class="lesson-gallery">
+          ${(sec.images || []).map(img => `
+            <figure class="lesson-gallery-item">
+              <img src="${img.src}" alt="${img.alt || ''}" loading="lazy">
+              ${img.alt ? `<figcaption class="lesson-gallery-cap">${img.alt}</figcaption>` : ''}
+            </figure>`).join('')}
         </div>`;
       break;
 
     case 'video': {
       const vid = sec.youtube.replace(/.*(?:youtu\.be\/|v=)([^&?]+).*/, '$1');
       inner = `
-        <div class="lesson-block">
-          ${sec.label ? `<div class="lesson-block-head"><span class="lesson-block-icon">📺</span><h3 class="lesson-block-title">${sec.label}</h3></div>` : ''}
-          <div class="lesson-video-wrap">
-            <iframe src="https://www.youtube.com/embed/${vid}" allowfullscreen title="${sec.label || 'Video'}"></iframe>
-          </div>
-          ${sec.note ? `<p class="lesson-video-note">${sec.note}</p>` : ''}
-        </div>`;
+        <div class="lesson-video-wrap">
+          <iframe src="https://www.youtube.com/embed/${vid}" allowfullscreen title="${sec.label || 'Video'}"></iframe>
+        </div>
+        ${sec.note ? `<p class="lesson-video-note">${sec.note}</p>` : ''}`;
       break;
     }
 
     case 'audio':
       inner = `
-        <div class="lesson-block">
-          ${sec.label ? `<div class="lesson-block-head"><span class="lesson-block-icon">🎧</span><h3 class="lesson-block-title">${sec.label}</h3></div>` : ''}
-          ${sec.context ? `<p class="lesson-audio-context">${sec.context}</p>` : ''}
-          <div class="lesson-audio-wrap">
-            <audio controls preload="metadata">
-              <source src="${sec.src}" type="audio/mpeg">
-            </audio>
-          </div>
-          ${sec.note ? `<p class="lesson-video-note">${sec.note}</p>` : ''}
-          ${sec.tip ? `<div class="lesson-audio-tip">${sec.tip}</div>` : ''}
-        </div>`;
+        ${sec.context ? `<p class="lesson-audio-context">${sec.context}</p>` : ''}
+        <div class="lesson-audio-wrap">
+          <audio controls preload="metadata">
+            <source src="${sec.src}" type="audio/mpeg">
+          </audio>
+        </div>
+        ${sec.note ? `<p class="lesson-video-note">${sec.note}</p>` : ''}
+        ${sec.tip ? `<div class="lesson-audio-tip">${sec.tip}</div>` : ''}`;
       break;
 
     default: return '';
@@ -3543,27 +3508,32 @@ function renderLessonSection(sec, courseColor) {
 
   if (sec.sideImg) {
     return `
-      <div class="ls-panel">
+      <div class="ls-panel ls-panel-split">
         <div class="ls-panel-content">${inner}</div>
-        <div class="ls-side-img">
+        <figure class="ls-side-img">
           <img src="${sec.sideImg}" alt="${sec.sideImgAlt || ''}" loading="lazy">
-          ${sec.sideImgCap ? `<p class="ls-side-img-cap">${sec.sideImgCap}</p>` : ''}
-        </div>
+          ${sec.sideImgCap ? `<figcaption class="ls-side-img-cap">${sec.sideImgCap}</figcaption>` : ''}
+        </figure>
       </div>`;
   }
 
   return inner;
 }
 
-function renderLessonSlide(slide, lesson, lessonNum, icon, course, next) {
+function renderLessonSlide(slide, lesson, lessonNum, icon, course, next, idx, total) {
   if (slide.type === '_title') {
+    const hero = lessonHeroImg(lesson);
     return `
       <div class="ls-slide ls-title-slide">
-        <div class="ls-title-icon">${icon}</div>
-        <div class="ls-title-eyebrow">Lesson ${lessonNum} &nbsp;·&nbsp; ${lesson.duration}</div>
-        <h1 class="ls-title-h1">${lesson.title}</h1>
-        <p class="ls-title-summary">${lesson.summary}</p>
-        <div class="ls-start-hint">Press → to begin</div>
+        ${hero ? `<div class="ls-title-bg" style="background-image:url('${hero}')"></div>` : ''}
+        <div class="ls-title-content">
+          <div class="ls-title-icon">${icon}</div>
+          <div class="ls-title-eyebrow">${esc(course.name)} &nbsp;·&nbsp; Lesson ${lessonNum}${lesson.duration ? ` &nbsp;·&nbsp; ${esc(lesson.duration)}` : ''}</div>
+          <h1 class="ls-title-h1">${lesson.title}</h1>
+          <div class="ls-title-rule"></div>
+          <p class="ls-title-summary">${lesson.summary}</p>
+          <div class="ls-start-hint">Press → to begin</div>
+        </div>
       </div>`;
   }
 
@@ -3596,9 +3566,20 @@ function renderLessonSlide(slide, lesson, lessonNum, icon, course, next) {
       </div>`;
   }
 
+  const secTotal = total - 2;
+  const heading  = slide.type === 'intro' ? '' : (slide.title || slide.label || '');
+
   return `
-    <div class="ls-slide ls-section-slide">
+    <div class="ls-slide ls-section-slide${slide.sideImg ? ' ls-has-img' : ''}">
       <div class="ls-section-inner">
+        <header class="ls-sec-head">
+          <div class="ls-sec-kicker">
+            <span class="ls-sec-count">${String(idx).padStart(2, '0')} / ${String(secTotal).padStart(2, '0')}</span>
+            <span class="ls-sec-sep"></span>
+            <span class="ls-sec-lesson">${lesson.title}</span>
+          </div>
+          ${heading ? `<h2 class="ls-sec-h2${slide.warning ? ' ls-sec-h2-warn' : ''}">${heading}</h2>` : ''}
+        </header>
         ${renderLessonSection(slide, course.color)}
       </div>
     </div>`;
@@ -3657,7 +3638,7 @@ function renderLessonPage() {
   return `
     <div class="ls-show" style="--clr:${course.color}">
       <div class="ls-slide-area">
-        ${renderLessonSlide(slides[idx], lesson, lessonNum, icon, course, next)}
+        ${renderLessonSlide(slides[idx], lesson, lessonNum, icon, course, next, idx, total)}
       </div>
       <div class="ls-controls">
         <div class="ls-ctrl-left">
