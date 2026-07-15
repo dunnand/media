@@ -3291,6 +3291,7 @@ const LESSON_ICONS = {
   'destructive-editing': '✂️',
   'audition-basics': '🎚️', 'stutter': '🔊', 'double-track': '🔁',
   'remix-stretch': '🎵', 'reverb': '🌊', 'spectral-display': '🌈',
+  'radio-in-depth': '📰',
 };
 
 function renderLessons() {

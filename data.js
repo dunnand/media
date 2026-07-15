@@ -1845,6 +1845,86 @@ const LESSONS = {
           },
         ]
       },
+      {
+        id: 'u5',
+        title: 'Unit 5 — IASB Projects',
+        lessons: [
+          {
+            id: 'radio-in-depth',
+            title: 'Radio In-Depth (IASB)',
+            duration: '1–2 classes',
+            summary: 'The IASB long-form storytelling project — what judges score, the required outline, and how to build a 1st-place piece.',
+            sections: [
+              { type: 'intro', content: 'This is IASB\'s long-form storytelling category. You\'ll create a news or feature story — <strong>2:00 or longer</strong> — focused on a <strong>single topic</strong>. You are not just reporting facts. You are crafting a compelling audio experience that informs, engages, and leaves impact. Final piece due <strong>May 1</strong>.',
+                sideImg: 'images/iasb-group.png', sideImgCap: 'The Homestead Audio Broadcasting team at IASB — In-Depth is one of our strongest categories.' },
+              { type: 'keyterms', title: 'How IASB Judges Score You', terms: [
+                { term: 'Opening', def: 'Does the first 20 seconds hook the listener and set the tone?' },
+                { term: 'Content', def: 'Is there real substance — research, facts, and voices that matter?' },
+                { term: 'Delivery', def: 'Confident, natural narration that sounds like storytelling, not reading.' },
+                { term: 'Audio Quality', def: 'Clean recordings, balanced mix, no clipping or noise.' },
+                { term: 'Creativity', def: 'An angle and approach the judges haven\'t heard before.' },
+                { term: 'Credibility', def: 'Real voices with real expertise or lived experience.' },
+                { term: 'Writing', def: 'Tight, purposeful scripting — every line earns its place.' },
+                { term: 'Pacing', def: 'The story keeps moving. No dead spots, no rushing.' },
+                { term: 'Closing', def: 'An ending that lands — not a story that just stops.' },
+                { term: 'Overall Impact', def: 'Does the listener walk away changed? Everything matters.' },
+              ]},
+              { type: 'keyterms', title: 'The Six Ingredients of a Strong In-Depth', terms: [
+                { term: '1 · Thorough Research', def: 'Go beyond surface-level information. Use interviews, data, and background context.' },
+                { term: '2 · Multiple Perspectives', def: 'Include voices outside your immediate circle — IASB requires interviews outside the Homestead bubble.' },
+                { term: '3 · Narrative Structure', def: 'Clear beginning → middle → end. Tell a story, don\'t just stack interviews.' },
+                { term: '4 · Expert or Direct Experience', def: 'Interview people with lived experience or real expertise on your topic.' },
+                { term: '5 · Sound Design', def: 'Ambient sound, natural sound, music beds, sound bites — but don\'t overproduce.' },
+                { term: '6 · Context', def: 'Help the listener understand why this topic matters.' },
+              ]},
+              { type: 'callout', label: '⚠️ Non-Negotiable IASB Guidelines', warning: true, items: [
+                'Interview <strong>multiple people from outside the Homestead bubble</strong> — each person needs a specific reason to be part of your story',
+                'Your script and interview questions must be turned in',
+                '<strong>All full interview audio</strong> must be turned in to the Dropbox — not just the clips you used',
+              ]},
+              { type: 'list', title: 'Project Timeline', items: [
+                '<strong>Topic Proposal — March 3.</strong> One paragraph: your topic, your angle, and who you plan to interview.',
+                '<strong>Interview Questions — March 16.</strong> Written questions for every planned interview.',
+                '<strong>Full Script — March 27.</strong> Include your planned sound elements, not just narration.',
+                '<strong>Final Combined .wav File (2:00+) — May 1.</strong> Mixed, mastered, exported at −6 dB.',
+                '<strong>All Full Interview Audio — May 1.</strong> Complete, unedited interviews in the Dropbox.',
+              ]},
+              { type: 'keyterms', title: 'The Required Story Outline', terms: [
+                { term: 'Opening (0:00–0:20)', def: 'Grab attention: a hook, a sound element, and a first line of narration that pulls the listener in.' },
+                { term: 'Topic Introduction (0:20–0:45)', def: 'What is the issue or story? Who is involved, and why does it matter?' },
+                { term: 'Interview Segment 1', def: 'Your first voice. Why are they credible? What key soundbite are you using?' },
+                { term: 'Context / Background', def: 'Historical or statistical info and supporting research that frames the story.' },
+                { term: 'Interview Segment 2', def: 'A different perspective — someone who sees the topic from another side.' },
+                { term: 'Development / Turning Point', def: 'What new understanding does the listener gain here?' },
+                { term: 'Closing', def: 'Reflection, call to action, emotional takeaway, or music fade — end it on purpose.' },
+              ]},
+              { type: 'text', title: '🏆 Weak Opening vs. 1st-Place Opening', content: '<em>Weak:</em> "School spirit has changed over the years at Homestead High School."<br><br><em>1st place:</em> (Pep rally crowd building) — Alumni voice: <strong>"I\'ve never heard this gym louder than in 1998."</strong> (Cut to current game ambience) — Current student: <strong>"It\'s different now — but it\'s still ours."</strong> Then narration: "For decades, Homestead spirit has defined what it means to be a Spartan — but what that spirit looks like has changed."<br><br>Hook ✔ Natural sound ✔ Contrast ✔ Emotional tone ✔' },
+              { type: 'list', title: 'Interviews at a Winning Level', items: [
+                '<strong>Alumni</strong> — specific stories, memories, and examples. Nostalgia is powerful audio.',
+                '<strong>Current student</strong> — honest opinions on turnout, not defensive.',
+                '<strong>Faculty (20+ years at HHS)</strong> — context and observations on how students have evolved.',
+                '<strong>Athletic Director</strong> — numbers, facts, and a statewide perspective.',
+                'Every clip: <strong>5–12 seconds</strong>, condensed, emotional or insightful — no filler words.',
+              ]},
+              { type: 'list', title: 'Sound Design That Wins', items: [
+                'Layer real ambience: pep rally, student section, basketball crowd, hallway noise, marching band, PA announcements',
+                'Music supports the emotion — it never competes with the voices',
+                'Levels balanced, transitions clean',
+                '<strong>Final export at −6 dB</strong> — this is on the rubric',
+              ], sideImg: 'images/audition-levels.png', sideImgCap: 'Good levels = great audio. The winning mix is clean, balanced, and exported at −6 dB.' },
+              { type: 'text', title: '🎙️ Example Topic — The Evolution of Homestead Spirit', content: 'Explore how school spirit has changed over time: alumni interviews, current student voices, historical context, personal stories, ambient school sounds, and a clear narrative arc. The turning point is not <em>"spirit isn\'t the same anymore"</em> — it\'s <strong>"spirit looks different, and that difference reflects who students are now."</strong> If your story doesn\'t clearly say something, it won\'t win.' },
+              { type: 'callout', label: 'Listen Like a Judge — Professional Examples', items: [
+                '<a href="https://drive.google.com/file/d/1g6orsjugL2-ejbwt9JowPUkZVPuKJ5Y-/view" target="_blank" rel="noopener">Radiolab ↗</a> — narrative science storytelling with layered sound design',
+                '<a href="https://drive.google.com/file/d/10pQTugNcsMgxjn2XqTM0TW6o81jZHkD1/view" target="_blank" rel="noopener">99% Invisible ↗</a> — making an overlooked topic fascinating in minutes',
+                '<a href="https://drive.google.com/file/d/17QW88cG-4Jrk0MiOuovWXPL6skAL0cB6/view" target="_blank" rel="noopener">Twenty Thousand Hertz ↗</a> — sound itself as the story',
+                'Stuck on a topic? <a href="https://training.npr.org/2016/10/17/3-simple-ways-to-find-story-ideas/" target="_blank" rel="noopener">NPR Training: Simple ways to find story ideas ↗</a>',
+              ]},
+              { type: 'text', title: 'Homestead\'s In-Depth Record', content: 'Homestead has placed in Radio In-Depth <strong>eight times</strong> — two 1st-place wins, three 2nds, and three 3rds. Recent champions: <a href="https://drive.google.com/file/d/18-w0axryIDxPWA6EtBkx5NxP970W0bnc/view" target="_blank" rel="noopener">Carly Swymeler (1st, 2024) ↗</a> and <a href="https://drive.google.com/file/d/1-wp1hEedkyQ0ebsVGMCIQIpbV_fgdd4Q/view" target="_blank" rel="noopener">Leah Steup (1st, 2025) ↗</a>. Listen to both before you write a single line — then go take their spot.',
+                sideImg: 'images/iasb-finalists.png', sideImgCap: 'IASB finalists — Homestead students highlighted. Your name goes here next.' },
+            ]
+          },
+        ]
+      },
     ]
   },
   live: {
