@@ -1938,6 +1938,359 @@ const LESSONS = {
                 tip: '⭐ <strong>Steal like a broadcaster:</strong> Pick one specific technique from either winning piece — a transition, a soundbite placement, an ambience choice — and decide where it fits in your own story before you write your topic proposal.' },
             ]
           },
+          {
+            id: 'iasb-imaging',
+            title: 'Imaging (IASB)',
+            duration: '1–2 classes',
+            summary: 'Station imaging — sweepers, promos, and jingles. Build 10+ pieces, brand them consistently, and cut a 2:00 collage.',
+            sections: [
+              { type: 'intro', content: 'Imaging is the sound of the station itself — the sweepers, drop-ins, promos, and jingles between the music. For IASB you\'ll submit a <strong>collage of multiple productions, no longer than 2:00 total</strong>. Judges score consistency of branding, execution, use of sound, creativity, production value, voices, pacing, and overall effect. Due <strong>October 31</strong>.' },
+              { type: 'keyterms', title: 'What Counts as Imaging', terms: [
+                { term: 'Sweeper', def: 'A short produced piece that bridges two songs or segments while stamping the station\'s identity.' },
+                { term: 'Drop-in', def: 'A quick branded element dropped into a show — a tagline, a voice hit, an effect.' },
+                { term: 'Promo', def: 'A produced spot promoting something the station does — a show, an event, streaming on WCYT.O-R-G.' },
+                { term: 'Jingle', def: 'A sung or musical station identifier. The stickiest form of branding there is.' },
+              ]},
+              { type: 'callout', label: '⚠️ Non-Negotiable IASB Guidelines', warning: true, items: [
+                '<strong>10–15 different script concepts</strong> written out and turned in',
+                'Final project: a collage of station imaging <strong>close to 2 minutes</strong>',
+                'Branding must be consistent — say <strong>"2 Point Oh, The Next Level of Radio"</strong> the exact same way, with the same effects, every single time',
+                'Multiple layers, a well-written script, and a real mix of sounds',
+              ]},
+              { type: 'list', title: 'The Build Process', items: [
+                'Write your 10–15 concepts first — promote taglines, streaming on WCYT.O-R-G, radio shows, styles, and more',
+                'Build a <strong>separate multitrack session for each production</strong>, and mix each one down',
+                'Combine all the mixdowns into one final multitrack, then mix down once more into the collage',
+                'Concept pieces are good — but not always necessary. Branding consistency wins over cleverness.',
+              ]},
+              { type: 'list', title: 'Your Dropbox Must Include', items: [
+                'One scripting page with all 10–15 concepts',
+                'A separate folder for each production — every media file plus the multitrack session file',
+                'The final project file: the collage, just under 2:00',
+              ]},
+              { type: 'list', title: 'What "Excellent" Sounds Like (Straight From the Rubric)', items: [
+                'Script peer/teacher reviewed, clear message, fun concept',
+                'Multiple voices that hold the listener\'s complete attention',
+                'Clean vocals, balanced music and effects — <strong>final .wav at −6 dB</strong>',
+                'One tagline, one focused branding technique, across every piece',
+                'Total runtime <strong>1:30–2:00</strong>',
+              ]},
+              { type: 'keyterms', title: 'Homestead\'s Imaging Record', terms: [
+                { term: '🥇 1st Place × 5', def: '<a href="https://drive.google.com/file/d/1TesZ46RaKjOIsGWy8RFzKXRA0s0qYIzN/view" target="_blank" rel="noopener">Julian Shine (2007) ↗</a> · <a href="https://drive.google.com/file/d/14SzpdmE6xpow9Kc_uUfTTlKsKvUg33Uh/view" target="_blank" rel="noopener">Casey Stanley (2015) ↗</a> · <a href="https://drive.google.com/file/d/1gih4PXdiWj5TkIdx19GfLnpKrYgUUGAv/view" target="_blank" rel="noopener">Kolin Davis (2017) ↗</a> · <a href="https://drive.google.com/file/d/18luED9W7i5XUolXUGCAfBGXbFzzq15ig/view" target="_blank" rel="noopener">Drew Persinger (2021) ↗</a> · <a href="https://drive.google.com/file/d/157g_Vra0mp8tvG5XepObzDehRC-HZ_s8/view" target="_blank" rel="noopener">Devyn Brown (2023) ↗</a>' },
+                { term: '🥈 2nd Place', def: '<a href="https://drive.google.com/file/d/1c9hfC77N6XeASOZGEyP5sHpXl-sqBrAf/view" target="_blank" rel="noopener">Casey Stanley (2014) ↗</a> · <a href="https://drive.google.com/file/d/1BZ1RPvX9WotpPZ0qLPOdYLqUChc-7Oj1/view" target="_blank" rel="noopener">Drew Persinger (2019) ↗</a> · <a href="https://drive.google.com/file/d/1CSMC_DTvgNRleip08PBpQAdk3XPkn6Cr/view" target="_blank" rel="noopener">Ian Fraser (2024) ↗</a>' },
+                { term: '🥉 3rd Place', def: '<a href="https://drive.google.com/file/d/1xqAFKaYl06ULc-k_XPKP6A8ABgsHDPlt/view" target="_blank" rel="noopener">Andy Dunn & Julian Shine (2006) ↗</a> · Tyler Marshall (2009)' },
+                { term: '🎧 Study the Winners', def: 'Imaging is Homestead\'s strongest category — five state titles. <a href="https://drive.google.com/drive/folders/1DBtR70gzQkJUCWdzIWWPO5yggVM8m-S-" target="_blank" rel="noopener">Browse the 2025 IASB Imaging winners folder ↗</a> before you write a single concept.' },
+              ]},
+            ]
+          },
+          {
+            id: 'iasb-air-personality',
+            title: 'Air Personality (IASB)',
+            duration: '1–2 classes',
+            summary: 'The solo DJ category — 5 recorded shifts on 2.0, then a 2–3 minute scoped aircheck of your best breaks. Top 6 compete live in Indianapolis.',
+            sections: [
+              { type: 'intro', content: 'Air Personality is IASB\'s solo radio show category — and one of the big ones: the <strong>top 6 entries compete live in Indianapolis</strong>. Judges score voice quality, ad-libbing, content, appropriate energy, pacing, phrasing, getting in and out of breaks, overall delivery, and connecting with the audience.' },
+              { type: 'callout', label: 'Who Can Pick This Project', warning: true, items: [
+                'Only students who have <strong>excelled at air personality this year</strong> and have recorded class versions can enter',
+                '<strong>5 different shifts</strong> recorded and turned in — all recorded on the <strong>2.0 station</strong>',
+                'Scripts must be turned in',
+                'Final project: a <strong>scoped aircheck (music removed), 2:00–3:00</strong>, of your best breaks',
+              ]},
+              { type: 'keyterms', title: 'Terms That Win This Category', terms: [
+                { term: 'Hit the Post', def: 'Talking up to the exact moment the lyrics begin — without stepping on the vocals. Also: riding the instrumental ramp of a song\'s intro.' },
+                { term: 'Scoped Aircheck', def: 'Your shift with the music cut out — just your breaks, back to back. This is what the judges hear.' },
+                { term: 'Backsell', def: 'Identifying the songs that just played. "That was…" and "you just heard…" are too basic — find a different way every break.' },
+              ]},
+              { type: 'list', title: 'Every Break Must Include', items: [
+                'Your name',
+                'Pre- and post-song titles <strong>and</strong> artists',
+                'The tagline or station identity — <strong>2 Point Oh, "The Next Level of Radio"</strong>',
+                'A hook — keep listeners invested in what\'s coming up',
+                'Homestead Media promotions, a couple of times per shift',
+                'Different in/out transitions every single break — condensed, informative, entertaining',
+              ]},
+              { type: 'list', title: 'Your Dropbox Must Include (25 Points Per File)', items: [
+                'One script page — bullet-pointed or written out',
+                'A folder with your full shifts from the semester',
+                'The final project file: 2–3 minutes of your best breaks, scoped',
+              ]},
+              { type: 'callout', label: '🎧 Train Your Ear — Professional Air Personalities', items: [
+                '<a href="https://drive.google.com/file/d/1Y7FgJGUEYUJOjARL9ICvn6Fg2J46dQnn/view" target="_blank" rel="noopener">Cheryl Waters — KEXP ↗</a> and <a href="https://drive.google.com/file/d/1yJjB4CxVQDsu93m-XEVeloB0-13h04bW/view" target="_blank" rel="noopener">Mike — WXPN ↗</a>',
+                'Stream on your own: <a href="https://www.kexp.org/archive/" target="_blank" rel="noopener">KEXP Archive ↗</a> · <a href="https://xpn.org/" target="_blank" rel="noopener">WXPN ↗</a> · <a href="https://kutx.org/streams/" target="_blank" rel="noopener">KUTX ↗</a> · <a href="https://kxt.org/listen/" target="_blank" rel="noopener">KXT 91.7 ↗</a> · <a href="https://wfmu.org/" target="_blank" rel="noopener">WFMU 91.1 ↗</a>',
+                'Build a playlist of 20 songs from the <a href="https://docs.google.com/spreadsheets/d/1sUeWFHL2m0YepzHGDUWnLJUXRBWlFZfy78POqIDWfpQ/edit" target="_blank" rel="noopener">WCYT & 2.0 Music Catalog ↗</a>',
+              ]},
+              { type: 'keyterms', title: 'Homestead\'s Air Personality Record', terms: [
+                { term: '🥇 1st Place', def: '<a href="https://drive.google.com/file/d/1fqkrbw2qNmTYL5OgSv7rKc65mZbZa5oR/view" target="_blank" rel="noopener">Macy Gray (2024) ↗</a> — the rubric\'s own example for delivery. Strong presence, confidence, professional.' },
+                { term: '🥈 2nd Place', def: '<a href="https://drive.google.com/file/d/19Q8RomuXYlOZgX0XZthRRZd1S5w2BVaP/view" target="_blank" rel="noopener">Kolin Davis (2017) ↗</a> · <a href="https://drive.google.com/file/d/1B2QyVEoZsP93R8qKld74VosaI_epe_GK/view" target="_blank" rel="noopener">Macy Gray (2023) ↗</a> · <a href="https://drive.google.com/file/d/1E-UbMPKhTUnqkLJpD7oH9ieIrLvRkmpi/view" target="_blank" rel="noopener">Carter Schwartz (2025) ↗</a>' },
+                { term: '🎤 Live Finals', def: 'Make the top 6 and you\'re on stage in Indianapolis doing it live. Macy went from 2nd in 2023 to 1st in 2024 — the tape you make this semester is the audition.' },
+              ]},
+            ]
+          },
+          {
+            id: 'iasb-talk-show',
+            title: 'Talk Show (IASB)',
+            duration: '1–2 classes',
+            summary: 'A 5–7 minute scoped aircheck of your best talk show episode — opinion, interviews, and interaction. Homestead has won it two years running.',
+            sections: [
+              { type: 'intro', content: 'Submit a <strong>scoped aircheck of 5–7 minutes</strong> that best represents a talk show as presented to the audience — featuring a variety of elements: opinion, interviews, and interaction. Judges score knowledge, content, ad-libbing, introduction of topic/guest, appropriate energy, interaction, delivery, production elements, and overall impression.' },
+              { type: 'callout', label: '⚠️ Before You Go On Air', warning: true, content: 'Every talk show needs a <strong>well-written script before any time on the air</strong> — and it must be approved by Mr. Dunn. Record every show on Adobe Audition.' },
+              { type: 'list', title: 'The Craft — What Separates Good Shows', items: [
+                'One host introduces themselves <strong>and their co-host</strong> every break',
+                'The first break gets a <strong>rundown of topics</strong>',
+                'Use the Textline, and build social media interaction — polls and questions on today\'s topic',
+                'Take breaks — don\'t go 20 minutes straight. Exit with a hook: <em>"Stay tuned — the X segment is coming up, and X is joining us to tell us all about it."</em>',
+                'Build segments up from the start of the show so listeners stay excited to reach them',
+                'Pre-planning is crucial — every winning entry in this category was planned, not improvised',
+              ]},
+              { type: 'list', title: 'What "Excellent" Looks Like (Straight From the Rubric)', items: [
+                'Hosts <strong>play well off each other and give each other space</strong> — and clearly know the topic',
+                'Topics and guests get a real introduction, with background and relatable context',
+                'Strong presence, confidence, professional delivery',
+                'Two production elements: a <strong>professional show intro</strong> and a <strong>show liner</strong>',
+                'Scoped runtime <strong>5:00–7:00</strong> — significantly under or over costs you',
+              ]},
+              { type: 'callout', label: '🎧 Listen First', items: [
+                '<a href="https://drive.google.com/file/d/1-9xkyZBMqcl_TzLCRGV5TI7cjiU1A5Yg/view" target="_blank" rel="noopener">The Bobby Bones Show ↗</a> — the professional benchmark for host chemistry and segment flow',
+                '<a href="https://drive.google.com/file/d/19O3Ks8Zj1QXxyCgOHFAkJ5mOGrma8DUa/view" target="_blank" rel="noopener">Dickmeyer, Burns & Baker (1st, 2024) ↗</a> and <a href="https://drive.google.com/file/d/1je5NdP7BG6msiam4bAQvfRymeGYY8fg7/view" target="_blank" rel="noopener">their 2025 repeat ↗</a> — the current champs, twice over',
+              ]},
+              { type: 'keyterms', title: 'Homestead\'s Talk Show Record', terms: [
+                { term: '🥇 1st Place × 3', def: '<a href="https://drive.google.com/file/d/1u8ciy6CEsiQ_J5i4B7z5EXJof3yCQCEy/view" target="_blank" rel="noopener">Jenna Lane & Karlie Flanagan (2021) ↗</a> · <a href="https://drive.google.com/file/d/19O3Ks8Zj1QXxyCgOHFAkJ5mOGrma8DUa/view" target="_blank" rel="noopener">Grace Dickmeyer, Caroline Burns & Alayna Baker (2024) ↗</a> · <a href="https://drive.google.com/file/d/1je5NdP7BG6msiam4bAQvfRymeGYY8fg7/view" target="_blank" rel="noopener">same trio (2025) ↗</a>' },
+                { term: '🥈 2nd Place', def: '<a href="https://drive.google.com/file/d/1ybq0LZv8s-IOO_izLm7R8K3EfWtHRdE1/view" target="_blank" rel="noopener">Kolin Davis, Hallie Nowak & Colby Shoup (2015) ↗</a> · <a href="https://drive.google.com/file/d/1K46fwYxncRbo01DLKr1Hhhry4KsfqQe_/view" target="_blank" rel="noopener">Jessica Walter & Ellie Davis (2018) ↗</a> · <a href="https://drive.google.com/file/d/1Gjslao0D93H72qtJIEm_nWPT3PgGYSkY/view" target="_blank" rel="noopener">Walter & Davis again (2019) ↗</a>' },
+                { term: '🥉 3rd Place', def: '<a href="https://drive.google.com/file/d/1bwoebh9FHAIijbSdq-RlvJ6E-MQvbyhz/view" target="_blank" rel="noopener">Brayden Carroll (2021)* ↗</a> · <a href="https://drive.google.com/file/d/1i-16U7wU3IzUhAPiNyd_OP5bPiemoRDJ/view" target="_blank" rel="noopener">Jenna Lane & Karlie Flanagan (2022) ↗</a> · <a href="https://drive.google.com/file/d/1zrBxJdJxZlyHQmjVZ8xtIbKRDdspEcc_/view" target="_blank" rel="noopener">Austin Render & Connor Fitzharris (2015)* ↗</a> — *would now fall under Sports Talk Show' },
+                { term: '🔁 The Streak', def: 'The same trio won 1st in 2024 and 2025 — and they built both wins on pre-planning, chemistry, and segment structure. That formula is on this slide deck.' },
+              ]},
+            ]
+          },
+          {
+            id: 'iasb-copywriting',
+            title: 'Copywriting (IASB)',
+            duration: '1 class',
+            summary: 'Write one 60-second spot from the client\'s copy points — talent roles, music, sound effects, and production directions all on the page.',
+            sections: [
+              { type: 'intro', content: 'Copywriting is the one category where <strong>the script IS the entry</strong> — nothing gets produced. You write one <strong>60-second spot</strong> from the client\'s copy points, noting talent roles, music, sound effects, and specific production directions. Judges score the lead, holding attention, creation of interest and desire, delivering the client\'s message, call to action, creativity, and timing. <strong>One written script due January 31.</strong>' },
+              { type: 'keyterms', title: 'This Year\'s Client Brief', terms: [
+                { term: 'Client', def: 'IHSAA Champions Network — 70+ terrestrial radio stations plus 150+ video affiliates on IHSAAtv.org, blanketing the state with high school sports coverage.' },
+                { term: 'Target Audience', def: 'Student-athletes, coaches, administrators, fans, and parents.' },
+                { term: 'Required Call to Action', def: '"Watch and listen on IHSAAtv.org (O-R-G) — spread the word."' },
+                { term: 'Required Closing Line', def: '"This promotional spot is for the IHSAA Champions Network promoting the coverage of high school athletics."' },
+              ]},
+              { type: 'list', title: 'Your Script Must Include', items: [
+                '<strong>Sounds</strong> — sound effects, background music, and ambience, listed at their exact location in the script',
+                '<strong>All copy points</strong> — the client\'s message, the call to action, and the required closing line',
+                '<strong>60 seconds</strong> — when you finish the script, read it out loud and time yourself',
+                'Script formatting — page divided up so each voice and segment is clearly stated',
+              ]},
+              { type: 'list', title: 'What "Excellent" Looks Like (Straight From the Rubric)', items: [
+                'A lead that is informed <strong>and grabs the listener from the first line</strong>',
+                'Interesting, original material with multiple voices',
+                'The right amount of copy points — enough to deliver the message, not a data dump — with a great call to action',
+                'Timed exactly when read aloud',
+                'Music and sound effects written at the exact spot they fire',
+              ]},
+              { type: 'callout', label: '📖 Study These Before You Write', items: [
+                '<a href="https://docs.google.com/document/d/1Wk7_RwhSZTeLjBM-95eDApfv2YhjsFf6Hh0s30INYu0/" target="_blank" rel="noopener">The perfect example script — Nisha Lalria\'s 1st-place entry (2022) ↗</a>',
+                '<a href="https://drive.google.com/file/d/1Z3je43oYq5vf0sSPUqqaPZ9h8GWGyI7x/view" target="_blank" rel="noopener">Listen to a produced spot ↗</a> — and picture how you would write it out on the page',
+              ]},
+              { type: 'keyterms', title: 'Homestead\'s Copywriting Record', terms: [
+                { term: '🥇 1st Place', def: '<a href="https://docs.google.com/document/u/0/d/1Wk7_RwhSZTeLjBM-95eDApfv2YhjsFf6Hh0s30INYu0/edit" target="_blank" rel="noopener">Nisha Lalria (2022) ↗</a> — her script is the "perfect example" linked above. Read it twice.' },
+                { term: '🥈 2nd Place', def: '<a href="https://drive.google.com/file/d/16azWz9FHzTgr7KVbpbhfjqPe2PrlppUF/view" target="_blank" rel="noopener">Kolin Davis (2016) ↗</a>' },
+                { term: '🥉 3rd Place', def: '<a href="https://drive.google.com/file/d/1WWu2BpwH0ecVPJ60AzB9f-uI1TWowMAR/view" target="_blank" rel="noopener">Tyler Veit (2021) ↗</a> · <a href="https://docs.google.com/document/d/165uobWWRez-jC1GKmzt4mOyXMI8V-kG6/edit" target="_blank" rel="noopener">Ian Fraser (2024) ↗</a>' },
+              ]},
+            ]
+          },
+          {
+            id: 'iasb-spot-production',
+            title: 'Spot Production (IASB)',
+            duration: '1–2 classes',
+            summary: 'An original commercial, PSA, or station promo — exactly 30 or 60 seconds. Homestead\'s second-strongest category with six state titles.',
+            sections: [
+              { type: 'intro', content: 'Submit an <strong>original commercial, public service announcement, or station promo</strong> — 30 or 60 seconds long. Judges score concept, production value, opening, voices, delivery, script, use of sound, creativity, closing, and timing. And timing is brutal: <strong>:29.0–:30.0 or :59.0–:60.0</strong>. Not "about" thirty seconds. Thirty seconds.' },
+              { type: 'list', title: 'What Could Your Spot Promote?', items: [
+                'Station taglines — <strong>2.0, "The Next Level of Radio"</strong>',
+                'Streaming on WCYT.O-R-G',
+                'Radio shows and the style of music',
+                'Sports broadcasts and Homestead Media',
+                'Or go public service — a PSA counts',
+                'Concept pieces are good, but not always necessary',
+              ]},
+              { type: 'callout', label: '⚠️ Non-Negotiable IASB Guidelines', warning: true, items: [
+                '<strong>3 different script concepts</strong> written out and turned in',
+                'The final script must be written in full <strong>IASB Copywriting format</strong>, sound effects listed — <a href="https://docs.google.com/document/d/1Wk7_RwhSZTeLjBM-95eDApfv2YhjsFf6Hh0s30INYu0/edit" target="_blank" rel="noopener">see the example ↗</a>',
+                'Final project: a commercial or promo for our media program, <strong>30 or 60 seconds EXACTLY</strong>',
+                'Multiple layers, a well-written script, and a real mix of sounds',
+              ]},
+              { type: 'list', title: 'Your Dropbox Must Include', items: [
+                'One scripting page with 3 concepts plus one full Copywriting version of the final spot',
+                'A folder with every media file you used, plus the multitrack session file',
+                'The final project file — 30 or 60 seconds long',
+              ]},
+              { type: 'list', title: 'What "Excellent" Sounds Like (Straight From the Rubric)', items: [
+                'Script peer/teacher reviewed, clear message, fun concept',
+                'Multiple voices with interesting, original material',
+                'Vocal effects, sound effects, and music bed all present and balanced — <strong>final .wav at −6 dB</strong>',
+                'A strong broadcasting voice that knows when to change style and range',
+                'Dead-on <strong>:30.0 or :60.0</strong>',
+              ]},
+              { type: 'keyterms', title: 'Homestead\'s Spot Production Record', terms: [
+                { term: '🥇 1st Place × 6', def: '<a href="https://drive.google.com/file/d/1fSJVWs_akdwRIaKy1I3U1BifJQpwhz81/view" target="_blank" rel="noopener">Mike Dutton (2005) ↗</a> · <a href="https://drive.google.com/file/d/1lfl7vuSaJE_9mS7qJrwqOGT8nMfdJYAF/view" target="_blank" rel="noopener">Andrew Sims & Kaitlyn Rauch (2009) ↗</a> · <a href="https://drive.google.com/file/d/1rs1HdcEqv4QQ7GjkPfdJay3VtDLP-lEq/view" target="_blank" rel="noopener">Christina Kruger (2019) ↗</a> · <a href="https://drive.google.com/file/d/1_TJ6FJX1HDZ198x5r5HTN9oXf_KaNkxb/view" target="_blank" rel="noopener">Christina Kruger (2020) ↗</a> · <a href="https://drive.google.com/file/d/1hT951ofiqGCH97MDKyI7igoUh4Gn6DCF/view" target="_blank" rel="noopener">Easton Hensley (2021) ↗</a> · <a href="https://drive.google.com/file/d/19cwCTfsi99BEHxxZMLO8uoCQwMxocWaS/view" target="_blank" rel="noopener">Chris Bay (2023) ↗</a>' },
+                { term: '🥈 2nd Place × 5', def: 'Andrew Sims & Kaitlyn Rauch (2008) · <a href="https://drive.google.com/file/d/1wn0KD5CeLxMMBJUha4JmuSZuSwRRjP8K/view" target="_blank" rel="noopener">Matt Hamilton (2014) ↗</a> · <a href="https://drive.google.com/file/d/1A5T7gqgxeutg6XyUgNKn-T2lss-mKWxF/view" target="_blank" rel="noopener">Joe Swymeler, Cameron Kruger & Evan Cole (2018) ↗</a> · <a href="https://drive.google.com/file/d/1JU2qyQquOHcnELXinObbAnPKQmCq6shf/view" target="_blank" rel="noopener">John Lane (2019) ↗</a> · <a href="https://drive.google.com/file/d/1YTBRkcliroLvZl4m6XrCLJCz4SGu-mXD/view" target="_blank" rel="noopener">Christina Kruger (2021) ↗</a>' },
+                { term: '🥉 3rd Place × 3', def: 'Julian Shine (2007) · Dan Vandergriff & Kaitlyn Rauch (2011) · <a href="https://drive.google.com/file/d/1nhZhB_TFc3VbskO0DsneTgV-014DU_0D/view" target="_blank" rel="noopener">Kolin Davis (2015) ↗</a>' },
+                { term: '👑 The Kruger Standard', def: 'Christina Kruger placed four straight years — 1st, 1st, 2nd — and her 2019 and 2020 spots are the rubric\'s own examples for production value and script. Start there.' },
+              ]},
+            ]
+          },
+          {
+            id: 'iasb-drama',
+            title: 'Adapted & Original Drama (IASB)',
+            duration: '1–2 classes',
+            summary: 'A 5–15 minute audio drama — existing or original script, multiple voice actors, and a world built entirely out of sound. Due October 31.',
+            sections: [
+              { type: 'intro', content: 'Submit an audio drama — produced from an <strong>existing script (Adapted)</strong> or an <strong>original script</strong> — at least 5 minutes, no longer than 15. Judges listen to excerpts at their discretion and score the opening, delivery, scene transitions, acting, music and sound effects, and conclusion. Due <strong>October 31</strong>.' },
+              { type: 'list', title: 'The Full-Credit Formula', items: [
+                'Find a script — or use an excerpt from a longer one. <a href="https://drive.google.com/drive/folders/1Nw0Ov18k1p--ymxuhxI3-fvPbzAhB4Dd" target="_blank" rel="noopener">Script ideas folder ↗</a>',
+                'Record with <strong>multiple voice actors</strong> — they don\'t have to be from the media classes',
+                'Build the world with sound effects and music, then act — don\'t read',
+                'Turn in the script as a PDF along with the mixed-down audio file',
+              ]},
+              { type: 'list', title: 'Set the Stage With Sound', items: [
+                'Once you have the script, make the listener <strong>envision the world</strong> — sound effects and world noise carry the scene',
+                'Free libraries: <a href="https://freesound.org/" target="_blank" rel="noopener">Freesound ↗</a> and <a href="https://pixabay.com/sound-effects/" target="_blank" rel="noopener">Pixabay (90,000+ effects) ↗</a>',
+                'Open with the script\'s title and writer over a music bed — it instantly sounds professional',
+                'Get someone else to listen to your voice — is it convincing for the plot?',
+                'Don\'t be afraid to re-record. If a line doesn\'t match, redo it. Energy must match the script.',
+              ]},
+              { type: 'callout', label: '⚠️ Your Dropbox Must Include', warning: true, items: [
+                'The script — written or pasted into the project page',
+                'A mixed-down .wav, <strong>5:00–15:00</strong>',
+                'A separate folder for every audio piece you used, plus the multitrack session file',
+                'Save everything — multitrack file, voices, effects — in one folder as you work',
+              ]},
+              { type: 'callout', label: '🎧 Professional Examples — The Truth Podcast (Original Scripts)', items: [
+                '<a href="https://drive.google.com/file/d/1Racab7jZZruVpp7AzF6RkGnHOt4krSAv/view" target="_blank" rel="noopener">Heat Meet ↗</a> · <a href="https://drive.google.com/file/d/1gPRs7ahkJVZDRK4kQmkqWQ-GTEgSp3YV/view" target="_blank" rel="noopener">Keep Running ↗</a> · <a href="https://drive.google.com/file/d/1vaq4e9LKZ0WevkQPwQL0Ny6wv0Zcpu5Z/view" target="_blank" rel="noopener">About the Pond ↗</a> · <a href="https://drive.google.com/file/d/14DyFFqp2el7Zm3pU4R6u0viIVennJjHY/view" target="_blank" rel="noopener">The Grand Finale ↗</a> · <a href="https://drive.google.com/file/d/1dBwOekANZ4NxtChXINqeeHY-_evfeHCu/view" target="_blank" rel="noopener">Phonebank Kismet ↗</a>',
+                'Listen for how every scene establishes its space in the first two seconds of sound',
+              ]},
+              { type: 'keyterms', title: 'Homestead\'s Drama Record', terms: [
+                { term: '🥇 Original Drama — 1st × 4', def: '<a href="https://drive.google.com/file/d/15L7wbv0C6rFguscABuYWSVC0rgTmiITe/view" target="_blank" rel="noopener">Andy Dunn & Julian Shine (2006) ↗</a> · <a href="https://drive.google.com/file/d/1Gb3vg6EG-VNg8BdqZpliPFyoYEygcxyP/view" target="_blank" rel="noopener">Madi & PJ Yoquelet (2018) ↗</a> · <a href="https://drive.google.com/file/d/1-GqvF1r-ksXEhzd7wo81zOwYZQJedUph/view" target="_blank" rel="noopener">Devyn Brown (2023) ↗</a> · <a href="https://drive.google.com/file/d/1UHKEQuNgD8jeGq5rW9kekbzqG8Wml1S6/view" target="_blank" rel="noopener">Dax Thakker (2024) ↗</a>' },
+                { term: '🥉 Original Drama — 3rd', def: '<a href="https://drive.google.com/file/d/1RkdbftWO5dz_EiHtvKAy10slwM-q1_o-/view" target="_blank" rel="noopener">Kolin Davis (2017) ↗</a>' },
+                { term: '🥈 Adapted Drama — 2nd', def: '<a href="https://drive.google.com/file/d/10DDg6qiFv86Oe-4tyd0IptAaE5cwg-3Z/view" target="_blank" rel="noopener">Thomas Lazar (2022) ↗</a> — Adapted Drama\'s 1st place is still unclaimed by Homestead.' },
+                { term: '🎬 Production Benchmark', def: '<a href="https://drive.google.com/file/d/1jO4tpbGLgc1DipzSkUQ9s8lPCcLkHJD9/view" target="_blank" rel="noopener">Ian Fraser\'s Dune drama ↗</a> is the rubric\'s own example for a clean, balanced −6 dB mix.' },
+              ]},
+            ]
+          },
+          {
+            id: 'iasb-interview',
+            title: 'Interview (IASB)',
+            duration: '2 classes',
+            summary: 'A 5+ minute interview with someone outside the Homestead bubble — built on pre-interview research, open-ended questions, and a real promotion.',
+            sections: [
+              { type: 'intro', content: 'Submit an interview of <strong>5 minutes or longer</strong> — no characterizations, no fictional characters. Judges score the introduction, question order, quality and depth of questions, delivery, style, and conclusion. Pick a topic that genuinely interests you: any topic qualifies, but the interview must focus on <strong>a specific topic or event associated with the guest</strong>.' },
+              { type: 'callout', label: '⚠️ Who You Can Interview', warning: true, items: [
+                'Someone <strong>outside the Homestead Media program and your immediate family</strong>',
+                'The person needs a specific topic to be interviewed about, plus an event or project to promote',
+                'Interviewing someone <strong>not currently in high school</strong> earns extra points',
+              ]},
+              { type: 'list', title: 'The Process (This Is Most of the Grade)', items: [
+                '<strong>Three interview options (10 pts)</strong> — who, what topic, and what you could promote for them',
+                '<strong>Pre-interview (20 pts)</strong> — 10 closed-ended questions answered by email, text, or call. The pre-interview turns "Where did you write your song?" into "Your song was written during COVID in the South — how did southern living shape your writing?"',
+                '<strong>Outline (20 pts)</strong> — introduction, 10 open-ended questions, and a written close',
+                '<strong>The finished interview (100 pts)</strong> — played on air and uploaded to WCYT\'s Spotify for all podcast apps',
+              ]},
+              { type: 'keyterms', title: 'The Anatomy of a Great Interview', terms: [
+                { term: 'Introduction', def: 'Introduce yourself first. Give the guest\'s background — tell their story for them — and do their promotion up front.' },
+                { term: 'Questions', def: 'Open-ended How and Why questions with a purpose. You already got the Who, What, and When in the pre-interview.' },
+                { term: 'The Research Rule', def: 'If it\'s on their website or social media, don\'t ask it. "When is your event?" is never a question. Provide answers to researchable facts yourself.' },
+                { term: 'Open vs. Closed', def: '"Are you scared this will happen again?" gets a Yes/No. "What factors will stop this from happening again?" gets a story.' },
+                { term: 'The Close', def: 'Reword the promotion, thank the guest, ask if there\'s anything else they\'d like to share — then sign off strong: <strong>"For WCYT, I\'m [your name]."</strong>' },
+                { term: 'Personality', def: 'Lead with poise, follow up on answers, and give the guest room — no "yeah," no "uh huh," no talking over.' },
+              ]},
+              { type: 'callout', label: '🎧 Listen Before You Book Anyone', items: [
+                '<a href="https://drive.google.com/drive/folders/14RUfbFQUV080wYjfM8VGMInaGb6sXsqI" target="_blank" rel="noopener">Jesse Thorn examples ↗</a> — a master of the research-driven interview',
+                'Past student work: <a href="https://drive.google.com/file/d/1p5Aawcjxc3NXDWDXL9q2aIqPZKpe895U/view" target="_blank" rel="noopener">Example 1 ↗</a> · <a href="https://drive.google.com/file/d/19loO2ZQ0BemxIqXfphl4_6zyPRtrhFlh/view" target="_blank" rel="noopener">2 ↗</a> · <a href="https://drive.google.com/file/d/1G10pdXnFAJQyGGJzKGdVm6Y-I9CDQW_C/view" target="_blank" rel="noopener">3 ↗</a> · <a href="https://drive.google.com/file/d/1JrtY-b_UxTIDFr-2k-0XQ3fOoPagmFdA/view" target="_blank" rel="noopener">4 ↗</a> · <a href="https://drive.google.com/file/d/1Ze1QTjaiRnkMfpmsYokz2yXBmyaWxq05/view" target="_blank" rel="noopener">5 ↗</a>',
+                'Dropbox needs: the interview page linked, plus a .wav — <strong>5:00 minimum, 15:00 max, aim to stay under 10</strong>',
+              ]},
+              { type: 'keyterms', title: 'Homestead\'s Interview Record', terms: [
+                { term: '🥇 1st Place', def: 'Jake Lemon (2007)' },
+                { term: '🥈 2nd Place × 3', def: '<a href="https://drive.google.com/file/d/1ZKFxokTuEHxeNBfmOumK-7KicFfXk0gh/view" target="_blank" rel="noopener">Christina Kruger (2019) ↗</a> · <a href="https://drive.google.com/file/d/18Sugif51YeiRixLfDiWOR2Bm53bID7NN/view" target="_blank" rel="noopener">Austin Render (2016) ↗</a> · Evan Roberts (2008)' },
+                { term: '🥉 3rd Place × 4', def: '<a href="https://drive.google.com/file/d/1H7o2LMzYD4HcCfePgKyW4LhTexzvikVc/view" target="_blank" rel="noopener">Donnie Harmon (2020) ↗</a> · Chris Jorgensen (2007) · Jake Lemon (2006) · Joe Pasquali (2005)' },
+                { term: '🎯 The Gap', def: 'Eight placements but only one title — and none since 2007. This category is wide open for someone who does the pre-interview work.' },
+              ]},
+            ]
+          },
+          {
+            id: 'iasb-podcast',
+            title: 'Podcasting (IASB)',
+            duration: '2 classes',
+            summary: 'A four-episode podcast series with a partner — theme, tagline, intro music, commercial, and episodes on WCYT\'s Spotify feed.',
+            sections: [
+              { type: 'intro', content: 'You and a partner will create a <strong>professional-grade podcast series of four episodes</strong> — aired live on WCYT The Point 91FM and published to <a href="https://open.spotify.com/show/7g9PiMxCO93XMKJzLkLu7D" target="_blank" rel="noopener">WCYT\'s Spotify feed ↗</a>. The IASB entry is one episode, <strong>5–15 minutes</strong>, using music and production elements to create a compelling audio experience. Judges score pre-planning, opening, effective and efficient storytelling, creativity, originality, production quality, vocal performance, and closing. <strong>Open, commercial, and Episode 1 outline due January 21.</strong>' },
+              { type: 'keyterms', title: 'Pick Your Style', terms: [
+                { term: 'Narrative', def: 'Find a story and tell it with interlaced interviews. The best style for IASB and the NPR contest — think 99% Invisible, Twenty Thousand Hertz, This American Life.' },
+                { term: 'Interview', def: 'The most popular podcast style — the focus can be anything, not just the guest. Think How I Built This, Song Exploder, TED Interview.' },
+                { term: 'Roundtable', def: 'A crew talking through topics with structure — think 1A, This Week in Tech, No Dunks.' },
+                { term: 'Other', def: 'Fiction and format-breakers like Welcome to Night Vale. Harder to score, unforgettable when it works.' },
+              ]},
+              { type: 'list', title: 'Part 1 — Concept Development (10 pts)', items: [
+                '<strong>Theme</strong> — one overarching idea for the series (example: students\' trials and tribulations)',
+                '<strong>4–5 episode topics</strong> filled out on your assignment sheet',
+                '<strong>Tagline</strong> — one line that opens every episode: <em>"Exploring the voices and stories of tomorrow\'s leaders."</em>',
+                '<strong>Intro music</strong> that matches the show\'s tone — choose it or make it',
+                '<strong>A 30-second commercial</strong> played during another group\'s show — hosts, premise, and the required line: <em>"Listen to us live on Fridays on WCYT.org or on your favorite podcast platform"</em>',
+              ]},
+              { type: 'list', title: 'Parts 2–4 — Plan, Produce, Submit', items: [
+                '<strong>Episode planning (15 pts/episode)</strong> — outline every episode: Break 1 and Break 2, 7 minutes max each',
+                'Structure each episode: <strong>beginning</strong> (chit-chat intro of the topic) → <strong>middle</strong> (the meat) → <strong>end</strong> (a game, question of the week, or listener mail to change the pace)',
+                '<strong>Recording & production (50 pts)</strong> — record every show, remove the music, drop in another group\'s commercial',
+                '<strong>Final submission (25 pts/episode)</strong> — Dropbox gets: 4 scripts, 4 complete recordings, and the open + commercial audio files',
+              ]},
+              { type: 'callout', label: '🎧 Learn From the Best', items: [
+                'NPR guides: <a href="https://www.npr.org/2021/06/22/1009098800/how-to-start-a-podcast-npr-advice" target="_blank" rel="noopener">How to Start a Podcast ↗</a> · <a href="https://www.npr.org/2018/11/15/662070097/starting-your-podcast-a-guide-for-students" target="_blank" rel="noopener">A Guide for Students ↗</a>',
+                'Narrative: <a href="https://drive.google.com/file/d/1LAp6qHAeg11roQiNQxJwIf_--LLbZfBU/view" target="_blank" rel="noopener">Life Kit ↗</a> · <a href="https://drive.google.com/file/d/1LudisAlDF81jGJHBVp6sNrot6Vsf2_6q/view" target="_blank" rel="noopener">Moo Deng & the viral zoo animal ↗</a> · <a href="https://drive.google.com/file/d/1GbvzcC0M9AtLVjt16J1NCOh5tHhar0Y5/view" target="_blank" rel="noopener">Radiolab ↗</a>',
+                'Roundtable: <a href="https://drive.google.com/file/d/1BH4lw1fxpLaCmU69tY9qn2zn6sSWi9Sb/view" target="_blank" rel="noopener">Vergecast ↗</a> · <a href="https://drive.google.com/file/d/10PCAqfx9nQ3J8qPCIBAqhVOIYD-UvkFT/view" target="_blank" rel="noopener">Pop Culture Happy Hour ↗</a> — Interview: <a href="https://drive.google.com/file/d/1SmXglSlcjNPbhl8FKwT694C7TmjfLpvY/view" target="_blank" rel="noopener">David Letterman ↗</a> · <a href="https://drive.google.com/file/d/1OpqOU_4mW1GyKlX89cXut_4NIMDtDon8/view" target="_blank" rel="noopener">Fresh Air ↗</a>',
+                '<a href="https://drive.google.com/file/d/1GlmNtIQzmQkzoDJfBIChNRWrFD2hBx2C/view" target="_blank" rel="noopener">NPR Podcast Challenge winner ↗</a> and <a href="https://drive.google.com/file/d/1xMot9Gq2KXHw525qNA8mtnluWdY2RUrm/view" target="_blank" rel="noopener">How To Win The Competition.mp3 ↗</a>',
+              ]},
+              { type: 'list', title: 'What "Excellent" Sounds Like (Straight From the Rubric)', items: [
+                'Well-organized segments that are easy to follow — the organization sheet was actually used',
+                'A strong opening that explains the show, introduces the hosts, and previews the topic',
+                'Purposeful, open-ended questions built on real knowledge',
+                'Clear vocals, balanced music and effects — <strong>final .wav at −6 dB</strong>',
+                'Confident hosting: follow-ups, no interruptions, no "yeah / uh huh"',
+                '<strong>5:00 minimum, aim to stay under 15:00</strong>',
+              ]},
+            ]
+          },
+          {
+            id: 'fcc-issue-report',
+            title: 'FCC Issue Report',
+            duration: '2 classes',
+            summary: 'Real FCC compliance: research a community issue, record four 3-minute breaks, and file the report in WCYT\'s public FCC file.',
+            sections: [
+              { type: 'intro', content: 'This one is not a competition — it\'s <strong>the law</strong>. Every quarter, WCYT must air programming responsive to significant community needs, issues, and concerns, and document it. Your write-up gets uploaded to <a href="https://publicfiles.fcc.gov/fm-profile/wcyt/Issues%20and%20Programs%20Lists/25bf308f-db7a-d953-a897-24394dd5fb00" target="_blank" rel="noopener">WCYT\'s FCC Public Inspection File ↗</a> — where <strong>anyone in the world can read it</strong>.' },
+              { type: 'text', title: 'Why This Exists', content: '"The FCC requires each broadcast station to air a reasonable amount of programming responsive to significant community needs, issues, and problems as determined by the station," per FCC counsel Scott Flick. The station must keep a list with a narrative describing each issue treated — including the <strong>time, date, duration, and title</strong> of each program. The burden is on the broadcaster to prove it. You are the broadcaster.' },
+              { type: 'list', title: 'The Project — 100 Points in 4 Parts', items: [
+                '<strong>Part 1 (15 pts):</strong> Three possible topics — who at Homestead to get a quote from, why the FCC would approve it, and 3+ sources',
+                '<strong>Part 2 (15 pts):</strong> Outline all four breaks — rundown, development, and conclusion',
+                '<strong>Part 3 (20 pts):</strong> The FCC template — issue, description (full paragraph), air date/time, length, hosts',
+                '<strong>Part 4 (50 pts):</strong> Record <strong>four breaks, 3+ minutes each</strong>, exported at −6 dB, into your personalized Dropbox folder with this document linked',
+              ]},
+              { type: 'callout', label: '⚠️ On Air, DO NOT', warning: true, items: [
+                'Mention "Issue Report" — listeners don\'t need to know this',
+                'Give <strong>any</strong> of your own opinions on the topic',
+                'Forget to include resources for listeners to look into',
+                'Stray from the topic',
+              ]},
+              { type: 'list', title: 'The Research Standard', items: [
+                'Topics must be backed by <strong>.edu, .org, and .gov</strong> sources only — facts, no opinions',
+                'Cite your sources on air — it builds credibility with listeners',
+                'Get a quote from Homestead staff — your counselor, teachers, SRO, or administration can also help you find a topic',
+                'Everyone shares their Issue Report with the class before anyone goes on air',
+              ]},
+              { type: 'callout', label: '🎧 Study a Full Example', items: [
+                '<a href="https://docs.google.com/document/d/1rzXguYomACzoAMiKqYj1KKJf93cddliPUTG8XStcaig/edit" target="_blank" rel="noopener">Water Pollution Issue Report — the model write-up ↗</a>',
+                'All four breaks: <a href="https://drive.google.com/file/d/18hgLQfUSXGUYVhRJtBf2bBeD45MogJOu/view" target="_blank" rel="noopener">Break 1 ↗</a> · <a href="https://drive.google.com/file/d/1lWPFabkqTtPB3TVyfVoosTa4cwpcMy6Z/view" target="_blank" rel="noopener">Break 2 ↗</a> · <a href="https://drive.google.com/file/d/1R2hL8OMiu4Jis6aiaGnDZ7LqHpNz_Kj5/view" target="_blank" rel="noopener">Break 3 ↗</a> · <a href="https://drive.google.com/file/d/190qTZ8RMOD3PoU1XoDp1XMtoBo_yMMmU/view" target="_blank" rel="noopener">Break 4 ↗</a>',
+                'More filed examples: <a href="https://publicfiles.fcc.gov/fm-profile/wicr/more-public-files/" target="_blank" rel="noopener">WICR\'s public file (UIndy) ↗</a>',
+              ]},
+            ]
+          },
         ]
       },
     ]

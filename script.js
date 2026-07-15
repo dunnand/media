@@ -3214,6 +3214,25 @@ function attachListeners() {
     });
   });
 
+  // ── Lesson visibility toggle (teacher checkmarks) ────────────
+  document.querySelectorAll('[data-toggle-lesson]').forEach(btn => {
+    btn.addEventListener('click', async e => {
+      e.stopPropagation();
+      const id = btn.dataset.toggleLesson;
+      const db = getDB();
+      if (!db) return;
+      trackUsage('writes');
+      if (S.hiddenLessons.has(id)) {
+        await db.collection('hm_hidden_lessons').doc(id).delete();
+        S.hiddenLessons.delete(id);
+      } else {
+        await db.collection('hm_hidden_lessons').doc(id).set({ hidden: true });
+        S.hiddenLessons.add(id);
+      }
+      render();
+    });
+  });
+
   // ── Canva lesson handlers ────────────────────────────────────
   const lsConnectCanva = document.getElementById('ls-connect-canva');
   if (lsConnectCanva) lsConnectCanva.addEventListener('click', async () => {
@@ -3291,7 +3310,10 @@ const LESSON_ICONS = {
   'destructive-editing': '✂️',
   'audition-basics': '🎚️', 'stutter': '🔊', 'double-track': '🔁',
   'remix-stretch': '🎵', 'reverb': '🌊', 'spectral-display': '🌈',
-  'radio-in-depth': '📰',
+  'radio-in-depth': '📰', 'iasb-imaging': '📢', 'iasb-air-personality': '🎙️',
+  'iasb-talk-show': '💬', 'iasb-copywriting': '✍️', 'iasb-spot-production': '📻',
+  'iasb-drama': '🎭', 'iasb-interview': '🎤', 'iasb-podcast': '🎧',
+  'fcc-issue-report': '📜',
 };
 
 function renderLessons() {
@@ -3337,11 +3359,12 @@ function renderLessonCourse() {
   if (!course) return renderLessonsHub();
 
   const units = course.units.map((unit, ui) => {
-    const items = unit.lessons.filter(l => !S.hiddenLessons.has(l.id)).map((l, li) => {
+    const items = unit.lessons.filter(l => S.teacherMode || !S.hiddenLessons.has(l.id)).map((l, li) => {
       const icon = LESSON_ICONS[l.id] || course.icon;
       const hasCanva = !!S.canvaLessons[l.id]?.url;
+      const isHidden = S.hiddenLessons.has(l.id);
       return `
-        <div class="lesson-item"
+        <div class="lesson-item${isHidden ? ' lesson-item-off' : ''}"
              data-lesson-course="${S.lessonCourse}"
              data-lesson-unit="${unit.id}"
              data-lesson-id="${l.id}">
@@ -3352,9 +3375,11 @@ function renderLessonCourse() {
             <div class="lesson-item-summary">${l.summary}</div>
           </div>
           <div class="lesson-item-right">
+            ${isHidden ? `<span class="lesson-hidden-chip">Hidden</span>` : ''}
             <span class="lesson-duration-chip">${l.duration}</span>
             ${S.teacherMode
-              ? `<button class="lesson-delete-btn" data-delete-lesson="${l.id}" data-delete-type="builtin" title="Hide lesson">✕</button>`
+              ? `<button class="lesson-toggle${isHidden ? '' : ' on'}" data-toggle-lesson="${l.id}"
+                   title="${isHidden ? 'Hidden from students — click to show' : 'Visible to students — click to hide'}">${isHidden ? '' : '✓'}</button>`
               : `<span class="lesson-item-arrow">→</span>`}
           </div>
         </div>`;
