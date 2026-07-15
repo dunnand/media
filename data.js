@@ -1897,7 +1897,7 @@ const LESSONS = {
                 { term: 'Interview Segment 2', def: 'A different perspective — someone who sees the topic from another side.' },
                 { term: 'Development / Turning Point', def: 'What new understanding does the listener gain here?' },
                 { term: 'Closing', def: 'Reflection, call to action, emotional takeaway, or music fade — end it on purpose.' },
-              ]},
+              ], sideImg: 'images/indepth-story-arc.svg', sideImgCap: 'The 2:00 story arc — the turning point is where 1st-place pieces separate themselves.' },
               { type: 'text', title: '🏆 Weak Opening vs. 1st-Place Opening', content: '<em>Weak:</em> "School spirit has changed over the years at Homestead High School."<br><br><em>1st place:</em> (Pep rally crowd building) — Alumni voice: <strong>"I\'ve never heard this gym louder than in 1998."</strong> (Cut to current game ambience) — Current student: <strong>"It\'s different now — but it\'s still ours."</strong> Then narration: "For decades, Homestead spirit has defined what it means to be a Spartan — but what that spirit looks like has changed."<br><br>Hook ✔ Natural sound ✔ Contrast ✔ Emotional tone ✔' },
               { type: 'list', title: 'Interviews at a Winning Level', items: [
                 '<strong>Alumni</strong> — specific stories, memories, and examples. Nostalgia is powerful audio.',
@@ -1924,8 +1924,18 @@ const LESSONS = {
                 { term: '🥇 1st Place · 2024', def: '<a href="https://drive.google.com/file/d/18-w0axryIDxPWA6EtBkx5NxP970W0bnc/view" target="_blank" rel="noopener">Carly Swymeler — listen to the winning piece ↗</a>' },
                 { term: '🥈 2nd Place', def: '<a href="https://drive.google.com/file/d/1C_lazViWRb8vnBd-O4ADeRg-W2as8zBL/view" target="_blank" rel="noopener">Ashton Hackman (2020) ↗</a> · <a href="https://drive.google.com/file/d/1kPSC-EW0MIzUXyFEyR3PpU0BoznKReBB/view" target="_blank" rel="noopener">Abigail Boylan (2018) ↗</a> · <a href="https://drive.google.com/file/d/1EFX1yd5_8ii4eryQQ9kW8RNaiMf5SAbu/view" target="_blank" rel="noopener">Madison McConahay (2015) ↗</a>' },
                 { term: '🥉 3rd Place', def: '<a href="https://drive.google.com/file/d/1OyEvKTFrMh3yUWuYzqJd-PiE5KsCyhtn/view" target="_blank" rel="noopener">Sydney Scholl (2018) ↗</a> · <a href="https://drive.google.com/file/d/1Va3nKwTP--HyK_Y35Ql_hhNNbZpG1zDG/view" target="_blank" rel="noopener">Abigail Boylan (2017) ↗</a> · <a href="https://drive.google.com/file/d/1V_UfEr9ThAox9uQB9UBM7_Bml_19DRXB/view" target="_blank" rel="noopener">Gabe Smith (2016) ↗</a>' },
-                { term: 'Your Entry · 2027', def: 'Homestead won this category in 2024 and 2025 — then the 2026 title went to another school. Listen to the winners above before you write a single line, then go take it back.' },
+                { term: 'Your Entry · 2027', def: 'Homestead won this category in 2024 and 2025 — then the 2026 title went to another school. The next two slides are those winning pieces. Study them, then go take it back.' },
               ]},
+              { type: 'audio',
+                src: 'audio/carly-swymeler-in-depth-2024.mp3',
+                label: '🥇 Listen: Carly Swymeler — 2024 State Champion',
+                context: 'This piece won 1st in the state in 2024. Listen once straight through as a listener. Then listen again as a judge — score it against the ten criteria from the start of this lesson.',
+                note: '<strong>Track the outline as you listen:</strong> Where does the opening hook end and the topic introduction begin? When does the first outside voice enter? Can you point to the turning point — the moment you understood something new?' },
+              { type: 'audio',
+                src: 'audio/leah-steup-in-depth-2025.mp3',
+                label: '🥇 Listen: Leah Steup — 2025 State Champion',
+                context: 'Back-to-back: this one took 1st in 2025. This time, focus on the sound design — what is underneath the narration at every moment, and when does it change?',
+                tip: '⭐ <strong>Steal like a broadcaster:</strong> Pick one specific technique from either winning piece — a transition, a soundbite placement, an ambience choice — and decide where it fits in your own story before you write your topic proposal.' },
             ]
           },
         ]

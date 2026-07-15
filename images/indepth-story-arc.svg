@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 760" font-family="-apple-system, 'Segoe UI', system-ui, sans-serif">
+  <defs>
+    <linearGradient id="arc" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a78bfa" stop-opacity="0.35"/>
+      <stop offset="0.62" stop-color="#a78bfa" stop-opacity="1"/>
+      <stop offset="1" stop-color="#a78bfa" stop-opacity="0.45"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="760" rx="18" fill="#131318"/>
+
+  <text x="48" y="62" fill="#f0f0f4" font-size="26" font-weight="800">The 2:00 Story Arc</text>
+  <text x="48" y="90" fill="#8888a0" font-size="14">Seven segments. One narrative. Every second earns its place.</text>
+
+  <!-- spine -->
+  <line x1="88" y1="130" x2="88" y2="700" stroke="url(#arc)" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- 1 Opening -->
+  <circle cx="88" cy="150" r="9" fill="#a78bfa"/>
+  <text x="120" y="146" fill="#a78bfa" font-size="12" font-weight="800" letter-spacing="1.5">0:00–0:20</text>
+  <text x="120" y="168" fill="#f0f0f4" font-size="17" font-weight="700">Opening</text>
+  <text x="120" y="188" fill="#8888a0" font-size="13">Hook + sound element. Grab them or lose them.</text>
+
+  <!-- 2 Topic Intro -->
+  <circle cx="88" cy="235" r="9" fill="#a78bfa"/>
+  <text x="120" y="231" fill="#a78bfa" font-size="12" font-weight="800" letter-spacing="1.5">0:20–0:45</text>
+  <text x="120" y="253" fill="#f0f0f4" font-size="17" font-weight="700">Topic Introduction</text>
+  <text x="120" y="273" fill="#8888a0" font-size="13">Who is involved. Why it matters.</text>
+
+  <!-- 3 Interview 1 -->
+  <circle cx="88" cy="320" r="9" fill="#a78bfa"/>
+  <text x="120" y="316" fill="#a78bfa" font-size="12" font-weight="800" letter-spacing="1.5">VOICE 1</text>
+  <text x="120" y="338" fill="#f0f0f4" font-size="17" font-weight="700">Interview Segment 1</text>
+  <text x="120" y="358" fill="#8888a0" font-size="13">A credible voice. One key soundbite, 5–12 seconds.</text>
+
+  <!-- 4 Context -->
+  <circle cx="88" cy="405" r="9" fill="#a78bfa"/>
+  <text x="120" y="401" fill="#a78bfa" font-size="12" font-weight="800" letter-spacing="1.5">GROUND IT</text>
+  <text x="120" y="423" fill="#f0f0f4" font-size="17" font-weight="700">Context / Background</text>
+  <text x="120" y="443" fill="#8888a0" font-size="13">History, statistics, research. The bigger picture.</text>
+
+  <!-- 5 Interview 2 -->
+  <circle cx="88" cy="490" r="9" fill="#a78bfa"/>
+  <text x="120" y="486" fill="#a78bfa" font-size="12" font-weight="800" letter-spacing="1.5">VOICE 2</text>
+  <text x="120" y="508" fill="#f0f0f4" font-size="17" font-weight="700">Interview Segment 2</text>
+  <text x="120" y="528" fill="#8888a0" font-size="13">A different perspective — another side of the story.</text>
+
+  <!-- 6 Turning Point (highlighted) -->
+  <circle cx="88" cy="575" r="13" fill="none" stroke="#f59e0b" stroke-width="3"/>
+  <circle cx="88" cy="575" r="5" fill="#f59e0b"/>
+  <text x="120" y="571" fill="#f59e0b" font-size="12" font-weight="800" letter-spacing="1.5">★ THE TURN</text>
+  <text x="120" y="593" fill="#f0f0f4" font-size="17" font-weight="700">Development / Turning Point</text>
+  <text x="120" y="613" fill="#8888a0" font-size="13">The listener understands something new. This is the win.</text>
+
+  <!-- 7 Closing -->
+  <circle cx="88" cy="660" r="9" fill="#a78bfa"/>
+  <text x="120" y="656" fill="#a78bfa" font-size="12" font-weight="800" letter-spacing="1.5">2:00+</text>
+  <text x="120" y="678" fill="#f0f0f4" font-size="17" font-weight="700">Closing</text>
+  <text x="120" y="698" fill="#8888a0" font-size="13">Reflection, call to action, or music fade. End on purpose.</text>
+</svg>
