@@ -1924,7 +1924,7 @@ const LESSONS = {
                 { term: '🥇 1st Place · 2024', def: '<a href="https://drive.google.com/file/d/18-w0axryIDxPWA6EtBkx5NxP970W0bnc/view" target="_blank" rel="noopener">Carly Swymeler — listen to the winning piece ↗</a>' },
                 { term: '🥈 2nd Place', def: '<a href="https://drive.google.com/file/d/1C_lazViWRb8vnBd-O4ADeRg-W2as8zBL/view" target="_blank" rel="noopener">Ashton Hackman (2020) ↗</a> · <a href="https://drive.google.com/file/d/1kPSC-EW0MIzUXyFEyR3PpU0BoznKReBB/view" target="_blank" rel="noopener">Abigail Boylan (2018) ↗</a> · <a href="https://drive.google.com/file/d/1EFX1yd5_8ii4eryQQ9kW8RNaiMf5SAbu/view" target="_blank" rel="noopener">Madison McConahay (2015) ↗</a>' },
                 { term: '🥉 3rd Place', def: '<a href="https://drive.google.com/file/d/1OyEvKTFrMh3yUWuYzqJd-PiE5KsCyhtn/view" target="_blank" rel="noopener">Sydney Scholl (2018) ↗</a> · <a href="https://drive.google.com/file/d/1Va3nKwTP--HyK_Y35Ql_hhNNbZpG1zDG/view" target="_blank" rel="noopener">Abigail Boylan (2017) ↗</a> · <a href="https://drive.google.com/file/d/1V_UfEr9ThAox9uQB9UBM7_Bml_19DRXB/view" target="_blank" rel="noopener">Gabe Smith (2016) ↗</a>' },
-                { term: 'Your Entry · 2027', def: 'Eight placements so far — and back-to-back 1sts. Listen to the winners above before you write a single line, then go defend the streak.' },
+                { term: 'Your Entry · 2027', def: 'Homestead won this category in 2024 and 2025 — then the 2026 title went to another school. Listen to the winners above before you write a single line, then go take it back.' },
               ]},
             ]
           },
