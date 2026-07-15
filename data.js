@@ -1984,6 +1984,59 @@ const LESSONS = {
             ]
           },
           {
+            id: 'imaging-4-weeks',
+            title: '4 Weeks of Imaging',
+            duration: '4 weeks',
+            summary: 'The week-by-week build for the Imaging entry — Rule of 3, sound collage, multiple voices, and production tricks. Two pieces a week, 25 points each.',
+            sections: [
+              { type: 'intro', content: 'This is how the Imaging entry actually gets built: <strong>four weeks, one style per week, two pieces per week at 25 points each</strong>, plus 5 points per script. Every script runs 10–30 seconds toward a 2:00 maximum collage. Start by listening to <a href="https://drive.google.com/file/d/11bARZtYJX72TrIE_pmMtszl5n-rGa698/view" target="_blank" rel="noopener">Twenty Thousand Hertz — the history of radio jingles ↗</a>.' },
+              { type: 'keyterms', title: 'The Four Weeks', terms: [
+                { term: 'Week 1 · Rule of 3', def: 'Two Rule-of-3 liners — <a href="https://www.youtube.com/watch?v=ub3oqHPUJy8" target="_blank" rel="noopener">watch the technique ↗</a>. One uses the provided script: "The Point 91FM has expanded its signal!… The Point 91FM: Louder, Clearer, Better."' },
+                { term: 'Week 2 · Sound Collage', def: 'Two liners built from <strong>6–10 different found sounds</strong>, using "Louder, Clearer, Better" & "Where Music is the Point." <a href="https://drive.google.com/file/d/1devJTbS_5WbufHVmOh2AUgn_hedm0QYL/view" target="_blank" rel="noopener">Example ↗</a>' },
+                { term: 'Week 3 · Multiple Voices', def: 'Two liners layering multiple voices, using "Louder, Clearer, Better" & "Your Alternative to Commercial Radio." <a href="https://drive.google.com/file/d/1e43h4ykZfRSr0h4_e5tsSniWfR4mCEgc/view" target="_blank" rel="noopener">Example ↗</a>' },
+                { term: 'Week 4 · Production Tricks', def: 'Two liners using <strong>3–5 production tricks</strong>, with "Louder, Clearer, Better" & "The Independent Music Source." <a href="https://drive.google.com/file/d/1Csrrf7V1ws-6xBqtrtWaXN7_eqaYYZZ4/view" target="_blank" rel="noopener">Example ↗</a>' },
+              ]},
+              { type: 'list', title: 'The Production Tricks Toolbox (Week 4)', items: [
+                '<strong>Stuttering</strong> — <a href="https://youtu.be/PtJ6bZzFUW8" target="_blank" rel="noopener">stutter effect in Audition Multitrack ↗</a> — "WCYT, 2.0 The Next Level Of Radio…"',
+                '<strong>Double vocal layering</strong> — <a href="https://www.youtube.com/watch?v=Zuxzl8pl-Jg" target="_blank" rel="noopener">double up your voice ↗</a> — "New WCYT Text line — 260-702-9118"',
+                '<strong>Time stretch</strong> — <a href="https://www.youtube.com/watch?v=8xopxZ_zvUU" target="_blank" rel="noopener">stretch in the Multitrack ↗</a> — "best of, best of, best of…"',
+                '<strong>Reverse reverb</strong> — <a href="https://youtu.be/kx62MjMvBsw?t=530" target="_blank" rel="noopener">reverse vocal effect (from 9:00) ↗</a> — *BUILD UP* "IIIIIITTTTTTTTS the point 91fm…"',
+              ]},
+              { type: 'list', title: 'Steps to Success (Every Piece, Every Week)', items: [
+                '<strong>Script it</strong> — 10 to 30 seconds each, tracked in your Imaging Tracker with all 8 scripts',
+                '<strong>Define your sound</strong> — Benztown branding with layers for voice, drones, music, and effects (Benztown voice samples and AI voices are fair game, so is recording a clip from YouTube)',
+                '<strong>Mix</strong> — every layer leveled so the voice is clear and audible, mixed down to <strong>−6 dB</strong>',
+                'Incorporate the week\'s style into <strong>all</strong> your pieces — extra points for going beyond the bare minimum',
+              ]},
+              { type: 'callout', label: '🎧 The Benchmark', content: 'The rubric\'s example for a sound collage is <a href="https://drive.google.com/file/d/157g_Vra0mp8tvG5XepObzDehRC-HZ_s8/view" target="_blank" rel="noopener">Devyn Brown\'s 1st-place 2023 Imaging entry ↗</a>. That\'s what eight weeks of pieces distilled to 2:00 sounds like — study it before Week 1.' },
+            ]
+          },
+          {
+            id: 'bhm-liners',
+            title: 'Black History Month Liners',
+            duration: '1 week',
+            summary: 'Two station liners for WCYT\'s Black History Month programming — exact scripts, music bed, clean FM mix. Airs all month.',
+            sections: [
+              { type: 'intro', content: 'This week we <strong>pause the 4 Weeks of Imaging project</strong> to produce two Black History Month station liners for The Point. These aren\'t practice — <strong>they air on WCYT all month long</strong>, promoting the nightly 7 p.m. Black History Month celebration.' },
+              { type: 'keyterms', title: 'The Two Required Scripts (Do NOT Change the Wording)', terms: [
+                { term: 'Liner 1 · The Promo', def: '"It\'s Black History Month. Tune in every night at 7 p.m. to celebrate Black musicians with your host, John. Black History Month on The Point 91 FM and WCYT dot org." — Save as <strong>BlackHistCom-YourName.wav</strong>' },
+                { term: 'Liner 2 · The Bumper', def: '"You\'re listening to the Black History Month celebration, all month long with John on The Point 91 FM and streaming at WCYT dot org." — Save as <strong>BlackHistSpot-YourName.wav</strong>' },
+              ]},
+              { type: 'list', title: 'Production Requirements', items: [
+                'Two separate recordings — one per script',
+                'A <strong>music bed under each liner</strong> that supports, never overpowers, the voice',
+                'Voice clear and <strong>front-mixed</strong> — no sound effects beyond the bed',
+                'No advanced effects required — keep it clean and professional for FM broadcast',
+                'Clear, confident delivery',
+              ]},
+              { type: 'callout', label: '⚠️ Submission', warning: true, items: [
+                'Both files to the assigned <a href="https://drive.google.com/drive/u/0/folders/1QlPmUI02g_WAymFKXgV_Xje6m8MT4B49" target="_blank" rel="noopener">Dropbox folder ↗</a>',
+                'Files must be named <strong>exactly</strong> as specified to receive full credit',
+                'When you\'re done, you return to the 4 Weeks of Imaging project',
+              ]},
+            ]
+          },
+          {
             id: 'iasb-air-personality',
             title: 'Air Personality (IASB)',
             duration: '1–2 classes',

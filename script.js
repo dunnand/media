@@ -3314,7 +3314,7 @@ const LESSON_ICONS = {
   'iasb-talk-show': '💬', 'iasb-copywriting': '✍️', 'iasb-spot-production': '📻',
   'iasb-drama': '🎭', 'iasb-interview': '🎤', 'iasb-podcast': '🎧',
   'fcc-issue-report': '📜', 'iasb-radio-show': '🎶', 'iasb-news-anchor': '🗞️',
-  'legal-id-aircheck-final': '🏁',
+  'legal-id-aircheck-final': '🏁', 'imaging-4-weeks': '🗓️', 'bhm-liners': '📣',
 };
 
 function renderLessons() {
