@@ -3313,7 +3313,8 @@ const LESSON_ICONS = {
   'radio-in-depth': '📰', 'iasb-imaging': '📢', 'iasb-air-personality': '🎙️',
   'iasb-talk-show': '💬', 'iasb-copywriting': '✍️', 'iasb-spot-production': '📻',
   'iasb-drama': '🎭', 'iasb-interview': '🎤', 'iasb-podcast': '🎧',
-  'fcc-issue-report': '📜',
+  'fcc-issue-report': '📜', 'iasb-radio-show': '🎶', 'iasb-news-anchor': '🗞️',
+  'legal-id-aircheck-final': '🏁',
 };
 
 function renderLessons() {

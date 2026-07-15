@@ -2291,6 +2291,113 @@ const LESSONS = {
               ]},
             ]
           },
+          {
+            id: 'iasb-radio-show',
+            title: 'Radio Show (IASB)',
+            duration: '1–2 classes',
+            summary: 'Team air personality — a 5–7 minute scoped aircheck of a music radio show with a co-host. Can\'t be done alone.',
+            sections: [
+              { type: 'intro', content: 'Submit a <strong>scoped aircheck of 5–7 minutes (music removed)</strong> of a radio show as presented to the audience. Judges score content, announcer interaction, delivery, connecting with the audience, production elements, and overall impression. Think of this as <strong>team air personality — you can\'t do this project alone</strong>.' },
+              { type: 'list', title: 'The Craft — Running a Show With a Co-Host', items: [
+                'One host introduces themselves <strong>and their co-host</strong> every break',
+                'First break: a rundown of topics <strong>and the artists</strong> playing during the show',
+                'Use the Textline — ask for requests and mention them on air',
+                'Build social media interaction: polls on what song should end your set, questions on today\'s topic',
+                'Transitions: talk over the music beds of song intros (<strong>hit the post</strong>), and hook listeners before every break — <em>"Stay tuned, when we come back it\'s our weekly segment…"</em>',
+                'Build segments up from the start of the show, and use the <a href="https://docs.google.com/spreadsheets/d/1P2UQZK1fbMvvOhtO9h-h1o2B_i7PcpA4SNrVI2tqNqY/edit" target="_blank" rel="noopener">On Air Checklist ↗</a> every time',
+              ]},
+              { type: 'callout', label: '⚠️ Non-Negotiable IASB Guidelines', warning: true, items: [
+                'Shows recorded <strong>after school on 2.0 or WCYT, on Tuesdays</strong>',
+                '<strong>3 different shows</strong> recorded and turned in, with <strong>3 scripts</strong>',
+                'Final project: a scoped aircheck of 5–7 minutes that best represents a radio show',
+                'Build a playlist of 20 songs from the <a href="https://docs.google.com/spreadsheets/d/1sUeWFHL2m0YepzHGDUWnLJUXRBWlFZfy78POqIDWfpQ/edit" target="_blank" rel="noopener">2.0 / WCYT Music Catalog ↗</a> — song suggestions welcome (clean only) to adunn@sacs.k12.in.us',
+              ]},
+              { type: 'list', title: 'What "Excellent" Sounds Like (Straight From the Rubric)', items: [
+                'Top-notch music information, fun facts, and short topics — organized and developed',
+                'Hosts play well off each other and <strong>give each other space</strong>',
+                'Strong presence, confidence, professional delivery',
+                'Social media and Textline woven in — <strong>talk to listeners like they\'re your friend</strong>',
+                'A professional show intro and a show liner',
+                'Scoped runtime <strong>5:00–7:00</strong>',
+              ]},
+              { type: 'callout', label: '🎧 Listen First', items: [
+                'Pro examples: <a href="https://drive.google.com/file/d/1x2MkA5s1s-1QiYWFMnc93F89mJHDIjzo/view" target="_blank" rel="noopener">NPR 1 ↗</a> · <a href="https://drive.google.com/file/d/12yC2Hrp26zNjTL-SPbyhUPDa_AWtEXA4/view" target="_blank" rel="noopener">NPR 2 ↗</a> · <a href="https://drive.google.com/file/d/1V3DCnUgdvnoGmxBhzvgcdrD73LOTGaX2/view" target="_blank" rel="noopener">NPR 3 ↗</a> — plus <a href="https://www.soundopinions.org/episodes" target="_blank" rel="noopener">Sound Opinions ↗</a> and <a href="https://www.npr.org/sections/allsongs/" target="_blank" rel="noopener">All Songs Considered ↗</a>',
+                '<a href="https://drive.google.com/file/d/1NaQwwOxlzK_YAq44YQSB0Ke8nOBY9Iwj/view" target="_blank" rel="noopener">Macy Gray & Lily Frost (2nd, 2024) ↗</a> — the most recent Homestead placement in this category',
+              ]},
+              { type: 'keyterms', title: 'Homestead\'s Radio Show Record', terms: [
+                { term: '🥇 1st Place × 2', def: '<a href="https://drive.google.com/file/d/1diB73er6OpefxFiAUuiMNk5oTRwsYm2N/view" target="_blank" rel="noopener">Cora Shaw & Karlie Flanagan (2020)* ↗</a> · <a href="https://drive.google.com/file/d/1Ddla4WCAOwKk33zjPPA_pPmYjAbO07Ia/view" target="_blank" rel="noopener">Shaw & Flanagan again (2021)* ↗</a>' },
+                { term: '🥈 2nd Place × 3', def: '<a href="https://drive.google.com/file/d/11L0wWiZD03gukcFbpGflc36Bs2krKKDz/view" target="_blank" rel="noopener">Karlie Flanagan & Nisha Lalria (2022)* ↗</a> · <a href="https://drive.google.com/file/d/1jWEId0sef1gNHBQV2rtjkozJ6eToRaM1/view" target="_blank" rel="noopener">Nada Dahouk & Michelle Obioma (2023) ↗</a> · <a href="https://drive.google.com/file/d/1NaQwwOxlzK_YAq44YQSB0Ke8nOBY9Iwj/view" target="_blank" rel="noopener">Macy Gray & Lily Frost (2024) ↗</a>' },
+                { term: '🥉 3rd Place × 2', def: '<a href="https://drive.google.com/file/d/1r-mlnEoi_7mc2RvfiFbgO9KQ-DUwIpCr/view" target="_blank" rel="noopener">Easton Hensley & Tyler Veit (2019) ↗</a> · <a href="https://drive.google.com/file/d/10_R50wJf6KQF_IbEn3MVGOsKOk86BND6/view" target="_blank" rel="noopener">Nada Dahouk & Michelle Obioma (2022)* ↗</a> — *entries that would now fall under Talk Show' },
+              ]},
+            ]
+          },
+          {
+            id: 'iasb-news-anchor',
+            title: 'News Anchor (IASB)',
+            duration: '1–2 classes',
+            summary: 'A 3–5 minute newscast — global to local story order, scripted word for word, delivered like a professional. Due October 31.',
+            sections: [
+              { type: 'intro', content: 'Submit a single newscast — <strong>3 to 5 minutes</strong> — which may include sounders, sound bites, theme music, and jingles. One student acts as the DJ for the day and introduces the news anchor at the end of their air personality shift. Judges score story order, delivery, energy, articulation, pronunciation, pacing, transitions, and credibility. Due <strong>October 31</strong>.' },
+              { type: 'keyterms', title: 'The Story Order (Every Newscast)', terms: [
+                { term: '1 · Global', def: 'The world story your listeners need first.' },
+                { term: '2 · National', def: 'The biggest story in the country.' },
+                { term: '3 · State of Indiana', def: 'What matters at the state level.' },
+                { term: '4 · Local', def: 'Fort Wayne and the Homestead community.' },
+                { term: '5 · Fluff', def: 'Sports, weather, or something uplifting — end with a smile.' },
+              ]},
+              { type: 'list', title: 'The Delivery Standard', items: [
+                'Open with <strong>"For your WCYT news report, I\'m ___"</strong> and close with <strong>"That was your WCYT news report, I\'m ___"</strong>',
+                'Script <strong>everything</strong> you\'re going to say — 3 main stories plus the fluff piece',
+                'Learn pronunciations before going on — <strong>names, cities, and businesses</strong> (find video examples to confirm)',
+                'Conversational style — skip the jargon people don\'t actually use',
+                'Understand the stories: get background before you go live, and pace yourself',
+              ]},
+              { type: 'callout', label: '⚠️ Non-Negotiable IASB Guidelines', warning: true, items: [
+                '<strong>5 different newscasts</strong> recorded and turned in — all on the <strong>2.0 station</strong>',
+                'Scripts turned in — one script page with your written-out news scripts',
+                'The next day, find your report in the skimmer and put it in the news anchor Dropbox',
+                'Final project: your best newscast, 3:00–5:00',
+              ]},
+              { type: 'callout', label: '🎧 Sound Like the Pros', items: [
+                '<a href="https://drive.google.com/file/d/1oZ5uKO3jJtmoK865EuCVon2OU-32EUcD/view" target="_blank" rel="noopener">NPR News example 1 ↗</a> · <a href="https://drive.google.com/file/d/1QE-3G4boX6DJkwuFcBj9bdrPzMwse0IS/view" target="_blank" rel="noopener">NPR News example 2 ↗</a>',
+                'More on your own: <a href="https://www.npr.org/podcasts-and-shows/" target="_blank" rel="noopener">NPR Podcasts & Shows ↗</a> — select Hourly News in the top header',
+              ]},
+              { type: 'keyterms', title: 'Homestead\'s News Anchor Record', terms: [
+                { term: '🥇 1st Place × 3', def: '<a href="https://drive.google.com/file/d/1ZQL54PQFgDyLBCs3kwLlsoeM4pWZ4B_R/view" target="_blank" rel="noopener">Kolin Davis (2017) ↗</a> · <a href="https://drive.google.com/file/d/1gd8fQsPnKTPdTcO4Thj-dxccQPOmFYe2/view" target="_blank" rel="noopener">Cory Balkenbusch (2018) ↗</a> · <a href="https://drive.google.com/file/d/153xXm3XH_jrYDNUSpzWn5MY-xLHsF6AG/view" target="_blank" rel="noopener">Easton Hensley (2021) ↗</a>' },
+                { term: '🥈 2nd Place × 4', def: '<a href="https://drive.google.com/file/d/1uJmRtz2mx9l3ShpR-yQG0ycdxtpSlNDG/view" target="_blank" rel="noopener">Cory Balkenbusch (2017) ↗</a> · <a href="https://drive.google.com/file/d/112RspfES46yyHXYhwL446yGzVSDsyxV6/view" target="_blank" rel="noopener">Sydney Scholl (2018) ↗</a> · <a href="https://drive.google.com/file/d/11l_wOmgDUUb1zIsOMn_MqM5IOzxwjuuX/view" target="_blank" rel="noopener">Cory Balkenbusch (2019) ↗</a> · <a href="https://drive.google.com/file/d/1oX8mn0JTww5Y_b_q9qFpMoz80tt40l7b/view" target="_blank" rel="noopener">Cora Shaw (2022) ↗</a>' },
+                { term: '🥉 3rd Place', def: '<a href="https://drive.google.com/file/d/1LPUhLnbqAQXV3OOf7HsLJ03PRUCF2pCs/view" target="_blank" rel="noopener">Carson Clymer (2020) ↗</a> — eight total placements makes this one of Homestead\'s most consistent categories.' },
+              ]},
+            ]
+          },
+          {
+            id: 'legal-id-aircheck-final',
+            title: 'Legal ID & Aircheck — Semester Final',
+            duration: '1–2 classes',
+            summary: 'The final project: a dry sponsor read, the WCYT legal ID over a subtle bed, and your best five breaks in one polished mixdown. Due December 18.',
+            sections: [
+              { type: 'intro', content: 'The semester final: <strong>plan, voice, record, and deliver broadcast-ready content</strong> — professional on-air announcements plus a polished air personality mixdown, applying vocal performance, station branding, file naming conventions, and technical audio standards. Due <strong>December 18</strong>, into the Audio Broadcasting Final Dropbox in a folder with your name.' },
+              { type: 'keyterms', title: 'The Three Deliverables', terms: [
+                { term: '1 · Brought To You By', def: 'Dry voice only, no music. "This hour on The Point 91 FM is brought to you by…" — natural sponsor read, smile in the voice, clean breaths. Save as <strong>BTYB-YourName.wav</strong>' },
+                { term: '2 · Legal ID', def: '15–20 seconds over a subtle bed: "The Point is… WCYT 91.1, Lafayette Township, Fort Wayne — a broadcast service of Homestead High School — presented by Homestead Media — online at WCYT dot org — The Point 91 FM, where music is the point." Save as <strong>LegalID-YourName.wav</strong>' },
+                { term: '3 · Aircheck Mixdown', def: 'Your best five breaks from this semester\'s air personality shifts or radio shows — songs removed, assembled into one continuous mixdown with show fades on scoped segments. Save as <strong>AirPerson-YourName.wav</strong>' },
+              ]},
+              { type: 'callout', label: '⚠️ Pronunciation Check', warning: true, content: 'In the Legal ID, "Lafayette" is pronounced <strong>lah-fy-ETT</strong>. Get it right before you press record — this ID airs on a licensed station.' },
+              { type: 'list', title: 'Technical Specs & Quality Control', items: [
+                'File format: <strong>.wav</strong>, peaks around <strong>−6 dBFS</strong>, no clipping, consistent level across all files',
+                'Music beds tasteful and <strong>under</strong> the voice — on everything except the BTYB',
+                'Trim leading and trailing dead air; clean edits and breaths',
+                'File names exactly as specified — replace "YourName" and nothing else',
+                'Don\'t just read — <strong>perform</strong>. Pace yourself, and re-record weak takes.',
+              ]},
+              { type: 'list', title: 'Final Checklist Before You Submit', items: [
+                'BTYB-YourName.wav — dry VO',
+                'LegalID-YourName.wav — 15–20s, subtle bed',
+                'AirPerson-YourName.wav — best five breaks',
+                'All files peak −6 dBFS with no clipping',
+                'Everything in your named folder in the Dropbox',
+              ]},
+            ]
+          },
         ]
       },
     ]
