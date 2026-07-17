@@ -1500,15 +1500,28 @@ function renderBeats() {
     const metCount = contactList.filter(c => met[metKey(c.name)]).length;
     const allMet   = contactList.length > 0 && metCount === contactList.length;
 
-    const meetRows = contactList.map(c => {
+    const drafting = _contactDraft && _contactDraft.beatId === b.id;
+    const contactFormHtml = `
+      <div class="beat-contact-form">
+        <input id="bc-name" class="form-input" placeholder="Name (e.g. Jane Smith (Chess Club))" value="${esc(_contactDraft?.name || '')}">
+        <input id="bc-email" class="form-input" placeholder="email@sacs.k12.in.us (optional)" value="${esc(_contactDraft?.email || '')}">
+        <button class="btn-sm" onclick="beatContactSave()">Save</button>
+        <button class="btn-secondary" onclick="beatContactCancel()" style="font-size:0.78rem;padding:4px 10px">Cancel</button>
+      </div>`;
+
+    const meetRows = contactList.map((c, i) => {
+      if (drafting && _contactDraft.idx === i) return contactFormHtml;
       const k    = metKey(c.name);
       const done = !!met[k];
       const nameHtml = c.email ? `<a href="mailto:${esc(c.email)}" class="beat-contact-link">${esc(c.name)}</a>` : esc(c.name);
       return `
-        <label class="beat-meet-row ${done ? 'done' : ''}">
-          <input type="checkbox" class="beat-met-check" data-beat-id="${b.id}" data-met-key="${esc(k)}" ${done ? 'checked' : ''}>
-          <span>${nameHtml}</span>
-        </label>`;
+        <div class="beat-meet-item">
+          <label class="beat-meet-row ${done ? 'done' : ''}">
+            <input type="checkbox" class="beat-met-check" data-beat-id="${b.id}" data-met-key="${esc(k)}" ${done ? 'checked' : ''}>
+            <span>${nameHtml}</span>
+          </label>
+          <button class="beat-contact-editbtn" title="Edit contact" onclick="beatContactEdit(${b.id},${i})">✎</button>
+        </div>`;
     }).join('');
 
     const editForm = isEditing ? `
@@ -1550,14 +1563,17 @@ function renderBeats() {
       <div class="beat-expanded">
         ${isEditing ? editForm : `
           <div class="beat-expanded-topics">${(b.covers || []).map(esc).join('  ·  ')}</div>
-          ${contactList.length ? `
-            <div class="beat-meet">
-              <div class="beat-meet-head">Advisor Check-Ins
-                <span class="beat-meet-count ${allMet ? 'complete' : ''}">${allMet ? '✓ all met' : `${metCount} of ${contactList.length} met`}</span>
-              </div>
-              <div class="beat-meet-list">${meetRows}</div>
-            </div>` : `
-            <div class="beat-expanded-contacts">No advisors listed yet — your first job on this beat is finding out who runs each of these.</div>`}
+          <div class="beat-meet">
+            <div class="beat-meet-head">Advisor Check-Ins
+              ${contactList.length ? `<span class="beat-meet-count ${allMet ? 'complete' : ''}">${allMet ? '✓ all met' : `${metCount} of ${contactList.length} met`}</span>` : ''}
+            </div>
+            ${contactList.length
+              ? `<div class="beat-meet-list">${meetRows}</div>`
+              : `<div class="beat-meet-empty">No advisors listed yet — your first job on this beat is finding out who runs each of these. Know someone? Add them below.</div>`}
+            ${drafting && _contactDraft.idx === -1
+              ? contactFormHtml
+              : `<button class="ql-add-link" onclick="beatContactAdd(${b.id})" style="margin-top:6px;align-self:flex-start">+ Add Contact</button>`}
+          </div>
           ${S.teacherMode ? `
             <div class="beat-assign-inline">
               <input class="form-input beat-s1-input" data-beat-id="${b.id}" placeholder="Student 1" value="${assign.student1 || ''}">
@@ -1679,6 +1695,7 @@ async function saveBeatAssignment(beatId, student1, student2) {
 }
 
 async function beatToggleMet(beatId, key, checked) {
+  contactDraftSyncFromDom();
   const cur = S.beatAssignments[beatId] || {};
   const met = { ...(cur.met || {}) };
   if (checked) met[key] = true; else delete met[key];
@@ -1718,6 +1735,76 @@ function getBeat(id) {
 }
 
 let _beatDraft = null;
+let _contactDraft = null;
+
+function contactDraftSyncFromDom() {
+  if (!_contactDraft) return;
+  const n = document.getElementById('bc-name');
+  const e = document.getElementById('bc-email');
+  if (n) _contactDraft.name = n.value;
+  if (e) _contactDraft.email = e.value;
+}
+
+function beatContactAdd(beatId) {
+  contactDraftSyncFromDom();
+  _contactDraft = { beatId, idx: -1, name: '', email: '' };
+  render();
+  setTimeout(() => document.getElementById('bc-name')?.focus(), 50);
+}
+
+function beatContactEdit(beatId, idx) {
+  const c = (getBeat(beatId).contacts || [])[idx];
+  if (!c) return;
+  _contactDraft = {
+    beatId, idx,
+    name:  typeof c === 'string' ? c : (c.name || ''),
+    email: typeof c === 'string' ? (c.includes('@') ? c : '') : (c.email || ''),
+  };
+  render();
+  setTimeout(() => document.getElementById('bc-name')?.focus(), 50);
+}
+
+function beatContactCancel() { _contactDraft = null; render(); }
+
+async function beatContactSave() {
+  if (!_contactDraft) return;
+  contactDraftSyncFromDom();
+  const { beatId, idx } = _contactDraft;
+  const name  = _contactDraft.name.trim();
+  const email = _contactDraft.email.trim();
+  if (!name) { showToast('Contact name required.'); return; }
+
+  const contacts = (getBeat(beatId).contacts || []).map(c =>
+    typeof c === 'string'
+      ? { name: c, email: c.includes('@') ? c : '' }
+      : { name: c.name || '', email: c.email || '' });
+  let oldName = null;
+  if (idx === -1) contacts.push({ name, email });
+  else { oldName = contacts[idx].name; contacts[idx] = { name, email }; }
+
+  S.beatOverrides[beatId] = { ...(S.beatOverrides[beatId] || {}), contacts };
+  _contactDraft = null;
+  render();
+
+  const db = getDB();
+  if (db) {
+    try {
+      await db.collection('hm_beat_info').doc(String(beatId)).set({ contacts }, { merge: true });
+      trackUsage('writes', 1);
+      // carry the check-in over if a checked-off contact was renamed
+      const a = S.beatAssignments[beatId];
+      if (oldName && oldName !== name && a?.met?.[metKey(oldName)]) {
+        const met = { ...a.met };
+        met[metKey(name)] = true;
+        delete met[metKey(oldName)];
+        S.beatAssignments[beatId] = { ...a, met };
+        await db.collection('hm_indepth_beats').doc(String(beatId)).set({ met }, { merge: true });
+        render();
+      }
+      showToast('Contact saved.');
+    } catch(e) { showToast('Save failed.'); console.error(e); }
+  }
+}
 
 function beatSyncFromDom() {
   if (!_beatDraft) return;

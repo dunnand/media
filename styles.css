@@ -1069,6 +1069,23 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 }
 .beat-meet-row input { accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
 .beat-meet-row.done span { color: var(--dim); }
+
+.beat-meet { display: flex; flex-direction: column; }
+.beat-meet-item { display: flex; align-items: center; gap: 2px; min-width: 0; }
+.beat-meet-item .beat-meet-row { flex: 1; min-width: 0; }
+.beat-contact-editbtn {
+  background: none; border: none; cursor: pointer;
+  color: var(--dim); font-size: 0.72rem; padding: 2px 4px;
+  opacity: 0.35; flex-shrink: 0; border-radius: 4px;
+}
+.beat-meet-item:hover .beat-contact-editbtn { opacity: 1; }
+.beat-contact-editbtn:hover { background: var(--border); }
+.beat-meet-empty { font-size: 0.82rem; color: var(--dim); line-height: 1.5; }
+.beat-contact-form {
+  grid-column: 1 / -1;
+  display: flex; gap: 6px; align-items: center; flex-wrap: wrap; padding: 2px 0;
+}
+.beat-contact-form .form-input { flex: 1; min-width: 140px; font-size: 0.8rem; padding: 5px 10px; }
 .beat-row-icon { font-size: 1rem; flex-shrink: 0; }
 .beat-edit-form { background: var(--surface2); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 12px; margin-top: 4px; }
 .beat-edit-row { display: flex; flex-direction: column; gap: 6px; }

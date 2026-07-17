@@ -70,6 +70,7 @@ Firebase config lives in `index.html`. The app uses the **Compat SDK** (v8/compa
 | `hm_radio_plans` | Talk show planning submissions from students |
 | `hm_indepth_rundown` | TV show rundown data, keyed by week (YYYY-MM-DD of Monday) |
 | `hm_indepth_beats` | Beat assignments (doc ID = beat number, fields: student1, student2, met — map of advisor-name keys the pair has checked off as met) |
+| `hm_beat_info` | Beat overrides (doc ID = beat number, fields: name, covers, contacts) — set by teacher Edit Beat; students can also add/edit contacts inline (merge write on contacts only) |
 | `hm_yearbook_coverage` | Yearbook event sign-ups (student, event, role) |
 | `hm_yearbook_events` | Custom events added by teacher via dashboard |
 | `hm_config` | App config: `show_schedule` (skipped Fridays), `cal_cache` (calendar event cache) |
