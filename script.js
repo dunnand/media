@@ -90,6 +90,57 @@ function parseCSV(text) {
   return rows;
 }
 
+// ── Yearbook coverage — same Google Form pattern ─────────────
+// Create a second Form: "Your Name" (short answer, required), "Event" (short
+// answer, required — prefilled by the site), "Role" (multiple choice, e.g.
+// Photographer — optional). Publish its response sheet to web as CSV.
+const USE_GOOGLE_FORM_YEARBOOK = true;
+const YEARBOOK_FORM = {
+  formUrl: '',    // https://docs.google.com/forms/d/…/viewform
+  entryEvent: '', // entry.XXXXXXXX for the "Event" question
+  csvUrl: '',     // published-to-web CSV of the response sheet
+};
+
+function ybFormLink(ev) {
+  if (!YEARBOOK_FORM.formUrl) return '';
+  if (!ev || !YEARBOOK_FORM.entryEvent) return YEARBOOK_FORM.formUrl;
+  const val = encodeURIComponent(`${ev.id} — ${ev.title} (${ev.date})`);
+  return `${YEARBOOK_FORM.formUrl}?usp=pp_url&${YEARBOOK_FORM.entryEvent}=${val}`;
+}
+
+async function loadYbFormSignups() {
+  if (!USE_GOOGLE_FORM_YEARBOOK || !YEARBOOK_FORM.csvUrl) return;
+  try {
+    const res = await fetch(YEARBOOK_FORM.csvUrl, { cache: 'no-store' });
+    if (!res.ok) return;
+    const rows = parseCSV(await res.text());
+    if (rows.length < 2) { S.yearbookCoverage = []; return; }
+    const head   = rows[0].map(h => h.toLowerCase());
+    const iName  = head.findIndex(h => h.includes('name'));
+    const iEvent = head.findIndex(h => h.includes('event'));
+    const iRole  = head.findIndex(h => h.includes('role'));
+    if (iName < 0 || iEvent < 0) return;
+    const events = allYbEvents();
+    const seen = new Map();
+    rows.slice(1).forEach((r, n) => {
+      const studentName = (r[iName] || '').trim();
+      const evRaw = (r[iEvent] || '').trim();
+      if (!studentName || !evRaw) return;
+      const evId = (evRaw.split('—')[0] || '').trim();
+      const ev = events.find(e => e.id === evId)
+        || events.find(e => e.title && evRaw.toLowerCase().includes(e.title.toLowerCase()) && evRaw.includes(e.date));
+      if (!ev) return;
+      const role = (iRole >= 0 && r[iRole] ? r[iRole] : 'photographer')
+        .toLowerCase().replace(/[^a-z]/g, '') || 'photographer';
+      seen.set(`${ev.id}|${studentName.toLowerCase()}`, {
+        id: 'form-' + n, studentName, eventId: ev.id, eventTitle: ev.title,
+        eventDate: ev.date, role, fromForm: true,
+      });
+    });
+    S.yearbookCoverage = [...seen.values()];
+  } catch (e) { /* offline or form not yet configured */ }
+}
+
 async function loadFormSignups() {
   if (!USE_GOOGLE_FORM_SIGNUP || !SIGNUP_FORM.csvUrl) return;
   try {
@@ -1786,14 +1837,17 @@ function renderYearbook() {
                 ${S.ybShowAway ? '🏠 Home Only' : '🚌 Show Away Games'}
               </button>
             </div>
-            <p class="cal-section-sub">Pick an event, choose your role, and submit. Your teacher will confirm assignments.</p>
+            <p class="cal-section-sub">${USE_GOOGLE_FORM_YEARBOOK
+              ? 'Pick the event, then sign up on the Google Form — it opens with that event already filled in. Your name appears below after you submit.'
+              : 'Pick an event, choose your role, and submit. Your teacher will confirm assignments.'}</p>
 
+            ${USE_GOOGLE_FORM_YEARBOOK ? '' : `
             <div class="yb-name-row">
               <div class="form-group">
                 <label>Your Name</label>
                 <input id="yb-name" type="text" placeholder="First and last name" value="${esc(myName)}">
               </div>
-            </div>
+            </div>`}
 
             <div class="form-group">
               <label>Sport / Event Type</label>
@@ -1810,6 +1864,12 @@ function renderYearbook() {
               </select>
             </div>
 
+            ${USE_GOOGLE_FORM_YEARBOOK ? `
+            ${YEARBOOK_FORM.formUrl
+              ? `<button class="btn-primary" id="yb-form-btn" style="margin-top:8px">Sign Up on Google Form ↗</button>`
+              : `<p class="dim" style="font-size:0.8rem;margin-top:8px">Sign-up form coming soon — check back shortly.</p>
+                 ${S.teacherMode ? `<p style="font-size:0.8rem;margin-top:6px;color:var(--radio)">🔑 Teacher: create the Yearbook Google Form and fill in YEARBOOK_FORM in script.js (same steps as the broadcast form).</p>` : ''}`}
+            ` : `
             <div class="form-group">
               <label>Role</label>
               <div class="yb-role-picker">
@@ -1818,10 +1878,10 @@ function renderYearbook() {
               <input type="hidden" id="yb-role" value="">
             </div>
 
-            <button class="btn-primary" id="yb-submit-btn" style="margin-top:8px">Submit Sign-Up →</button>
+            <button class="btn-primary" id="yb-submit-btn" style="margin-top:8px">Submit Sign-Up →</button>`}
           </section>
 
-          ${myName ? `
+          ${myName && !USE_GOOGLE_FORM_YEARBOOK ? `
           <section class="card">
             <h2 class="cal-section-title">My Sign-Ups</h2>
             <div id="yb-my-signups">${mySignupRows}</div>
@@ -2271,6 +2331,7 @@ function renderFormSignupPage() {
   const now = new Date();
   const upcoming = (S.broadcasts || [])
     .filter(b => new Date(b.date + 'T00:00:00') >= now)
+    .filter(b => b.type !== 'dance')  // dances aren't crewed broadcasts
     .sort((a, b) => a.date.localeCompare(b.date));
   const formReady = !!SIGNUP_FORM.formUrl;
 
@@ -3115,6 +3176,15 @@ function attachListeners() {
       const ri = document.getElementById('yb-role');
       if (ri) ri.value = btn.dataset.role;
     });
+  });
+
+  const ybFormBtn = document.getElementById('yb-form-btn');
+  if (ybFormBtn) ybFormBtn.addEventListener('click', () => {
+    const evId = document.getElementById('yb-event')?.value;
+    if (!evId) { showToast('Pick a sport/event type and an event first.'); return; }
+    const ev = allYbEvents().find(e => e.id === evId);
+    if (!ev) { showToast('Event not found — try again.'); return; }
+    window.open(ybFormLink(ev), '_blank', 'noopener');
   });
 
   const ybSubmit = document.getElementById('yb-submit-btn');
@@ -4333,7 +4403,7 @@ async function loadBroadcastChecklist(bid) {
 // ── Init ──────────────────────────────────────────────────────
 async function init() {
   await Promise.all([loadFromFirebase(), loadCustomYbEvents(), loadYearbookCoverage(), loadCalendarYbEvents(), loadCanvaLessons(), loadHiddenLessons(), loadIntroClassInfo(), loadQuickLinks(), loadBeatOverrides()]);
-  await loadFormSignups();  // needs S.broadcasts, so runs after loadFromFirebase
+  await Promise.all([loadFormSignups(), loadYbFormSignups()]);  // need broadcasts/events loaded first
   render();
 
   document.addEventListener('keydown', e => {
