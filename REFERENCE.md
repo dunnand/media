@@ -1,7 +1,7 @@
 # Homestead Media — Full Site Reference
 
 Last updated: July 2026  
-Live site: https://dunnand.github.io/homestead_media/  
+Live site: https://wcyt.org/media/ (formerly dunnand.github.io/homestead_media)  
 Local folder: C:\Users\Andy\homestead_media\
 
 ---
@@ -47,7 +47,7 @@ No build step — edit files, commit, push, and the site updates within ~2 minut
    ```
 3. Wait ~2 minutes, then hard refresh the live site (Ctrl+Shift+R)
 
-GitHub repo: https://github.com/dunnand/homestead_media
+GitHub repo: https://github.com/dunnand/media (renamed from homestead_media July 2026; served at wcyt.org/media because the account's user site dunnand.github.io carries the wcyt.org custom domain)
 
 ---
 
@@ -264,7 +264,7 @@ TARGET_CAL_ID = '2b9bdfdee65f7330d8d5d2fd1d4877c1b709289fa0b0747427f57fd62516bed
 ## 10. Google Calendar API Key
 
 **Key:** `AIzaSyCy5ZKtIjrF1lgDojmYgDlxit2Te7SKyeU`  
-**Restrictions:** Websites → `https://dunnand.github.io/*` | API → Google Calendar API only  
+**Restrictions:** Websites → `https://dunnand.github.io/*` and `https://wcyt.org/*` | API → Google Calendar API only  
 **Cloud project:** "Singular" (project ID: singular-381913) at https://console.cloud.google.com
 
 ### If the Key Needs to Be Replaced
