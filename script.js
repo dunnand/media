@@ -1611,7 +1611,7 @@ function renderBeats() {
       </div>
       <section class="card beat-howto">
         <div class="beat-howto-grid">
-          <div class="beat-howto-step"><span class="beat-howto-num">1</span><div><strong>Meet every advisor.</strong> Sit down with each teacher listed on your beat, introduce yourselves as the pair covering their area, and check them off as you go.</div></div>
+          <div class="beat-howto-step"><span class="beat-howto-num">1</span><div><strong>Meet every advisor.</strong> Sit down with each teacher listed on your beat, introduce yourselves as the pair covering their area, and check them off as you go. If your beat is missing an advisor — find out who it is and add them as a contact.</div></div>
           <div class="beat-howto-step"><span class="beat-howto-num">2</span><div><strong>Ask what's coming up.</strong> Events, competitions, meetings — anything this season that could turn into a story.</div></div>
           <div class="beat-howto-step"><span class="beat-howto-num">3</span><div><strong>Find a student leader.</strong> Get the name of an officer or captain in each club you can go to directly all year.</div></div>
           <div class="beat-howto-step"><span class="beat-howto-num">4</span><div><strong>Get on the email list.</strong> If a club sends updates to its members, ask to be added — and have your teacher added too.</div></div>
@@ -4460,12 +4460,13 @@ function renderRundownSection(b) {
         <h2>📋 Broadcast Rundown</h2>
         <div class="rd-actions">
           <button class="btn-secondary" id="rd-print-btn" data-rd-bid="${b.id}">🖨️ Print</button>
-          ${S.teacherMode && !editing ? `
-            <button class="btn-secondary rd-tmpl-btn" id="rd-edit-template-btn" data-rd-bid="${b.id}" data-rd-sport="${sport}"
-              title="Edit master template — updates all ${sportLabel} games">✏️ Edit Template</button>
+          ${!editing ? `
+            ${S.teacherMode ? `
+              <button class="btn-secondary rd-tmpl-btn" id="rd-edit-template-btn" data-rd-bid="${b.id}" data-rd-sport="${sport}"
+                title="Edit master template — updates all ${sportLabel} games">✏️ Edit Template</button>` : ''}
             <button class="btn-secondary" id="rd-edit-game-btn" data-rd-bid="${b.id}"
-              title="Edit this game only">✎ This Game</button>
-            ${hasOverride ? `<button class="btn-secondary rd-reset-btn" id="rd-reset-btn" data-rd-bid="${b.id}">↩ Reset to Template</button>` : ''}
+              title="Edit this game's rundown — add your script, talking points, and key words">✎ ${S.teacherMode ? 'This Game' : 'Edit Rundown'}</button>
+            ${S.teacherMode && hasOverride ? `<button class="btn-secondary rd-reset-btn" id="rd-reset-btn" data-rd-bid="${b.id}">↩ Reset to Template</button>` : ''}
           ` : ''}
           ${editing ? `
             <button class="btn-primary"   id="rd-save-btn"   data-rd-bid="${b.id}">Save</button>
