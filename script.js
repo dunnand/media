@@ -96,9 +96,9 @@ function parseCSV(text) {
 // Photographer — optional). Publish its response sheet to web as CSV.
 const USE_GOOGLE_FORM_YEARBOOK = true;
 const YEARBOOK_FORM = {
-  formUrl: '',    // https://docs.google.com/forms/d/…/viewform
-  entryEvent: '', // entry.XXXXXXXX for the "Event" question
-  csvUrl: '',     // published-to-web CSV of the response sheet
+  formUrl: 'https://docs.google.com/forms/d/1EVhVzfwxlXC0W7Evd70hH0pVZDcxW336zTTKcxnGopI/viewform',
+  entryEvent: 'entry.124034746', // the "Event" question
+  csvUrl: '',     // TODO: publish the "Public" (filtered) tab to web as CSV and paste here
 };
 
 function ybFormLink(ev) {
