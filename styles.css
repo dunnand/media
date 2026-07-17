@@ -1476,6 +1476,15 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 .ls-start-hint { margin-top: 30px; font-size: 0.78rem; color: var(--dim); letter-spacing: 0.1em; text-transform: uppercase; animation: ls-pulse 2.2s ease-in-out infinite; }
 @keyframes ls-pulse { 0%,100%{opacity:0.3} 50%{opacity:0.9} }
 
+/* Google Form sign-up */
+.avail-form-btn { display: inline-block; margin-top: 12px; text-decoration: none; text-align: center; }
+.avail-form-names { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.avail-form-badge {
+  font-size: 0.7rem; font-weight: 700; color: var(--dim);
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 6px; padding: 3px 8px; white-space: nowrap; flex-shrink: 0;
+}
+
 /* Lesson visibility toggle (teacher checkmarks) */
 .lesson-toggle {
   width: 28px; height: 28px; flex-shrink: 0;

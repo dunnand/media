@@ -40,6 +40,89 @@ function getDB() {
   return _db;
 }
 
+// ── Google Form sign-up backend ──────────────────────────────
+// Broadcast sign-ups now go through a Google Form; responses land in a
+// Google Sheet which is published to the web as CSV and read by the site.
+// No emails are collected anywhere.
+//
+// SETUP (one-time, ~5 minutes):
+// 1. Create a Google Form with exactly these questions:
+//      • "Your Name"            — Short answer, required
+//      • "Broadcast"            — Short answer, required (the site prefills this — tell
+//                                  students not to edit it)
+//      • "Interested Positions" — Checkboxes, optional (one checkbox per crew role,
+//                                  copied from the site's role list)
+// 2. Get the prefill entry ID: in the Form click ⋮ → "Get pre-filled link", type
+//    anything into Broadcast, click "Get link" — the URL contains entry.XXXXXXXX.
+// 3. In the Responses tab click the Sheets icon to create the response sheet, then in
+//    that sheet: File → Share → Publish to web → select the responses tab + CSV → Publish.
+// 4. Paste the three values below.
+//
+// To restore the old on-site sign-up, set USE_GOOGLE_FORM_SIGNUP = false.
+const USE_GOOGLE_FORM_SIGNUP = true;
+const SIGNUP_FORM = {
+  formUrl: '',        // e.g. https://docs.google.com/forms/d/e/1FAIpQL…/viewform
+  entryBroadcast: '', // e.g. entry.1234567890
+  csvUrl: '',         // e.g. https://docs.google.com/spreadsheets/d/e/2PACX…/pub?output=csv
+};
+
+function signupFormLink(b) {
+  if (!SIGNUP_FORM.formUrl) return '';
+  if (!b || !SIGNUP_FORM.entryBroadcast) return SIGNUP_FORM.formUrl;
+  const val = encodeURIComponent(`${b.id} — ${b.title} (${b.date})`);
+  return `${SIGNUP_FORM.formUrl}?usp=pp_url&${SIGNUP_FORM.entryBroadcast}=${val}`;
+}
+
+function parseCSV(text) {
+  const rows = []; let row = [], cur = '', inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQ) {
+      if (c === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else inQ = false; }
+      else cur += c;
+    }
+    else if (c === '"') inQ = true;
+    else if (c === ',') { row.push(cur); cur = ''; }
+    else if (c === '\n') { row.push(cur.replace(/\r$/, '')); rows.push(row); row = []; cur = ''; }
+    else cur += c;
+  }
+  if (cur !== '' || row.length) { row.push(cur.replace(/\r$/, '')); rows.push(row); }
+  return rows;
+}
+
+async function loadFormSignups() {
+  if (!USE_GOOGLE_FORM_SIGNUP || !SIGNUP_FORM.csvUrl) return;
+  try {
+    const res = await fetch(SIGNUP_FORM.csvUrl, { cache: 'no-store' });
+    if (!res.ok) return;
+    const rows = parseCSV(await res.text());
+    if (rows.length < 2) { S.availabilities = []; return; }
+    const head   = rows[0].map(h => h.toLowerCase());
+    const iName  = head.findIndex(h => h.includes('name'));
+    const iBcast = head.findIndex(h => h.includes('broadcast'));
+    const iRoles = head.findIndex(h => h.includes('position') || h.includes('role'));
+    if (iName < 0 || iBcast < 0) return;
+    const seen = new Map(); // latest submission per student+broadcast wins
+    rows.slice(1).forEach((r, n) => {
+      const studentName = (r[iName] || '').trim();
+      const bcRaw = (r[iBcast] || '').trim();
+      if (!studentName || !bcRaw) return;
+      const bId = (bcRaw.split('—')[0] || '').trim();
+      const broadcast = (S.broadcasts || []).find(b => b.id === bId)
+        || (S.broadcasts || []).find(b => b.title && bcRaw.toLowerCase().includes(b.title.toLowerCase()) && bcRaw.includes(b.date));
+      if (!broadcast) return;
+      const interestedRoles = iRoles >= 0 && r[iRoles]
+        ? r[iRoles].split(/[,;]/).map(s => s.trim()).filter(Boolean)
+        : [];
+      seen.set(`${broadcast.id}|${studentName.toLowerCase()}`, {
+        id: 'form-' + n, broadcastId: broadcast.id, studentName,
+        email: '', interestedRoles, fromForm: true,
+      });
+    });
+    S.availabilities = [...seen.values()];
+  } catch (e) { /* offline or form not yet configured — keep whatever loaded */ }
+}
+
 // ── State ─────────────────────────────────────────────────────
 function emptyStationSchedule() {
   const blank = () => DAYS.map(() => ({ show: '', djs: [] }));
@@ -742,33 +825,7 @@ function renderLive() {
 function renderAvailabilityCard(b) {
   if (!S.teacherMode) return renderStudentSignupCard(b);
 
-  const avails     = (S.availabilities || []).filter(a => a.broadcastId === b.id);
-  const withEmails = avails.filter(a => a.email);
-  const arrivalTime = computeArrival(b.gameTime, b.type);
-  const door33Time  = computeDoor33(b.gameTime, b.type);
-  const arrivalLbl  = ARRIVAL_LABEL[b.type] ?? ARRIVAL_DEFAULT_LABEL;
-
-  const reminderMailto = (() => {
-    if (!withEmails.length) return null;
-    const subject = `Tomorrow — ${b.title}`;
-    const body = [
-      `Hi,`,
-      ``,
-      `Reminder: you are signed up to crew the following broadcast TOMORROW.`,
-      ``,
-      `Event:        ${b.title}`,
-      `Date:         ${fmtDate(b.date, true)}`,
-      door33Time  ? `DOOR 33:      ${door33Time}  ← Arrive here first` : null,
-      arrivalTime ? `${arrivalLbl.toUpperCase().padEnd(13)} ${arrivalTime}  ← Be set up by this time` : null,
-      b.gameTime  ? `Game Time:    ${b.gameTime}` : null,
-      b.notes && b.notes !== 'TBD — time to be announced' ? `Location:     ${b.notes}` : null,
-      ``,
-      `See you there!`,
-      `— Homestead Live`,
-    ].filter(l => l !== null).join('\n');
-    const emails = withEmails.map(a => a.email).join(',');
-    return `mailto:${emails}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  })();
+  const avails = (S.availabilities || []).filter(a => a.broadcastId === b.id);
 
   const rows = avails.length
     ? avails.map(a => {
@@ -779,9 +836,10 @@ function renderAvailabilityCard(b) {
             <div class="avail-student-top">
               <div>
                 <span class="avail-student-name">${esc(a.studentName)}</span>
-                ${a.email ? `<div class="avail-student-email">${esc(a.email)}</div>` : '<div class="avail-no-email">No email</div>'}
               </div>
-              <button class="avail-del-btn" data-avail-id="${a.id}" title="Remove from list">✕</button>
+              ${a.fromForm
+                ? `<span class="avail-form-badge" title="Signed up via Google Form — manage in the response Sheet">📋 Form</span>`
+                : `<button class="avail-del-btn" data-avail-id="${a.id}" title="Remove from list">✕</button>`}
             </div>
             ${interests.length
               ? `<div class="avail-interests">${interests.map(r => `<span class="avail-interest-chip">${esc(r)}</span>`).join('')}</div>`
@@ -796,15 +854,12 @@ function renderAvailabilityCard(b) {
 
   return `
     <section class="card">
-      <div class="card-header" style="margin-bottom:${reminderMailto ? '10px' : '12px'}">
+      <div class="card-header" style="margin-bottom:12px">
         <h2>Available Students</h2>
         <span class="avail-count-badge">${avails.length}</span>
       </div>
-      ${reminderMailto ? `
-      <a href="${reminderMailto}" class="reminder-btn">
-        📧 Send Reminder Emails <span class="reminder-count">${withEmails.length} / ${avails.length}</span>
-      </a>` : avails.length && !withEmails.length ? `
-      <p style="font-size:0.78rem;color:var(--dim);margin-bottom:12px">No email addresses on file — students can add one on the Sign-Up page.</p>` : ''}
+      ${USE_GOOGLE_FORM_SIGNUP && avails.some(a => a.fromForm) ? `
+      <p style="font-size:0.75rem;color:var(--dim);margin-bottom:12px">📋 Sign-ups come from the Google Form — to remove one, delete its row in the response Sheet.</p>` : ''}
       <div class="avail-student-list">${rows}</div>
     </section>`;
 }
@@ -825,9 +880,14 @@ function renderStudentSignupCard(b) {
              ? `<div class="avail-my-roles">${myRoles.map(r => `<span class="avail-my-role-chip">${esc(r)}</span>`).join('')}</div>`
              : `<p style="font-size:0.82rem;color:var(--dim);margin-bottom:10px">No position preference set.</p>`}`
         : `<p style="font-size:0.85rem;color:var(--dim);margin-bottom:10px;line-height:1.5">You haven't signed up for this broadcast yet.</p>`}
+      ${USE_GOOGLE_FORM_SIGNUP && SIGNUP_FORM.formUrl ? `
+      <a class="btn-primary" href="${signupFormLink(b)}" target="_blank" rel="noopener" style="width:100%;margin-top:4px;display:block;text-align:center">
+        ${myEntry ? 'Update on Google Form ↗' : 'Sign Up on Google Form ↗'}
+      </a>
+      <button class="btn-secondary" data-nav="availability" style="width:100%;margin-top:8px">All Broadcasts →</button>` : `
       <button class="btn-secondary" data-nav="availability" style="width:100%;margin-top:4px">
         ${myEntry ? 'Update My Sign-Up →' : 'Sign Up for Broadcasts →'}
-      </button>
+      </button>`}
     </section>`;
 }
 
@@ -1668,7 +1728,6 @@ function filterYbEvents() {
 
 function renderYearbook() {
   const myName  = localStorage.getItem('hm_yb_name')  || '';
-  const myEmail = localStorage.getItem('hm_yb_email') || '';
   const now     = new Date();
 
   const allCoverage = S.yearbookCoverage || [];
@@ -1733,10 +1792,6 @@ function renderYearbook() {
               <div class="form-group">
                 <label>Your Name</label>
                 <input id="yb-name" type="text" placeholder="First and last name" value="${esc(myName)}">
-              </div>
-              <div class="form-group">
-                <label>Your Email</label>
-                <input id="yb-email" type="email" placeholder="student@email.com" value="${esc(myEmail)}">
               </div>
             </div>
 
@@ -2159,12 +2214,10 @@ async function deleteYbEvent(id) {
 
 async function submitYearbookSignup() {
   const name    = (document.getElementById('yb-name')?.value || '').trim();
-  const email   = (document.getElementById('yb-email')?.value || '').trim();
   const eventId = document.getElementById('yb-event')?.value;
   const role    = document.getElementById('yb-role')?.value;
 
   if (!name)    { showToast('Please enter your name.');    return; }
-  if (!email)   { showToast('Please enter your email.');   return; }
   if (!eventId) { showToast('Please select an event.');    return; }
   if (!role)    { showToast('Please choose a role.');      return; }
 
@@ -2179,14 +2232,13 @@ async function submitYearbookSignup() {
   const db = getDB();
   if (!db) { showToast('Database unavailable.'); return; }
 
-  localStorage.setItem('hm_yb_name',  name);
-  localStorage.setItem('hm_yb_email', email);
+  localStorage.setItem('hm_yb_name', name);
   localStorage.removeItem('hm_yb_coverage');
 
   try {
     trackUsage('writes');
     await db.collection('hm_yearbook_coverage').add({
-      studentName: name, email, eventId, eventTitle: event.title,
+      studentName: name, eventId, eventTitle: event.title,
       eventDate: event.date, role, submittedAt: Date.now(),
     });
     showToast('Signed up! You\'re on the coverage list.');
@@ -2209,6 +2261,66 @@ async function unsignYearbook(docId) {
 
 // ── BROADCAST SIGN-UP (Student) ───────────────────────────────
 function renderAvailabilityPage() {
+  if (USE_GOOGLE_FORM_SIGNUP) return renderFormSignupPage();
+  return renderAvailabilityPageLegacy();
+}
+
+// Google Form version — sign-ups happen on the Form, this page lists
+// each broadcast with a prefilled form link and who has signed up so far.
+function renderFormSignupPage() {
+  const now = new Date();
+  const upcoming = (S.broadcasts || [])
+    .filter(b => new Date(b.date + 'T00:00:00') >= now)
+    .sort((a, b) => a.date.localeCompare(b.date));
+  const formReady = !!SIGNUP_FORM.formUrl;
+
+  const broadcastCards = upcoming.map(b => {
+    const et = EVENT_TYPES[b.type] || EVENT_TYPES.other;
+    const signups = (S.availabilities || []).filter(a => a.broadcastId === b.id);
+    return `
+      <div class="avail-bc-card card">
+        <div class="avail-bc-meta">
+          <span class="avail-bc-type-badge" style="background:${et.color}">${et.label}</span>
+          <span class="avail-bc-date">${fmtDate(b.date, false)}</span>
+          ${signups.length > 0 ? `<span class="avail-bc-signups">${signups.length} signed up</span>` : ''}
+        </div>
+        <div class="avail-bc-title">${esc(b.title)}</div>
+        ${b.notes ? `<div class="avail-bc-notes">${esc(b.notes)}</div>` : ''}
+        ${b.gameTime ? `
+        <div class="avail-bc-times">
+          <span class="avail-door33-chip">🚪 Door 33 ${computeDoor33(b.gameTime, b.type)}</span>
+          <span class="avail-arrival-chip">${ARRIVAL_LABEL[b.type] ?? ARRIVAL_DEFAULT_LABEL} ${computeArrival(b.gameTime, b.type)}</span>
+          <span class="avail-gametime-chip">Game ${esc(b.gameTime)}</span>
+        </div>` : ''}
+        ${signups.length ? `
+        <div class="avail-form-names">${signups.map(a => `<span class="avail-interest-chip">${esc(a.studentName)}</span>`).join('')}</div>` : ''}
+        ${formReady
+          ? `<a class="btn-primary avail-form-btn" href="${signupFormLink(b)}" target="_blank" rel="noopener">Sign Up on Google Form ↗</a>`
+          : `<p class="dim" style="font-size:0.8rem;margin-top:10px">Sign-up form coming soon — check back shortly.</p>`}
+      </div>`;
+  }).join('') || `<p class="dim" style="padding:24px 0">No upcoming broadcasts scheduled.</p>`;
+
+  return `
+    ${navBar('live')}
+    <div class="class-page">
+      <button class="back-btn" data-nav="live">← Back to Homestead Live</button>
+      <div class="avail-page-header">
+        <h1>Broadcast Sign-Up</h1>
+        <p>Click Sign Up on any broadcast — it opens the Google Form with that game already filled in. Your name appears on this page after you submit.</p>
+      </div>
+      ${S.teacherMode && !SIGNUP_FORM.csvUrl ? `
+      <div class="card" style="border-left:3px solid var(--radio);padding:16px 20px;margin-bottom:16px">
+        <p style="font-size:0.85rem;line-height:1.6;color:var(--text)"><strong>🔑 Teacher setup needed:</strong> the Google Form isn't connected yet. Open <code>script.js</code> and follow the SETUP steps above <code>SIGNUP_FORM</code> — create the form, publish its response sheet as CSV, and paste the three URLs.</p>
+      </div>` : ''}
+      <div class="avail-broadcasts">${broadcastCards}</div>
+    </div>`;
+}
+
+/* LEGACY on-site sign-up — kept intact but disabled while sign-ups run
+   through the Google Form. Restore with USE_GOOGLE_FORM_SIGNUP = false.
+   (Note: the email field was removed site-wide; the legacy flow still
+   references it and would need the email handler restored to work.) */
+function renderAvailabilityPageLegacy() {
   const myName  = localStorage.getItem('hm_student_name') || '';
   const myEmail = localStorage.getItem('hm_student_email') || '';
   const canSignUp = !!(myName && myEmail);
@@ -2958,27 +3070,7 @@ function attachListeners() {
     apn.addEventListener('keydown', e => { if (e.key === 'Enter') apn.blur(); });
   }
 
-  const ape = document.getElementById('avail-page-email');
-  if (ape) {
-    ape.addEventListener('blur', () => {
-      const e = ape.value.trim();
-      if (e) {
-        localStorage.setItem('hm_student_email', e);
-        // Update all existing availability entries for this student
-        const myName = localStorage.getItem('hm_student_name') || '';
-        if (myName) {
-          (S.availabilities || [])
-            .filter(a => a.studentName.toLowerCase() === myName.toLowerCase() && a.email !== e)
-            .forEach(a => {
-              a.email = e;
-              db.collection('hm_availability').doc(a.id).update({ email: e }).catch(() => {});
-            });
-        }
-        render();
-      }
-    });
-    ape.addEventListener('keydown', e => { if (e.key === 'Enter') ape.blur(); });
-  }
+  // (email collection removed — sign-ups run through the Google Form)
 
   const dbRefresh = document.getElementById('db-refresh-plans');
   if (dbRefresh) dbRefresh.addEventListener('click', dashboardLoadPlans);
@@ -4241,6 +4333,7 @@ async function loadBroadcastChecklist(bid) {
 // ── Init ──────────────────────────────────────────────────────
 async function init() {
   await Promise.all([loadFromFirebase(), loadCustomYbEvents(), loadYearbookCoverage(), loadCalendarYbEvents(), loadCanvaLessons(), loadHiddenLessons(), loadIntroClassInfo(), loadQuickLinks(), loadBeatOverrides()]);
+  await loadFormSignups();  // needs S.broadcasts, so runs after loadFromFirebase
   render();
 
   document.addEventListener('keydown', e => {
