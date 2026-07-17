@@ -1198,9 +1198,9 @@ const INDEPTH_BEATS = [
     contacts: ['Holly Lyne (Anime Club)','Kevin Cogdell (Tabletop Club)','Nathan Arata (Chess / Euchre / Plush)','Logan Tuckey (Ping Pong)','Josh Eme (Ski Club)','Rachel Swing (Ski Club)','Jamie Smith (Equestrian)','Ellen Robinson (Fright Club)','Jill Grote (Get A Hobby)','Baylee Stonger (SADD)','Melanie Busch (Travel Club)','Kim Brown (Travel Club)','Greg Davis (FCA)','Jackson Zvers (Bible Club)'],
   },
   {
-    id: 15, name: 'Library & Computer Technology', icon: '💻', color: '#475569',
+    id: 15, name: 'Library, Tech & Campus Operations', icon: '🏫', color: '#475569',
     seasons: ['fall','winter','spring'],
-    covers: ['Library','Computer Technology Classes','SETS Program'],
+    covers: ['Library','Computer Technology Classes','SETS Program','Cafeteria & Food Services','Custodians & Maintenance','Transportation & Bus Drivers','Front Office & Attendance','School Nurses','School Resource Officer','Safety Drills & Procedures'],
     contacts: [],
   },
 ];
