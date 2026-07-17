@@ -3061,7 +3061,7 @@ function attachListeners() {
 
   document.querySelectorAll('[data-beat-toggle]').forEach(el =>
     el.addEventListener('click', e => {
-      if (e.target.closest('.beat-assign-inline')) return;
+      if (e.target.closest('.beat-assign-inline, .beat-edit-form')) return;
       const id = parseInt(el.dataset.beatToggle);
       S.expandedBeat = S.expandedBeat === id ? null : id;
       render();
