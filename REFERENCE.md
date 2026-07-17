@@ -123,7 +123,7 @@ const GOOGLE_CAL_API_KEY  = 'AIzaSyCy5ZKtIjrF1lgDojmYgDlxit2Te7SKyeU'
 ```javascript
 const IASB_DROPBOX_URL = 'https://drive.google.com/drive/folders/1Kg4UYcKzOLNYYqoEOG3fo2xbwNQtZCIY'
 // 36 IASB_DRIVE_FOLDERS entries (R1-R9, N1-N8, S1-S9, V1-V9, M1-M9)
-// DJ Panel: https://wcyt.org/dj  (Password: Homestead911-2.0)
+// DJ Panel: https://wcyt.org/dj  (Password: Spartans — changed July 2026)
 // Walsworth: https://login.walsworthyearbooks.com/login
 ```
 
