@@ -1015,7 +1015,7 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
   transition: background 0.12s;
 }
 .beat-row-num  { font-size: 0.72rem; color: var(--dim); font-variant-numeric: tabular-nums; width: 20px; flex-shrink: 0; }
-.beat-row-name { font-size: 0.85rem; font-weight: 600; flex: 1; }
+.beat-row-name { font-size: 0.95rem; font-weight: 600; flex: 1; }
 .beat-row-seasons { font-size: 0.8rem; flex-shrink: 0; }
 .beat-row-pair { font-size: 0.78rem; color: var(--dim); flex-shrink: 0; min-width: 120px; text-align: right; }
 .beat-row-empty { color: var(--border); }
@@ -1025,8 +1025,8 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
   padding: 10px 12px 14px 44px;
   display: flex; flex-direction: column; gap: 8px;
 }
-.beat-expanded-topics  { font-size: 0.78rem; color: var(--dim); line-height: 1.6; }
-.beat-expanded-contacts { font-size: 0.75rem; color: var(--dim); opacity: 0.7; }
+.beat-expanded-topics  { font-size: 0.95rem; color: var(--text); line-height: 1.65; }
+.beat-expanded-contacts { font-size: 0.88rem; color: var(--dim); }
 .beat-contact-link { color: var(--accent); text-decoration: none; }
 .beat-contact-link:hover { text-decoration: underline; }
 .beat-row-icon { font-size: 1rem; flex-shrink: 0; }
