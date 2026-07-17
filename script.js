@@ -61,9 +61,9 @@ function getDB() {
 // To restore the old on-site sign-up, set USE_GOOGLE_FORM_SIGNUP = false.
 const USE_GOOGLE_FORM_SIGNUP = true;
 const SIGNUP_FORM = {
-  formUrl: '',        // e.g. https://docs.google.com/forms/d/e/1FAIpQL…/viewform
-  entryBroadcast: '', // e.g. entry.1234567890
-  csvUrl: '',         // e.g. https://docs.google.com/spreadsheets/d/e/2PACX…/pub?output=csv
+  formUrl: 'https://docs.google.com/forms/d/1_OeCPHDdmSJRsNBtQIMyn0JcjjiTkgm5qUwYE1V3k8g/viewform',
+  entryBroadcast: 'entry.1934284818', // the "Broadcast" question
+  csvUrl: '',         // TODO: publish the response sheet to web as CSV and paste the link
 };
 
 function signupFormLink(b) {
