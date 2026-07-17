@@ -4563,7 +4563,7 @@ async function init() {
 }
 
 // ── Passcode gate ─────────────────────────────────────────────
-const SITE_PASSCODE = 'Spartans91.1FM';
+const SITE_PASSCODE = 'Spartans';
 const PASSCODE_KEY  = 'hm_access';
 
 function checkPasscode() {
