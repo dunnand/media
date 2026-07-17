@@ -63,7 +63,7 @@ const USE_GOOGLE_FORM_SIGNUP = true;
 const SIGNUP_FORM = {
   formUrl: 'https://docs.google.com/forms/d/1_OeCPHDdmSJRsNBtQIMyn0JcjjiTkgm5qUwYE1V3k8g/viewform',
   entryBroadcast: 'entry.1934284818', // the "Broadcast" question
-  csvUrl: '',         // TODO: publish the response sheet to web as CSV and paste the link
+  csvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS5TkBBk2P8l_Aiz3tJLQsuPING_iLizRBHsmjvXW1BuVo5YL64E_4fz1flOIyI0PYRNIJLfkvKU1M-/pub?gid=1178792521&single=true&output=csv',
 };
 
 function signupFormLink(b) {
