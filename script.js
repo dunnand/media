@@ -1479,6 +1479,8 @@ function renderInDepth() {
     </div>`;
 }
 
+const metKey = n => n.replace(/[.~*/\[\]]/g, '_');
+
 function renderBeats() {
   const seasonEmoji = { fall: '🍂', winter: '❄️', spring: '🌸' };
 
@@ -1490,10 +1492,24 @@ function renderBeats() {
     const open   = S.expandedBeat === b.id;
     const isEditing = _beatDraft?.id === b.id;
 
-    const contactsHtml = (b.contacts || []).map(c => {
-      if (typeof c === 'string') return c.includes('@') ? `<a href="mailto:${esc(c)}" class="beat-contact-link">${esc(c)}</a>` : esc(c);
-      return c.email ? `<a href="mailto:${esc(c.email)}" class="beat-contact-link">${esc(c.name)}</a>` : esc(c.name);
-    }).join('  ·  ');
+    const contactList = (b.contacts || []).map(c =>
+      typeof c === 'string'
+        ? (c.includes('@') ? { name: c, email: c } : { name: c, email: '' })
+        : c);
+    const met      = assign.met || {};
+    const metCount = contactList.filter(c => met[metKey(c.name)]).length;
+    const allMet   = contactList.length > 0 && metCount === contactList.length;
+
+    const meetRows = contactList.map(c => {
+      const k    = metKey(c.name);
+      const done = !!met[k];
+      const nameHtml = c.email ? `<a href="mailto:${esc(c.email)}" class="beat-contact-link">${esc(c.name)}</a>` : esc(c.name);
+      return `
+        <label class="beat-meet-row ${done ? 'done' : ''}">
+          <input type="checkbox" class="beat-met-check" data-beat-id="${b.id}" data-met-key="${esc(k)}" ${done ? 'checked' : ''}>
+          <span>${nameHtml}</span>
+        </label>`;
+    }).join('');
 
     const editForm = isEditing ? `
       <div class="beat-edit-form">
@@ -1534,16 +1550,14 @@ function renderBeats() {
       <div class="beat-expanded">
         ${isEditing ? editForm : `
           <div class="beat-expanded-topics">${(b.covers || []).map(esc).join('  ·  ')}</div>
-          ${contactsHtml ? `<div class="beat-expanded-contacts">${contactsHtml}</div>` : ''}
-          <div class="beat-getting-started">
-            <div class="beat-gs-title">🚀 Getting Started on This Beat</div>
-            <ol class="beat-gs-list">
-              <li>${contactsHtml ? 'Reach out to the contact(s) listed above' : 'Find out who runs each club/department this beat covers'} and introduce yourself as the Homestead Media student covering their area.</li>
-              <li>Ask what's happening this season for each topic this beat covers — upcoming events, meetings, competitions, or news.</li>
-              <li>Ask them to point you to a <strong>student leader</strong> (officer, captain, president) you can go to directly with questions all year.</li>
-              <li>If they send email updates to members, ask them to add you to that list — and ask your teacher to be added too — so you never miss a story.</li>
-            </ol>
-          </div>
+          ${contactList.length ? `
+            <div class="beat-meet">
+              <div class="beat-meet-head">Advisor Check-Ins
+                <span class="beat-meet-count ${allMet ? 'complete' : ''}">${allMet ? '✓ all met' : `${metCount} of ${contactList.length} met`}</span>
+              </div>
+              <div class="beat-meet-list">${meetRows}</div>
+            </div>` : `
+            <div class="beat-expanded-contacts">No advisors listed yet — your first job on this beat is finding out who runs each of these.</div>`}
           ${S.teacherMode ? `
             <div class="beat-assign-inline">
               <input class="form-input beat-s1-input" data-beat-id="${b.id}" placeholder="Student 1" value="${assign.student1 || ''}">
@@ -1561,6 +1575,7 @@ function renderBeats() {
           <span class="beat-row-icon" style="color:${base.color}">${base.icon}</span>
           <span class="beat-row-name">${esc(b.name)}</span>
           <span class="beat-row-seasons">${seasons}</span>
+          ${contactList.length ? `<span class="beat-row-met ${allMet ? 'complete' : ''}" title="Advisors met">${allMet ? '✓ all met' : `${metCount}/${contactList.length}`}</span>` : ''}
           <span class="beat-row-pair">${pair || '<span class="beat-row-empty">Unassigned</span>'}</span>
           <span class="beat-row-chevron">${open ? '▾' : '▸'}</span>
         </div>
@@ -1575,9 +1590,17 @@ function renderBeats() {
       <div class="class-header" style="margin-top:16px">
         <div>
           <h1>Coverage Beats</h1>
-          <p>15 beats — each pair covers one beat all year. ${S.teacherMode ? 'Click a row to expand and assign students.' : 'Click a row to see what\'s covered.'}</p>
+          <p>15 beats — each pair covers one beat all year. ${S.teacherMode ? 'Click a row to expand, assign students, and track advisor check-ins.' : 'Click a row to see what it covers and check off your advisor meetings.'}</p>
         </div>
       </div>
+      <section class="card beat-howto">
+        <div class="beat-howto-grid">
+          <div class="beat-howto-step"><span class="beat-howto-num">1</span><div><strong>Meet every advisor.</strong> Sit down with each teacher listed on your beat, introduce yourselves as the pair covering their area, and check them off as you go.</div></div>
+          <div class="beat-howto-step"><span class="beat-howto-num">2</span><div><strong>Ask what's coming up.</strong> Events, competitions, meetings — anything this season that could turn into a story.</div></div>
+          <div class="beat-howto-step"><span class="beat-howto-num">3</span><div><strong>Find a student leader.</strong> Get the name of an officer or captain in each club you can go to directly all year.</div></div>
+          <div class="beat-howto-step"><span class="beat-howto-num">4</span><div><strong>Get on the email list.</strong> If a club sends updates to its members, ask to be added — and have your teacher added too.</div></div>
+        </div>
+      </section>
       <section class="card">
         <div class="beat-list">${beatRows}</div>
       </section>
@@ -1648,11 +1671,25 @@ async function saveBeatAssignment(beatId, student1, student2) {
   const db = getDB();
   if (!db) return;
   try {
-    await db.collection('hm_indepth_beats').doc(String(beatId)).set({ student1: student1.trim(), student2: student2.trim() });
-    S.beatAssignments[beatId] = { student1: student1.trim(), student2: student2.trim() };
+    await db.collection('hm_indepth_beats').doc(String(beatId)).set({ student1: student1.trim(), student2: student2.trim() }, { merge: true });
+    S.beatAssignments[beatId] = { ...(S.beatAssignments[beatId] || {}), student1: student1.trim(), student2: student2.trim() };
     showToast('Beat assignment saved.');
     render();
   } catch(e) { showToast('Save failed.'); console.error(e); }
+}
+
+async function beatToggleMet(beatId, key, checked) {
+  const cur = S.beatAssignments[beatId] || {};
+  const met = { ...(cur.met || {}) };
+  if (checked) met[key] = true; else delete met[key];
+  S.beatAssignments[beatId] = { ...cur, met };
+  render();
+  const db = getDB();
+  if (!db) return;
+  try {
+    await db.collection('hm_indepth_beats').doc(String(beatId)).set({ met }, { merge: true });
+    trackUsage('writes', 1);
+  } catch(e) { console.error('met save failed', e); }
 }
 
 async function loadBeatOverrides() {
@@ -3070,11 +3107,15 @@ function attachListeners() {
 
   document.querySelectorAll('[data-beat-toggle]').forEach(el =>
     el.addEventListener('click', e => {
-      if (e.target.closest('.beat-assign-inline, .beat-edit-form')) return;
+      if (e.target.closest('.beat-assign-inline, .beat-edit-form, .beat-meet')) return;
       const id = parseInt(el.dataset.beatToggle);
       S.expandedBeat = S.expandedBeat === id ? null : id;
       render();
     }));
+
+  document.querySelectorAll('.beat-met-check').forEach(cb =>
+    cb.addEventListener('change', () =>
+      beatToggleMet(parseInt(cb.dataset.beatId), cb.dataset.metKey, cb.checked)));
 
   document.querySelectorAll('.beat-save-btn').forEach(btn =>
     btn.addEventListener('click', e => {
