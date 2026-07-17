@@ -1535,6 +1535,15 @@ function renderBeats() {
         ${isEditing ? editForm : `
           <div class="beat-expanded-topics">${(b.covers || []).map(esc).join('  ·  ')}</div>
           ${contactsHtml ? `<div class="beat-expanded-contacts">${contactsHtml}</div>` : ''}
+          <div class="beat-getting-started">
+            <div class="beat-gs-title">🚀 Getting Started on This Beat</div>
+            <ol class="beat-gs-list">
+              <li>${contactsHtml ? 'Reach out to the contact(s) listed above' : 'Find out who runs each club/department this beat covers'} and introduce yourself as the Homestead Media student covering their area.</li>
+              <li>Ask what's happening this season for each topic this beat covers — upcoming events, meetings, competitions, or news.</li>
+              <li>Ask them to point you to a <strong>student leader</strong> (officer, captain, president) you can go to directly with questions all year.</li>
+              <li>If they send email updates to members, ask them to add you to that list — and ask your teacher to be added too — so you never miss a story.</li>
+            </ol>
+          </div>
           ${S.teacherMode ? `
             <div class="beat-assign-inline">
               <input class="form-input beat-s1-input" data-beat-id="${b.id}" placeholder="Student 1" value="${assign.student1 || ''}">

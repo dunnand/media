@@ -1029,6 +1029,14 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 .beat-expanded-contacts { font-size: 0.88rem; color: var(--dim); }
 .beat-contact-link { color: var(--accent); text-decoration: none; }
 .beat-contact-link:hover { text-decoration: underline; }
+
+.beat-getting-started {
+  background: var(--surface2); border-radius: 10px;
+  padding: 12px 14px; margin-top: 2px;
+}
+.beat-gs-title { font-size: 0.78rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.beat-gs-list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 5px; }
+.beat-gs-list li { font-size: 0.82rem; color: var(--dim); line-height: 1.5; }
 .beat-row-icon { font-size: 1rem; flex-shrink: 0; }
 .beat-edit-form { background: var(--surface2); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 12px; margin-top: 4px; }
 .beat-edit-row { display: flex; flex-direction: column; gap: 6px; }
