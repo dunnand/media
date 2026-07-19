@@ -69,6 +69,7 @@ Firebase config lives in `index.html`. The app uses the **Compat SDK** (v8/compa
 | `hm_iasb_entries` | IASB competition entries per category |
 | `hm_radio_plans` | Talk show planning submissions from students |
 | `hm_indepth_rundown` | TV show rundown data, keyed by week (YYYY-MM-DD of Monday) |
+| `hm_rundown_edits` | Edit log for the In-Depth show rundown: `{at, week, role, by, before, after}` — everyone can edit the rundown; teacher mode shows the last 40 edits via the 📝 Edit Log button. Student names come from `localStorage.hm_student_name` (prompted on first edit) |
 | `hm_indepth_beats` | Beat assignments (doc ID = beat number, fields: student1, student2, met — map of advisor-name keys the pair has checked off as met) |
 | `hm_beat_info` | Beat overrides (doc ID = beat number, fields: name, covers, contacts) — set by teacher Edit Beat; students can also add/edit contacts inline (merge write on contacts only) |
 | `hm_yearbook_coverage` | Yearbook event sign-ups (student, event, role) |
