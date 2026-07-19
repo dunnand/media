@@ -1265,11 +1265,6 @@ function renderRundownCell(wk, role, isCurrent = false) {
 
   if (role.pair) {
     const pair = Array.isArray(rawVal) ? rawVal : ['', ''];
-    if (!S.teacherMode) {
-      const filled = pair.filter(Boolean);
-      if (!filled.length) return `<td class="rd-cell rd-cell-ro${colCls}"><span class="rd-empty">—</span></td>`;
-      return `<td class="rd-cell rd-cell-ro${colCls}">${filled.map(n => `<div class="rd-pair-ro">${esc(n)}</div>`).join('')}</td>`;
-    }
     return `<td class="rd-cell${colCls}"><div class="rd-pair-edit">
       <input class="rd-pair-input" data-week="${wk}" data-role="${role.key}" data-idx="0" placeholder="Anchor 1" value="${esc(pair[0] || '')}">
       <input class="rd-pair-input" data-week="${wk}" data-role="${role.key}" data-idx="1" placeholder="Anchor 2" value="${esc(pair[1] || '')}">
@@ -1280,17 +1275,6 @@ function renderRundownCell(wk, role, isCurrent = false) {
     const defaultItem = () => ({ type: 'VO', topic: '', student: '' });
     const items = Array.isArray(rawVal) ? rawVal : (rawVal ? [{ type: 'VO', topic: rawVal, student: '' }] : []);
     const slots = items.length > 0 ? [...items] : [defaultItem(), defaultItem()];
-
-    if (!S.teacherMode) {
-      const filled = slots.filter(i => i.topic || i.student);
-      if (!filled.length) return `<td class="rd-cell rd-cell-ro${colCls}"><span class="rd-empty">—</span></td>`;
-      return `<td class="rd-cell rd-cell-ro${colCls}">${filled.map(i => `
-        <div class="rd-struct-ro">
-          ${role.typeToggle ? `<span class="rd-type-badge rd-type-${(i.type||'VO').toLowerCase()}">${i.type || 'VO'}</span>` : ''}
-          ${i.topic   ? `<span class="rd-struct-topic">${esc(i.topic)}</span>` : ''}
-          ${i.student ? `<span class="rd-struct-student">${esc(i.student)}</span>` : ''}
-        </div>`).join('')}</td>`;
-    }
     return `<td class="rd-cell${colCls}"><div class="rd-structured">
       ${slots.map((item, idx) => `
         <div class="rd-struct-item">
@@ -1303,9 +1287,6 @@ function renderRundownCell(wk, role, isCurrent = false) {
   }
 
   const val = rawVal || '';
-  if (!S.teacherMode) {
-    return `<td class="rd-cell rd-cell-ro${colCls}">${val ? `<span class="rd-plain-val">${esc(val).replace(/\n/g,'<br>')}</span>` : '<span class="rd-empty">—</span>'}</td>`;
-  }
   return `<td class="rd-cell${colCls}"><textarea class="rd-input" data-week="${wk}" data-role="${role.key}" rows="2">${esc(val)}</textarea></td>`;
 }
 
@@ -1396,6 +1377,36 @@ function renderIntro() {
     </div>`;
 }
 
+function renderRundownLog() {
+  let body;
+  if (!S.rundownLog) {
+    body = '<div class="rd-log-empty">Loading edit history…</div>';
+  } else if (!S.rundownLog.length) {
+    body = '<div class="rd-log-empty">No edits recorded yet.</div>';
+  } else {
+    body = S.rundownLog.map(e => {
+      const role = RUNDOWN_ROLES.find(r => r.key === e.role);
+      const when = new Date(e.at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+      const wk   = new Date(e.week + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      return `
+        <div class="rd-log-row">
+          <span class="rd-log-when">${when}</span>
+          <span class="rd-log-who">${esc(e.by || 'Anonymous')}</span>
+          <span class="rd-log-what">
+            <span class="rd-log-role" style="color:${role?.color || 'inherit'}">${esc(role?.label || e.role)}</span>
+            · week of ${wk} ·
+            ${e.before ? `<s>${esc(e.before)}</s> → ` : ''}${e.after ? esc(e.after) : '<em>(cleared)</em>'}
+          </span>
+        </div>`;
+    }).join('');
+  }
+  return `
+    <div class="rd-log">
+      <div class="rd-log-head">Recent Edits <span style="font-weight:400;color:var(--dim);font-size:0.72rem">last 40 · students are asked their name on first edit</span></div>
+      ${body}
+    </div>`;
+}
+
 function renderInDepth() {
   const weeks    = getRundownWeeks();
   const offset   = S.rundownWeekOffset || 0;
@@ -1432,7 +1443,8 @@ function renderInDepth() {
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
           <h2 style="font-size:1rem;font-weight:700">${isPast ? 'Past Shows' : 'Show Rundown'}</h2>
           <div style="display:flex;gap:6px;align-items:center">
-            ${S.teacherMode ? '<span style="font-size:0.72rem;color:var(--dim)">saves on blur&nbsp;·&nbsp;</span>' : ''}
+            <span style="font-size:0.72rem;color:var(--dim)">saves automatically&nbsp;·&nbsp;</span>
+            ${S.teacherMode ? `<button class="btn-secondary rd-nav-btn" id="rd-log-btn" style="font-size:0.75rem;padding:4px 10px">${S.showRundownLog ? 'Hide Edit Log' : '📝 Edit Log'}</button>` : ''}
             <button class="btn-secondary rd-nav-btn" id="rd-prev" style="font-size:0.75rem;padding:4px 10px">← Back</button>
             ${offset !== 0 ? `<button class="btn-secondary rd-nav-btn" id="rd-today" style="font-size:0.75rem;padding:4px 10px">Today</button>` : ''}
             <button class="btn-secondary rd-nav-btn" id="rd-next" style="font-size:0.75rem;padding:4px 10px">Forward →</button>
@@ -1442,6 +1454,7 @@ function renderInDepth() {
           <thead><tr><th class="rd-role-head"></th>${headerCols}</tr></thead>
           <tbody>${bodyRows}</tbody>
         </table>
+        ${S.teacherMode && S.showRundownLog ? renderRundownLog() : ''}
       </section>
 
       <div class="page-grid">
@@ -1636,14 +1649,58 @@ async function loadRundownData() {
   } catch(e) { console.error('rundown load failed', e); }
 }
 
+function rundownValToStr(val) {
+  if (Array.isArray(val)) {
+    if (val.length && typeof val[0] === 'object') {
+      return val.filter(i => i && (i.topic || i.student))
+        .map(i => [i.type, i.topic, i.student].filter(Boolean).join(' '))
+        .join('; ');
+    }
+    return val.filter(Boolean).join(' & ');
+  }
+  return String(val || '');
+}
+
+function rundownEditorName() {
+  if (S.teacherMode) return 'Teacher';
+  let n = localStorage.getItem('hm_student_name') || '';
+  if (!n) {
+    n = (prompt('Your name? It shows next to your edits so your teacher knows who changed what.') || '').trim();
+    if (n) localStorage.setItem('hm_student_name', n);
+  }
+  return n || 'Anonymous';
+}
+
 async function saveRundownCell(weekKey, roleKey, value) {
   const db = getDB();
   if (!db) return;
   if (!S.rundownData[weekKey]) S.rundownData[weekKey] = {};
+  const beforeStr = rundownValToStr(S.rundownData[weekKey][roleKey]);
+  const afterStr  = rundownValToStr(value);
   S.rundownData[weekKey][roleKey] = value;
+  if (beforeStr === afterStr) return;
+  const by = rundownEditorName();
   try {
     await db.collection('hm_indepth_rundown').doc(weekKey).set(S.rundownData[weekKey], { merge: true });
+    await db.collection('hm_rundown_edits').add({
+      at: new Date().toISOString(),
+      week: weekKey,
+      role: roleKey,
+      by,
+      before: beforeStr,
+      after: afterStr,
+    });
   } catch(e) { console.error('rundown save failed', e); }
+}
+
+async function loadRundownLog() {
+  const db = getDB();
+  if (!db) return;
+  try {
+    const snap = await db.collection('hm_rundown_edits').orderBy('at', 'desc').limit(40).get();
+    S.rundownLog = snap.docs.map(d => d.data());
+    if (S.view === 'indepth') render();
+  } catch(e) { console.error('rundown log load failed', e); }
 }
 
 async function loadShowSchedule() {
@@ -3159,6 +3216,12 @@ function attachListeners() {
       saveRundownCell(week, role, items);
       render();
     }));
+
+  document.getElementById('rd-log-btn')?.addEventListener('click', () => {
+    S.showRundownLog = !S.showRundownLog;
+    if (S.showRundownLog) { S.rundownLog = null; loadRundownLog(); }
+    render();
+  });
 
   document.getElementById('rd-prev')?.addEventListener('click', () => {
     S.rundownWeekOffset = (S.rundownWeekOffset || 0) - 1;
