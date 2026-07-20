@@ -200,6 +200,8 @@ const S = {
   canvaLessons: {},
   showCanvaForm: false,
   hiddenLessons: new Set(),
+  lessonEdits: {},
+  lessonEditOpen: false,
   introClassInfo: {},
   editingIntroClass: null,
   expandedIntroClass: null,
@@ -3644,6 +3646,7 @@ function attachListeners() {
       if (dest === 'hub')    { S.lessonCourse = null; S.lessonUnit = null; S.lessonId = null; }
       if (dest === 'course') { S.lessonUnit = null; S.lessonId = null; }
       S.lessonSlide = 0;
+      S.lessonEditOpen = false;
       go('lessons');
     }));
 
@@ -3659,8 +3662,17 @@ function attachListeners() {
       const total = (lesson.sections || []).length + 2;
       if (dir === 'next' && S.lessonSlide < total - 1) S.lessonSlide++;
       if (dir === 'prev' && S.lessonSlide > 0) S.lessonSlide--;
+      S.lessonEditOpen = false;
       go('lessons');
     }));
+
+  document.getElementById('ls-edit-slide')?.addEventListener('click', () => {
+    S.lessonEditOpen = !S.lessonEditOpen;
+    render();
+  });
+  document.getElementById('ls-edit-save')?.addEventListener('click', saveLessonSlideEdit);
+  document.getElementById('ls-edit-cancel')?.addEventListener('click', () => { S.lessonEditOpen = false; render(); });
+  document.getElementById('ls-edit-reset')?.addEventListener('click', resetLessonSlideEdit);
 }
 
 // ── LESSONS ───────────────────────────────────────────────────
@@ -3722,7 +3734,8 @@ function renderLessonCourse() {
   if (!course) return renderLessonsHub();
 
   const units = course.units.map((unit, ui) => {
-    const items = unit.lessons.filter(l => S.teacherMode || !S.hiddenLessons.has(l.id)).map((l, li) => {
+    const items = unit.lessons.filter(l => S.teacherMode || !S.hiddenLessons.has(l.id)).map((rawL, li) => {
+      const l = mergedLesson(rawL);
       const icon = LESSON_ICONS[l.id] || course.icon;
       const hasCanva = !!S.canvaLessons[l.id]?.url;
       const isHidden = S.hiddenLessons.has(l.id);
@@ -3974,6 +3987,164 @@ function renderLessonSlide(slide, lesson, lessonNum, icon, course, next, idx, to
     </div>`;
 }
 
+// ── Lesson text editor (teacher mode) ────────────────────────
+function renderLessonSlideEditor(lesson, slides, idx) {
+  const secIdx = idx - 1;               // slide 0 is the title card
+  const sec = idx === 0 ? null : slides[idx];
+  const hasOverride = idx === 0
+    ? ['title','summary','duration'].some(k => S.lessonEdits[lesson.id]?.[k] !== undefined)
+    : !!S.lessonEdits[lesson.id]?.sections?.[secIdx];
+
+  let fields = '';
+  if (idx === 0) {
+    fields = `
+      <label class="le-label">Lesson Title</label>
+      <input id="le-title" class="form-input" value="${esc(lesson.title)}">
+      <label class="le-label">Summary</label>
+      <textarea id="le-summary" class="form-input le-ta" rows="3">${esc(lesson.summary || '')}</textarea>
+      <label class="le-label">Duration</label>
+      <input id="le-duration" class="form-input" value="${esc(lesson.duration || '')}" placeholder="e.g. 1 class">`;
+  } else {
+    switch (sec.type) {
+      case 'intro':
+        fields = `
+          <label class="le-label">Intro Text</label>
+          <textarea id="le-content" class="form-input le-ta" rows="7">${esc(sec.content || '')}</textarea>`;
+        break;
+      case 'text':
+        fields = `
+          <label class="le-label">Heading</label>
+          <input id="le-title" class="form-input" value="${esc(sec.title || '')}">
+          <label class="le-label">Text <span class="le-hint">(basic HTML like &lt;strong&gt; is allowed)</span></label>
+          <textarea id="le-content" class="form-input le-ta" rows="7">${esc(sec.content || '')}</textarea>`;
+        break;
+      case 'callout':
+        fields = `
+          <label class="le-label">Label</label>
+          <input id="le-label-input" class="form-input" value="${esc(sec.label || '')}">
+          ${sec.content !== undefined && !sec.items
+            ? `<label class="le-label">Text</label>
+               <textarea id="le-content" class="form-input le-ta" rows="6">${esc(sec.content || '')}</textarea>`
+            : `<label class="le-label">Items <span class="le-hint">(one per line; basic HTML allowed)</span></label>
+               <textarea id="le-items" class="form-input le-ta" rows="7">${esc((sec.items || []).join('\n'))}</textarea>`}`;
+        break;
+      case 'list':
+        fields = `
+          <label class="le-label">Heading</label>
+          <input id="le-title" class="form-input" value="${esc(sec.title || '')}">
+          <label class="le-label">Items <span class="le-hint">(one per line; basic HTML allowed)</span></label>
+          <textarea id="le-items" class="form-input le-ta" rows="8">${esc((sec.items || []).join('\n'))}</textarea>`;
+        break;
+      case 'keyterms':
+        fields = `
+          <label class="le-label">Heading</label>
+          <input id="le-title" class="form-input" value="${esc(sec.title || '')}">
+          <label class="le-label">Terms <span class="le-hint">(one per line, format: Term | Definition)</span></label>
+          <textarea id="le-terms" class="form-input le-ta" rows="8">${esc((sec.terms || []).map(t => `${t.term} | ${t.def}`).join('\n'))}</textarea>`;
+        break;
+      case 'video':
+        fields = `
+          <label class="le-label">Label</label>
+          <input id="le-label-input" class="form-input" value="${esc(sec.label || '')}">
+          <label class="le-label">YouTube URL</label>
+          <input id="le-youtube" class="form-input" value="${esc(sec.youtube || '')}">
+          <label class="le-label">Note (under the video)</label>
+          <textarea id="le-note" class="form-input le-ta" rows="3">${esc(sec.note || '')}</textarea>`;
+        break;
+      case 'audio':
+        fields = `
+          <label class="le-label">Context (before the player)</label>
+          <textarea id="le-context" class="form-input le-ta" rows="3">${esc(sec.context || '')}</textarea>
+          <label class="le-label">Note</label>
+          <textarea id="le-note" class="form-input le-ta" rows="3">${esc(sec.note || '')}</textarea>
+          <label class="le-label">Tip</label>
+          <textarea id="le-tip" class="form-input le-ta" rows="3">${esc(sec.tip || '')}</textarea>`;
+        break;
+      default:
+        fields = `<p class="le-hint" style="font-size:0.9rem">This slide type (${esc(sec.type)}) can't be edited here — its images/files live in data.js. Ask Claude to change it.</p>`;
+    }
+  }
+
+  return `
+    <div class="ls-slide le-editor">
+      <div class="le-editor-inner">
+        <div class="le-editor-head">✏️ Editing ${idx === 0 ? 'Title Slide' : `Slide ${idx} — ${esc(sec.type)}`}
+          ${hasOverride ? '<span class="le-edited-chip">edited</span>' : ''}
+        </div>
+        ${fields}
+        <div class="le-editor-btns">
+          <button class="btn-primary" id="ls-edit-save">Save</button>
+          <button class="btn-secondary" id="ls-edit-cancel">Cancel</button>
+          ${hasOverride ? `<button class="btn-secondary le-reset" id="ls-edit-reset">↩ Reset to original</button>` : ''}
+        </div>
+        <p class="le-hint" style="margin-top:8px">Edits save to the cloud and show for everyone. Reset restores the built-in text.</p>
+      </div>
+    </div>`;
+}
+
+async function saveLessonSlideEdit() {
+  const id = S.lessonId;
+  const secIdx = (S.lessonSlide || 0) - 1;
+  const val = elId => document.getElementById(elId)?.value;
+
+  let patch = {};
+  if (secIdx < 0) {
+    patch = { title: val('le-title') || '', summary: val('le-summary') || '', duration: val('le-duration') || '' };
+  } else {
+    if (val('le-title') !== undefined && val('le-title') !== null) patch.title = val('le-title');
+    if (document.getElementById('le-label-input')) patch.label = val('le-label-input');
+    if (document.getElementById('le-content')) patch.content = val('le-content');
+    if (document.getElementById('le-items')) patch.items = val('le-items').split('\n').map(s => s.trim()).filter(Boolean);
+    if (document.getElementById('le-terms')) patch.terms = val('le-terms').split('\n').map(s => s.trim()).filter(Boolean).map(line => {
+      const p = line.indexOf('|');
+      return p === -1 ? { term: line, def: '' } : { term: line.slice(0, p).trim(), def: line.slice(p + 1).trim() };
+    });
+    if (document.getElementById('le-youtube')) patch.youtube = val('le-youtube');
+    if (document.getElementById('le-note')) patch.note = val('le-note');
+    if (document.getElementById('le-context')) patch.context = val('le-context');
+    if (document.getElementById('le-tip')) patch.tip = val('le-tip');
+    if (!Object.keys(patch).length) { S.lessonEditOpen = false; render(); return; }
+  }
+
+  const cur = S.lessonEdits[id] || {};
+  if (secIdx < 0) Object.assign(cur, patch);
+  else { cur.sections = cur.sections || {}; cur.sections[secIdx] = { ...(cur.sections[secIdx] || {}), ...patch }; }
+  S.lessonEdits[id] = cur;
+  S.lessonEditOpen = false;
+  render();
+
+  const db = getDB();
+  if (db) {
+    try {
+      await db.collection('hm_lesson_edits').doc(id).set(cur);
+      trackUsage('writes');
+    } catch(e) { console.error('lesson edit save failed', e); }
+  }
+}
+
+async function resetLessonSlideEdit() {
+  const id = S.lessonId;
+  const secIdx = (S.lessonSlide || 0) - 1;
+  const cur = S.lessonEdits[id];
+  if (!cur) return;
+  if (secIdx < 0) { delete cur.title; delete cur.summary; delete cur.duration; }
+  else if (cur.sections) { delete cur.sections[secIdx]; if (!Object.keys(cur.sections).length) delete cur.sections; }
+
+  const empty = !Object.keys(cur).length;
+  if (empty) delete S.lessonEdits[id];
+  S.lessonEditOpen = false;
+  render();
+
+  const db = getDB();
+  if (db) {
+    try {
+      if (empty) await db.collection('hm_lesson_edits').doc(id).delete();
+      else await db.collection('hm_lesson_edits').doc(id).set(cur);
+      trackUsage('writes');
+    } catch(e) { console.error('lesson edit reset failed', e); }
+  }
+}
+
 function renderLessonPage() {
   const course = LESSONS[S.lessonCourse];
   if (!course) return renderLessonsHub();
@@ -3988,6 +4159,7 @@ function renderLessonPage() {
     unit   = unit || course.units[0] || { id: 'u1', title: '', lessons: [] };
   }
   if (!lesson) return renderLessonCourse();
+  lesson = mergedLesson(lesson);
 
   const canvaUrl = canvaData.url;
   const allLessons = [
@@ -4024,10 +4196,14 @@ function renderLessonPage() {
   const idx    = Math.max(0, Math.min(S.lessonSlide || 0, total - 1));
   const pct    = Math.round(((idx + 1) / total) * 100);
 
+  const editing = S.teacherMode && S.lessonEditOpen && slides[idx].type !== '_end';
+
   return `
     <div class="ls-show" style="--clr:${course.color}">
       <div class="ls-slide-area">
-        ${renderLessonSlide(slides[idx], lesson, lessonNum, icon, course, next, idx, total)}
+        ${editing
+          ? renderLessonSlideEditor(lesson, slides, idx)
+          : renderLessonSlide(slides[idx], lesson, lessonNum, icon, course, next, idx, total)}
       </div>
       <div class="ls-controls">
         <div class="ls-ctrl-left">
@@ -4043,6 +4219,7 @@ function renderLessonPage() {
           <div class="ls-lesson-label">${icon} ${esc(lesson.title)}</div>
         </div>
         <div class="ls-ctrl-right">
+          ${S.teacherMode && slides[idx].type !== '_end' ? `<button id="ls-edit-slide" class="btn-secondary" style="font-size:0.75rem;padding:4px 10px">${S.lessonEditOpen ? '✕ Close Editor' : '✏️ Edit Slide'}</button>` : ''}
           ${S.teacherMode ? `<button id="ls-connect-canva" class="btn-secondary" style="font-size:0.75rem;padding:4px 10px">🎨 Connect Canva</button>` : ''}
           <span class="ls-lesson-num">L${lessonNum}</span>
         </div>
@@ -4164,6 +4341,32 @@ async function loadHiddenLessons() {
     trackUsage('reads', snap.size || 1);
     S.hiddenLessons = new Set(snap.docs.map(d => d.id));
   } catch(e) {}
+}
+
+// Teacher text edits for built-in lessons — overrides shadow data.js LESSONS
+async function loadLessonEdits() {
+  const db = getDB();
+  if (!db) return;
+  try {
+    const snap = await db.collection('hm_lesson_edits').get();
+    trackUsage('reads', snap.size || 1);
+    const map = {};
+    snap.forEach(doc => { map[doc.id] = doc.data(); });
+    S.lessonEdits = map;
+  } catch(e) {}
+}
+
+// Apply stored overrides (title/summary/duration + per-section text) to a lesson
+function mergedLesson(lesson) {
+  const ov = S.lessonEdits[lesson.id];
+  if (!ov) return lesson;
+  const m = { ...lesson };
+  ['title', 'summary', 'duration'].forEach(k => { if (ov[k] !== undefined && ov[k] !== '') m[k] = ov[k]; });
+  if (ov.sections) {
+    m.sections = (lesson.sections || []).map((s, i) =>
+      ov.sections[i] ? { ...s, ...ov.sections[i] } : s);
+  }
+  return m;
 }
 
 // ── Quick Links ───────────────────────────────────────────────
@@ -4603,7 +4806,7 @@ async function loadBroadcastChecklist(bid) {
 
 // ── Init ──────────────────────────────────────────────────────
 async function init() {
-  await Promise.all([loadFromFirebase(), loadCustomYbEvents(), loadYearbookCoverage(), loadCalendarYbEvents(), loadCanvaLessons(), loadHiddenLessons(), loadIntroClassInfo(), loadQuickLinks(), loadBeatOverrides()]);
+  await Promise.all([loadFromFirebase(), loadCustomYbEvents(), loadYearbookCoverage(), loadCalendarYbEvents(), loadCanvaLessons(), loadHiddenLessons(), loadLessonEdits(), loadIntroClassInfo(), loadQuickLinks(), loadBeatOverrides()]);
   await Promise.all([loadFormSignups(), loadYbFormSignups()]);  // need broadcasts/events loaded first
   render();
 

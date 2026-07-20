@@ -1943,3 +1943,26 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
   .lesson-list li { padding-left: 46px; font-size: 1rem; }
   .ls-intro-statement { font-size: 1.2rem; }
 }
+
+/* ── Lesson slide editor (teacher mode) ─────────────────────── */
+.le-editor { display: flex; align-items: flex-start; justify-content: center; overflow-y: auto; }
+.le-editor-inner {
+  width: 100%; max-width: 760px; margin: 24px auto;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 22px 24px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.le-editor-head {
+  font-size: 0.95rem; font-weight: 700; margin-bottom: 6px;
+  display: flex; align-items: center; gap: 10px;
+}
+.le-edited-chip {
+  font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+  background: rgba(99,102,241,0.15); color: #818cf8;
+  border: 1px solid rgba(99,102,241,0.35); border-radius: 999px; padding: 2px 9px;
+}
+.le-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--dim); margin-top: 8px; }
+.le-hint { font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--dim); }
+.le-ta { resize: vertical; line-height: 1.5; font-size: 0.88rem; }
+.le-editor-btns { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+.le-reset { margin-left: auto; }
