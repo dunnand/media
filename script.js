@@ -4071,14 +4071,14 @@ function renderLive() {
                 <div style="margin-top:12px;padding:14px;background:var(--surface2);border-radius:10px;display:flex;flex-direction:column;gap:10px">
                   <input id="canva-title" class="form-input" placeholder="Lesson title" style="font-size:0.9rem">
                   <input id="canva-duration" class="form-input" placeholder="Duration (e.g. 2 classes)" style="font-size:0.9rem">
-                  <input id="canva-url" class="form-input" placeholder="Canva share link (canva.com/design/...)" style="font-size:0.9rem">
+                  <input id="canva-url" class="form-input" placeholder="Canva or Google Slides share link" style="font-size:0.9rem">
                   <select id="canva-unit" class="form-input" style="font-size:0.9rem">${unitOptions}</select>
                   <div style="display:flex;gap:8px">
                     <button class="btn-primary" id="canva-save-btn" style="font-size:0.85rem">Add Lesson</button>
                     <button class="btn-secondary" id="canva-cancel-btn" style="font-size:0.85rem">Cancel</button>
                   </div>
                 </div>` : `
-                <button class="btn-secondary" id="canva-add-btn" style="margin-top:10px;font-size:0.82rem;width:100%">+ Add Canva Lesson</button>`)
+                <button class="btn-secondary" id="canva-add-btn" style="margin-top:10px;font-size:0.82rem;width:100%">+ Add Canva/Slides Lesson</button>`)
               : ''}
             </section>`;
           })()}
@@ -8675,10 +8675,11 @@ function attachListeners() {
   // ── Canva lesson handlers ────────────────────────────────────
   const lsConnectCanva = document.getElementById('ls-connect-canva');
   if (lsConnectCanva) lsConnectCanva.addEventListener('click', async () => {
-    const url = prompt('Paste your Canva share link:', S.canvaLessons[S.lessonId]?.url || '');
+    const url = prompt('Paste your Canva or Google Slides share link:', S.canvaLessons[S.lessonId]?.url || '');
     if (url === null) return;
-    if (url && !isCanvaLink(url)) { showToast('That doesn\'t look like a Canva link.'); return; }
-    if (url && isCanvaShortLink(url) && !confirm('This looks like a Canva "Public view" link — Canva blocks these from embedding inline, so the lesson will show an "Open in Canva" button instead of the design itself.\n\nFor it to embed directly on the page, go to Canva → Share → Embed and paste that link instead.\n\nSave this link anyway?')) return;
+    if (url && !isEmbeddableLessonLink(url)) { showToast('That doesn\'t look like a Canva or Google Slides link.'); return; }
+    if (url && isCanvaShortLink(url) && !confirm('This looks like a Canva "Public view" link — Canva blocks these from embedding inline, so the lesson will show an "Open Original" button instead of the design itself.\n\nFor it to embed directly on the page, go to Canva → Share → Embed and paste that link instead.\n\nSave this link anyway?')) return;
+    if (url && isGoogleSlidesLink(url) && !confirm('Make sure this Slides deck is shared as "Anyone with the link → Viewer" (File → Share in Google Slides) — otherwise it\'ll show an access error instead of the deck.\n\nSave this link?')) return;
     const db = getDB();
     if (!db) return;
     trackUsage('writes');
@@ -8702,9 +8703,10 @@ function attachListeners() {
     const title    = document.getElementById('canva-title')?.value.trim();
     const duration = document.getElementById('canva-duration')?.value.trim();
     const url      = document.getElementById('canva-url')?.value.trim();
-    if (!title || !url) { showToast('Title and Canva link are required.'); return; }
-    if (!isCanvaLink(url)) { showToast('That doesn\'t look like a Canva link.'); return; }
-    if (isCanvaShortLink(url) && !confirm('This looks like a Canva "Public view" link — Canva blocks these from embedding inline, so the lesson will show an "Open in Canva" button instead of the design itself.\n\nFor it to embed directly on the page, go to Canva → Share → Embed and paste that link instead.\n\nSave this link anyway?')) return;
+    if (!title || !url) { showToast('Title and link are required.'); return; }
+    if (!isEmbeddableLessonLink(url)) { showToast('That doesn\'t look like a Canva or Google Slides link.'); return; }
+    if (isCanvaShortLink(url) && !confirm('This looks like a Canva "Public view" link — Canva blocks these from embedding inline, so the lesson will show an "Open Original" button instead of the design itself.\n\nFor it to embed directly on the page, go to Canva → Share → Embed and paste that link instead.\n\nSave this link anyway?')) return;
+    if (isGoogleSlidesLink(url) && !confirm('Make sure this Slides deck is shared as "Anyone with the link → Viewer" (File → Share in Google Slides) — otherwise it\'ll show an access error instead of the deck.\n\nSave this link?')) return;
     const db = getDB();
     if (!db) return;
     trackUsage('writes');
@@ -8714,7 +8716,7 @@ function attachListeners() {
     await ref.set(data);
     S.canvaLessons[ref.id] = data;
     S.showCanvaForm = false;
-    showToast('Canva lesson added!');
+    showToast('Lesson added!');
     render();
   });
 
@@ -8900,14 +8902,14 @@ function renderLessonCourse() {
           <div style="margin-top:12px;padding:14px;background:var(--surface2);border-radius:10px;display:flex;flex-direction:column;gap:10px">
             <input id="canva-title" class="form-input" placeholder="Lesson title" style="font-size:0.9rem">
             <input id="canva-duration" class="form-input" placeholder="Duration (e.g. 2 classes)" style="font-size:0.9rem">
-            <input id="canva-url" class="form-input" placeholder="Canva share link (canva.com/design/...)" style="font-size:0.9rem">
+            <input id="canva-url" class="form-input" placeholder="Canva or Google Slides share link" style="font-size:0.9rem">
             <select id="canva-unit" class="form-input" style="font-size:0.9rem">${unitOptions}</select>
             <div style="display:flex;gap:8px">
               <button class="btn-primary" id="canva-save-btn" style="font-size:0.85rem">Add Lesson</button>
               <button class="btn-secondary" id="canva-cancel-btn" style="font-size:0.85rem">Cancel</button>
             </div>
           </div>` : `
-          <button class="btn-secondary" id="canva-add-btn" style="margin-top:10px;font-size:0.82rem;width:100%">+ Add Canva Lesson</button>`)
+          <button class="btn-secondary" id="canva-add-btn" style="margin-top:10px;font-size:0.82rem;width:100%">+ Add Canva/Slides Lesson</button>`)
         : ''}
       </div>
     </div>`;
@@ -9267,17 +9269,17 @@ function renderLessonPage() {
   if (canvaUrl) {
     return `
       <div class="ls-show" style="--clr:${course.color}">
-        <iframe src="${esc(canvaEmbedUrl(canvaUrl))}" class="ls-canva-frame" allowfullscreen allow="fullscreen"></iframe>
+        <iframe src="${esc(lessonEmbedUrl(canvaUrl))}" class="ls-canva-frame" allowfullscreen allow="fullscreen"></iframe>
         <div class="ls-controls">
           <div class="ls-ctrl-left">
             <button class="ls-back-btn" data-lesson-back="course">← ${esc(course.name)}</button>
           </div>
           <div class="ls-ctrl-center">
-            <div class="ls-lesson-label">🎨 ${esc(lesson.title)}</div>
+            <div class="ls-lesson-label">${isGoogleSlidesLink(canvaUrl) ? '📊' : '🎨'} ${esc(lesson.title)}</div>
           </div>
           <div class="ls-ctrl-right">
-            <a href="${esc(canvaUrl)}" target="_blank" rel="noopener" class="btn-secondary" style="font-size:0.75rem;padding:4px 10px;text-decoration:none" title="If the lesson didn't load above, some Canva share links block embedding — open it directly instead.">Open in Canva ↗</a>
-            ${S.teacherMode ? `<button id="ls-connect-canva" class="btn-secondary" style="font-size:0.75rem;padding:4px 10px">✏️ Change Canva URL</button>` : ''}
+            <a href="${esc(canvaUrl)}" target="_blank" rel="noopener" class="btn-secondary" style="font-size:0.75rem;padding:4px 10px;text-decoration:none" title="If the lesson didn't load above, the share link may block embedding — open it directly instead.">Open Original ↗</a>
+            ${S.teacherMode ? `<button id="ls-connect-canva" class="btn-secondary" style="font-size:0.75rem;padding:4px 10px">✏️ Change Link</button>` : ''}
           </div>
         </div>
       </div>`;
@@ -9315,7 +9317,7 @@ function renderLessonPage() {
         </div>
         <div class="ls-ctrl-right">
           ${S.teacherMode && slides[idx].type !== '_end' ? `<button id="ls-edit-slide" class="btn-secondary" style="font-size:0.75rem;padding:4px 10px">${S.lessonEditOpen ? '✕ Close Editor' : '✏️ Edit Slide'}</button>` : ''}
-          ${S.teacherMode ? `<button id="ls-connect-canva" class="btn-secondary" style="font-size:0.75rem;padding:4px 10px">🎨 Connect Canva</button>` : ''}
+          ${S.teacherMode ? `<button id="ls-connect-canva" class="btn-secondary" style="font-size:0.75rem;padding:4px 10px">🎨 Connect Canva/Slides</button>` : ''}
           <span class="ls-lesson-num">L${lessonNum}</span>
         </div>
       </div>
@@ -9440,9 +9442,28 @@ function isCanvaShortLink(url) {
   return /canva\.link/i.test(url);
 }
 
+function isGoogleSlidesLink(url) {
+  return /docs\.google\.com\/presentation/i.test(url);
+}
+
+function isEmbeddableLessonLink(url) {
+  return isCanvaLink(url) || isGoogleSlidesLink(url);
+}
+
 function canvaEmbedUrl(url) {
   if (!url) return '';
   return url.split('?')[0] + '?embed';
+}
+
+function googleSlidesEmbedUrl(url) {
+  const m = url.match(/\/presentation\/d\/([a-zA-Z0-9_-]+)/);
+  if (!m) return url;
+  return `https://docs.google.com/presentation/d/${m[1]}/embed?start=false&loop=false&delayms=3000`;
+}
+
+function lessonEmbedUrl(url) {
+  if (!url) return '';
+  return isGoogleSlidesLink(url) ? googleSlidesEmbedUrl(url) : canvaEmbedUrl(url);
 }
 
 async function loadCanvaLessons() {
