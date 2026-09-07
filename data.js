@@ -396,7 +396,6 @@ const LIVE_QUICK_LINKS = [
     { label: 'Livestream Computer (Completed Graphics)', url: 'https://drive.google.com/drive/u/0/folders/0AMt6Hze2xzJPUk9PVA' },
     { label: 'Graphic Checklist & Schedule', url: 'https://docs.google.com/spreadsheets/d/1erBfJz-t7TNa8LV4mhjJUrVf7WWKnaXcTkRqpFqFNKQ/edit?gid=740781133' },
     { label: 'Safe Area Templates', url: 'https://drive.google.com/drive/folders/1Au4CFu82rCkzyhEPzzHPjWtA9nSX2vxk?usp=drive_link' },
-    { label: 'Style Guide PDF', url: 'https://drive.google.com/file/d/1dMTaMixqSfk8yHo9ShjAhlK6whOMa0qC/view' },
   ]},
   { heading: '📈 Stats & Scores', links: [
     { label: 'MaxPreps — All Sports', url: 'https://www.maxpreps.com/in/fort-wayne/homestead-spartans/' },
@@ -2666,7 +2665,6 @@ const LESSONS = {
                 '<a href="https://drive.google.com/drive/u/0/folders/0AJfm1_t6EpJjUk9PVA" target="_blank">Homestead Live CLASS Drive — Assignments & Templates ↗</a>',
                 '<a href="https://drive.google.com/drive/u/0/folders/0AMt6Hze2xzJPUk9PVA" target="_blank">Livestream Computer Drive — Completed Graphics ↗</a>',
                 '<a href="https://drive.google.com/drive/folders/1Au4CFu82rCkzyhEPzzHPjWtA9nSX2vxk?usp=drive_link" target="_blank">Safe Area Templates ↗</a>',
-                '<a href="https://drive.google.com/file/d/1dMTaMixqSfk8yHo9ShjAhlK6whOMa0qC/view" target="_blank">Style Guide PDF ↗</a>',
               ]},
             ]
           },

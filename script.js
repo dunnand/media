@@ -4127,7 +4127,6 @@ function renderLive() {
             </div>
             <div class="live-ref-links">
               <a href="https://drive.google.com/drive/folders/1Au4CFu82rCkzyhEPzzHPjWtA9nSX2vxk?usp=drive_link" target="_blank" class="live-ref-link">📐 Safe Area Templates ↗</a>
-              <a href="https://drive.google.com/file/d/1dMTaMixqSfk8yHo9ShjAhlK6whOMa0qC/view" target="_blank" class="live-ref-link">📄 Style Guide PDF ↗</a>
             </div>
           </section>
           ${renderQuickLinksCard('live')}
