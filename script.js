@@ -11312,6 +11312,19 @@ async function init() {
     return;
   }
 
+  // Deep link straight to a lesson: ?lesson=<id>&course=<key> (course defaults to "live")
+  const lessonParam = new URLSearchParams(location.search).get('lesson');
+  if (lessonParam) {
+    const courseParam = new URLSearchParams(location.search).get('course') || 'live';
+    const found = getCourseLessonList(courseParam).find(l => l.id === lessonParam);
+    if (found) {
+      S.view = 'lessons';
+      S.lessonCourse = courseParam;
+      S.lessonUnit = found.unitId;
+      S.lessonId = lessonParam;
+    }
+  }
+
   render();
 
   document.addEventListener('keydown', e => {
