@@ -8024,6 +8024,12 @@ function attachListeners() {
       render();
     }));
 
+  document.querySelectorAll('[data-ls-filter]').forEach(btn =>
+    btn.addEventListener('click', () => {
+      S.liveSignupsFilter = btn.dataset.lsFilter;
+      render();
+    }));
+
   document.getElementById('lc-prev')?.addEventListener('click', () => { S.calMonthOffset = (S.calMonthOffset || 0) - 1; render(); });
   document.getElementById('lc-next')?.addEventListener('click', () => { S.calMonthOffset = (S.calMonthOffset || 0) + 1; render(); });
   document.querySelectorAll('.lc-has-event').forEach(el =>
@@ -11747,15 +11753,21 @@ function renderDashboard() {
     : `<p class="dim" style="padding:16px 0;font-size:0.875rem">No plans submitted yet.</p>`;
 
   // Live crew sign-ups — every upcoming broadcast in one place, so roles can
-  // be assigned without opening each broadcast individually.
+  // be assigned without opening each broadcast individually. A toggle also
+  // lets the teacher flip to past broadcasts to see who already crewed them.
   const lsToday = new Date().toISOString().slice(0, 10);
   const upcomingBroadcasts = (S.broadcasts || [])
     .filter(b => b.date >= lsToday)
     .sort((a, b) => a.date.localeCompare(b.date));
+  const pastBroadcasts = (S.broadcasts || [])
+    .filter(b => b.date < lsToday)
+    .sort((a, b) => b.date.localeCompare(a.date));
   const openCrewCount = upcomingBroadcasts.filter(b => rolesForType(b.type).some(r => !(b.roles || {})[r])).length;
+  const lsFilter = S.liveSignupsFilter === 'past' ? 'past' : 'upcoming';
+  const lsBroadcasts = lsFilter === 'past' ? pastBroadcasts : upcomingBroadcasts;
 
-  const liveSignupsSection = upcomingBroadcasts.length
-    ? upcomingBroadcasts.map(b => {
+  const liveSignupsSection = lsBroadcasts.length
+    ? lsBroadcasts.map(b => {
         const et = EVENT_TYPES[b.type] || EVENT_TYPES.other;
         const avails = (S.availabilities || []).filter(a => a.broadcastId === b.id);
         const roles = b.roles || {};
@@ -11805,7 +11817,9 @@ function renderDashboard() {
             </datalist>
           </div>`;
       }).join('')
-    : `<p class="dim" style="padding:16px 0;font-size:0.875rem">No upcoming broadcasts scheduled.</p>`;
+    : lsFilter === 'past'
+      ? `<p class="dim" style="padding:16px 0;font-size:0.875rem">No past broadcasts yet.</p>`
+      : `<p class="dim" style="padding:16px 0;font-size:0.875rem">No upcoming broadcasts scheduled.</p>`;
 
   const usage = getUsage();
   const READ_LIMIT = 50000, WRITE_LIMIT = 20000;
@@ -11902,7 +11916,11 @@ function renderDashboard() {
 
       ${dbSec('live_signups',
         `<h2>🎥 Live Crew Sign-Ups</h2>`,
-        `<span class="dim" style="font-size:0.8rem">${openCrewCount} of ${upcomingBroadcasts.length} upcoming need crew</span>`,
+        `<div class="ls-filter-tabs">
+           <button type="button" class="btn-secondary db-btn ls-filter-btn${lsFilter === 'upcoming' ? ' ls-filter-active' : ''}" data-ls-filter="upcoming" style="font-size:0.75rem">Upcoming</button>
+           <button type="button" class="btn-secondary db-btn ls-filter-btn${lsFilter === 'past' ? ' ls-filter-active' : ''}" data-ls-filter="past" style="font-size:0.75rem">Past</button>
+         </div>
+         <span class="dim" style="font-size:0.8rem">${lsFilter === 'past' ? `${pastBroadcasts.length} past` : `${openCrewCount} of ${upcomingBroadcasts.length} upcoming need crew`}</span>`,
         `<div class="ls-list">${liveSignupsSection}</div>`
       )}
 

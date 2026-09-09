@@ -2389,6 +2389,8 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 .dbs-chev { font-size: 0.65rem; color: var(--dim); width: 12px; flex-shrink: 0; }
 .dbs-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; flex-shrink: 0; }
 .dbs-body { padding: 4px 20px 20px; border-top: 1px solid var(--border); }
+.ls-filter-tabs { display: flex; gap: 4px; }
+.ls-filter-btn.ls-filter-active { background: var(--live); border-color: var(--live); color: #fff; }
 
 /* ── Dashboard IASB list ─────────────────────────────────────── */
 .db-iasb-list { display: flex; flex-direction: column; gap: 2px; }
