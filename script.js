@@ -366,6 +366,9 @@ function computeArrival(gameTime, type) {
 function computeDoor33(gameTime, type) {
   return computeTimeOffset(gameTime, (ARRIVAL_MINS[type] ?? ARRIVAL_DEFAULT_MINS) + DOOR_EXTRA_MINS);
 }
+function doorLabel(type) {
+  return `Door ${DOOR_NUMBERS[type] ?? DOOR_DEFAULT_NUMBER}`;
+}
 
 // ── Router ────────────────────────────────────────────────────
 function unsubIcebreakerGames() {
@@ -3977,7 +3980,7 @@ function renderLive() {
         <div class="next-date">${fmtDate(next.date, true)}</div>
         ${next.gameTime ? `
         <div class="next-times">
-          <span class="next-door33">Door 33 ${computeDoor33(next.gameTime, next.type)}</span>
+          <span class="next-door33">${doorLabel(next.type)} ${computeDoor33(next.gameTime, next.type)}</span>
           <span style="color:var(--border)">·</span>
           <span class="next-arrival">${ARRIVAL_LABEL[next.type] ?? ARRIVAL_DEFAULT_LABEL} ${computeArrival(next.gameTime, next.type)}</span>
           <span style="color:var(--border)">·</span>
@@ -4006,7 +4009,7 @@ function renderLive() {
           <div class="broadcast-info">
             <div class="broadcast-title">${esc(b.title)}</div>
             <div class="broadcast-date">${fmtDate(b.date)}${b.gameTime ? ' · Game ' + esc(b.gameTime) : ''}</div>
-            ${b.gameTime ? `<div class="broadcast-crewcall">Door 33 ${computeDoor33(b.gameTime, b.type)} · ${ARRIVAL_LABEL[b.type] ?? ARRIVAL_DEFAULT_LABEL} ${computeArrival(b.gameTime, b.type)}</div>` : ''}
+            ${b.gameTime ? `<div class="broadcast-crewcall">${doorLabel(b.type)} ${computeDoor33(b.gameTime, b.type)} · ${ARRIVAL_LABEL[b.type] ?? ARRIVAL_DEFAULT_LABEL} ${computeArrival(b.gameTime, b.type)}</div>` : ''}
           </div>
           <div class="broadcast-tag" style="color:${et.color}">${et.label}</div>
         </div>
@@ -4268,7 +4271,7 @@ function renderBroadcast() {
         <div class="crew-call-banner">
           <div class="crew-call-block">
             <div class="crew-call-time-val door33-val">${door33Time}</div>
-            <div class="crew-call-time-label">Door 33</div>
+            <div class="crew-call-time-label">${doorLabel(b.type)}</div>
           </div>
           <div class="crew-call-divider"></div>
           <div class="crew-call-block">
@@ -4281,7 +4284,7 @@ function renderBroadcast() {
             <div class="crew-call-time-label">Game Time</div>
           </div>
           <div class="crew-call-rule">
-            Enter through <strong>Door 33</strong> at ${door33Time} · Be in ${arrivalLbl} by ${arrivalTime}
+            Enter through <strong>${doorLabel(b.type)}</strong> at ${door33Time} · Be in ${arrivalLbl} by ${arrivalTime}
           </div>
         </div>` : ''}
       </div>
@@ -4374,7 +4377,7 @@ function renderSchedule() {
           <div class="sched-title">${esc(b.title)}</div>
           <div class="sched-meta">${fmtDate(b.date, true)}${b.notes ? ' · ' + esc(b.notes) : ''}</div>
           ${b.gameTime ? `<div class="sched-times">
-            <span class="sched-door33">Door 33 ${computeDoor33(b.gameTime, b.type)}</span>
+            <span class="sched-door33">${doorLabel(b.type)} ${computeDoor33(b.gameTime, b.type)}</span>
             <span class="sched-sep">·</span>
             <span class="sched-arrival">${ARRIVAL_LABEL[b.type] ?? ARRIVAL_DEFAULT_LABEL} ${computeArrival(b.gameTime, b.type)}</span>
             <span class="sched-sep">·</span>
@@ -6602,7 +6605,7 @@ function renderNativeSignupPage() {
         ${b.notes ? `<div class="avail-bc-notes">${esc(b.notes)}</div>` : ''}
         ${b.gameTime ? `
         <div class="avail-bc-times">
-          <span class="avail-door33-chip">🚪 Door 33 ${computeDoor33(b.gameTime, b.type)}</span>
+          <span class="avail-door33-chip">🚪 ${doorLabel(b.type)} ${computeDoor33(b.gameTime, b.type)}</span>
           <span class="avail-arrival-chip">${ARRIVAL_LABEL[b.type] ?? ARRIVAL_DEFAULT_LABEL} ${computeArrival(b.gameTime, b.type)}</span>
           <span class="avail-gametime-chip">Game ${esc(b.gameTime)}</span>
         </div>` : ''}
@@ -6695,7 +6698,7 @@ function renderFormSignupPage() {
         ${b.notes ? `<div class="avail-bc-notes">${esc(b.notes)}</div>` : ''}
         ${b.gameTime ? `
         <div class="avail-bc-times">
-          <span class="avail-door33-chip">🚪 Door 33 ${computeDoor33(b.gameTime, b.type)}</span>
+          <span class="avail-door33-chip">🚪 ${doorLabel(b.type)} ${computeDoor33(b.gameTime, b.type)}</span>
           <span class="avail-arrival-chip">${ARRIVAL_LABEL[b.type] ?? ARRIVAL_DEFAULT_LABEL} ${computeArrival(b.gameTime, b.type)}</span>
           <span class="avail-gametime-chip">Game ${esc(b.gameTime)}</span>
         </div>` : ''}
