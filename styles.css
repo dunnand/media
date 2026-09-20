@@ -3312,3 +3312,29 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 .le-ta { resize: vertical; line-height: 1.5; font-size: 0.88rem; }
 .le-editor-btns { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
 .le-reset { margin-left: auto; }
+
+/* ── IASB Key Dates & Rules ──────────────────────────── */
+.iasb-keydates {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.iasb-keydate {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+}
+.iasb-keydate-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--dim); margin-bottom: 4px; }
+.iasb-keydate-date { font-weight: 800; font-size: 1rem; margin-bottom: 2px; }
+.iasb-keydate-note { font-size: 0.72rem; color: var(--dim); }
+
+.iasb-rules summary { cursor: pointer; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; list-style: none; }
+.iasb-rules summary::-webkit-details-marker { display: none; }
+.iasb-rules summary h2 { margin: 0; }
+.iasb-rules-list { margin: 16px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem; line-height: 1.55; color: var(--dim); }
+.iasb-rules-list li::marker { color: var(--radio); font-weight: 700; }
+
+.iasb-resource-link { display: block; color: var(--radio); font-size: 0.875rem; font-weight: 600; text-decoration: none; padding: 4px 0; }
+.iasb-resource-link:hover { text-decoration: underline; }

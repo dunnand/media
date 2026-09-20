@@ -11398,7 +11398,7 @@ function renderIASB() {
   const submitted = entries.filter(e => e.submittedToPortal).length;
   const days = iasbDeadlineDays();
 
-  const divisions = ['Radio', 'News', 'Sports', 'Video', 'Emerging Media'];
+  const divisions = ['Radio', 'News', 'Sports', 'Video', 'Media Craft'];
   const byDivision = {};
   IASB_CATEGORIES.forEach(cat => {
     if (!byDivision[cat.division]) byDivision[cat.division] = [];
@@ -11420,7 +11420,7 @@ function renderIASB() {
               </div>
               <div class="iasb-cat-name">${cat.name}</div>
               <div class="iasb-cat-meta"><span>${cat.length}</span><span>${cat.fileFormat}</span></div>
-              <div class="iasb-entry-count">${catCount} ${catCount === 1 ? 'entry' : 'entries'}</div>
+              <div class="iasb-entry-count${catCount >= cat.perSchool ? ' full' : ''}">${catCount} of ${cat.perSchool} ${cat.perSchool === 1 ? 'entry' : 'entries'}</div>
             </div>`;
         }).join('')}
       </div>`;
@@ -11434,6 +11434,13 @@ function renderIASB() {
       <span class="iasb-dropbox-arrow">→</span>
     </a>`;
   }).join('');
+
+  const keyDates = IASB_KEY_DATES.map(k => `
+    <div class="iasb-keydate">
+      <div class="iasb-keydate-label">${k.label}</div>
+      <div class="iasb-keydate-date">${fmtDate(k.date, false)}</div>
+      <div class="iasb-keydate-note">${k.note}</div>
+    </div>`).join('');
 
   return `
     ${navBar('radio')}
@@ -11456,14 +11463,23 @@ function renderIASB() {
         </div>
       </div>
 
+      <div class="iasb-keydates">${keyDates}</div>
+
       <div class="iasb-categories-section">${catGrids}</div>
+
+      <section class="card iasb-form-card">
+        <details class="iasb-rules">
+          <summary><h2>${IASB_SEASON.slice(-4)} Competition Rules</h2><span class="dim">Applies to every entry</span></summary>
+          <ol class="iasb-rules-list">${IASB_RULES.map(r => `<li>${r}</li>`).join('')}</ol>
+        </details>
+      </section>
 
       <section class="card iasb-form-card">
         <div class="card-header">
           <h2>Audio Broadcasting Dropbox 2027</h2>
           <a href="${IASB_DROPBOX_URL}" target="_blank" class="btn-sm" style="background:var(--amber);color:#000">Open in Drive →</a>
         </div>
-        <p style="margin:0 0 16px;color:var(--dim);font-size:0.875rem">Click your category below to open its upload folder. Name your file: <code>YourName - EntryTitle.mp3</code></p>
+        <p style="margin:0 0 16px;color:var(--dim);font-size:0.875rem">Click your category below to open its upload folder. Name your file the IASB way: <code>R3 Student Name Homestead.mp3</code> (category code, student name, school)</p>
         <div class="iasb-dropbox-grid">${dropboxGrid}</div>
       </section>
     </div>`;
@@ -11485,8 +11501,8 @@ function renderIASBCategory() {
     ? `<a href="${catDriveUrl}" target="_blank" style="display:block;text-align:center;background:${cat.color};color:#000;text-decoration:none;padding:10px 16px;border-radius:8px;font-weight:700;font-size:0.875rem;margin-bottom:12px">
         📂 Open ${cat.code} Drive Folder →
        </a>
-       <p style="font-size:0.78rem;color:var(--dim);line-height:1.6;margin:0">Name your file:<br>
-         <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:0.75rem">YourName - Title${cat.fileFormat.split('+')[0].trim()}</code>
+       <p style="font-size:0.78rem;color:var(--dim);line-height:1.6;margin:0">Name your file the IASB way:<br>
+         <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:0.75rem">${cat.code} Student Name Homestead${cat.fileFormat.startsWith('.') ? cat.fileFormat.split('+')[0].trim() : ''}</code>
        </p>`
     : `<p class="dim" style="font-size:0.8rem;line-height:1.5">Drive folder not linked.</p>`;
 
@@ -11503,7 +11519,8 @@ function renderIASBCategory() {
             <span class="iasb-division-chip" style="color:${cat.color};border-color:${cat.color}40">${cat.division}</span>
             ${cat.tag ? `<span class="iasb-tag${cat.tag === 'LIVE Finals' ? ' live-tag' : ''}">${cat.tag}</span>` : ''}
             ${cat.solo ? '<span class="iasb-tag">Solo entry</span>' : ''}
-            <span class="iasb-tag">Open entries</span>
+            <span class="iasb-tag">${cat.perSchool === 1 ? '1 per school' : `${cat.perSchool} per school`}</span>
+            ${cat.oncePerStudent ? '<span class="iasb-tag">1 per student</span>' : ''}
           </div>
         </div>
       </div>
@@ -11516,12 +11533,14 @@ function renderIASBCategory() {
               <div class="iasb-spec-row"><span class="spec-label">Format</span><span>${cat.format}</span></div>
               <div class="iasb-spec-row"><span class="spec-label">Length</span><span>${cat.length}</span></div>
               <div class="iasb-spec-row"><span class="spec-label">File</span><span>${cat.fileFormat}</span></div>
+              <div class="iasb-spec-row"><span class="spec-label">Entries</span><span>${cat.perSchool} per school${cat.oncePerStudent ? ' · a student may enter once' : ''}</span></div>
             </div>
             <p class="iasb-cat-desc">${cat.description}</p>
+            ${cat.criteria.length ? `
             <div class="iasb-criteria-header">Judged On</div>
             <div class="iasb-criteria-chips">
               ${cat.criteria.map(c => `<span class="iasb-criterion-chip" style="border-color:${cat.color}30;color:${cat.color}">${c}</span>`).join('')}
-            </div>
+            </div>` : ''}
           </section>
 
           <section class="card">
@@ -11549,6 +11568,11 @@ function renderIASBCategory() {
                 </div>`).join('')}
             </div>
           </section>
+          ${cat.resources ? `
+          <section class="card">
+            <h2 style="margin-bottom:12px">Resources</h2>
+            ${cat.resources.map(r => `<a href="${r.url}" target="_blank" rel="noopener" class="iasb-resource-link">${r.label} ↗</a>`).join('')}
+          </section>` : ''}
           <section class="card">
             <h2 style="margin-bottom:12px">Submit Files</h2>
             ${formBtn}

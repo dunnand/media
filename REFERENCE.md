@@ -143,7 +143,7 @@ const GOOGLE_CAL_API_KEY  = 'AIzaSyCy5ZKtIjrF1lgDojmYgDlxit2Te7SKyeU'
 
 ```javascript
 const IASB_DROPBOX_URL = 'https://drive.google.com/drive/folders/1Kg4UYcKzOLNYYqoEOG3fo2xbwNQtZCIY'
-// 36 IASB_DRIVE_FOLDERS entries (R1-R9, N1-N8, S1-S9, V1-V9, M1-M9)
+// 45 IASB_DRIVE_FOLDERS entries keyed by 2027 codes (all categories except N10 and M10; V2 shares V1's folder)
 // DJ Panel: https://wcyt.org/dj  (Password: Spartans — changed July 2026)
 // Walsworth: https://login.walsworthyearbooks.com/login
 // Broadcast Planner: https://wcyt.org/planner.html (hour-clock planner, lives in dunnand.github.io repo;
@@ -190,7 +190,7 @@ The app has one HTML file. Navigation is via `go('viewname')` which sets `S.view
 | `yearbook` | Event coverage sign-ups, calendar embed, shot list tips |
 | `indepth` | 5-week TV rundown table + calendar |
 | `beats` | 15 In-Depth coverage beats with student assignments |
-| `iasb` | IASB competition hub with all 45 categories |
+| `iasb` | IASB competition hub with all 47 categories, key dates, and the rules list |
 | `iasb-category` | Single IASB category: requirements, entries, checklist, drive link |
 | `dashboard` | Teacher-only overview (PIN required) |
 | `lessons` | Lesson hub → course → unit → lesson slides |
@@ -405,7 +405,11 @@ Access: click 🔑 in nav → enter PIN (default: `2027`)
 
 ## 14. IASB Competition
 
-**45 categories** across 5 divisions: Radio (R1-R9), News (N1-N8), Sports (S1-S9), Video (V1-V9), Emerging Media (M1-M9)
+**47 categories** across 5 divisions, numbered per the *2027 IASB High School Competition Criteria and Rules* (Sept 2026): Radio (R1-R8), News (N1-N10), Sports (S1-S9), Video (V1-V10), Media Craft (M1-M10). IASB renumbers/renames categories some years (2027 moved Adapted/Original Drama to M8/M9, Podcast to R8, Vodcast to V10 "Video Podcast"), so re-check the whole list against the new PDF each year — don't just bump the dates.
+
+Each category in `IASB_CATEGORIES` carries `perSchool` (entry limit), `oncePerStudent`, length/format specs, judging `criteria` (empty array hides the "Judged On" block), a `checklist`, and optional `resources: [{label, url}]` (shown in a Resources card — used by M5 Sound Design). `IASB_KEY_DATES` (4 date tiles) and `IASB_RULES` (collapsible rules list) render on the hub. Files are named the IASB way: `R3 Student Name Homestead.mp3`.
+
+**Sound Design (M5) changed in 2027:** contestants add sound effects, music, and dialogue to an IASB-provided video (2027: Mario Kart World trailer, 1:33, silent picture) and submit an .mp4 — it is no longer a standalone audio piece.
 
 Key settings to update each year:
 ```javascript
@@ -413,7 +417,7 @@ const IASB_SEASON   = '2027-2028'     // Update in data.js
 const IASB_DEADLINE = '2028-02-05'    // Update in data.js
 ```
 
-Drive submission folders are in `IASB_DRIVE_FOLDERS` in data.js (36 Google Drive links).  
+Drive submission folders are in `IASB_DRIVE_FOLDERS` in data.js (keyed by 2027 codes). The Drive folders themselves are still *titled* with the 2026 numbering (e.g. "M6 - Sound Design" is now M5) — rename them if the mismatch confuses students; N10 and M10 have no folder yet.  
 Main dropbox: https://drive.google.com/drive/folders/1Kg4UYcKzOLNYYqoEOG3fo2xbwNQtZCIY
 
 ---
@@ -426,7 +430,7 @@ Do this each August before school starts:
 - [ ] Update `GIRLS_BASKETBALL_HOME_GAMES` in data.js with new girls BB schedule
 - [ ] Update `FOOTBALL_HOME_GAMES` in data.js with new football schedule
 - [ ] Update `SPECIAL_EVENTS` — confirm Homecoming Dance, Prom, Show Choir, NHS, Graduation dates
-- [ ] Update `IASB_SEASON` and `IASB_DEADLINE`
+- [ ] Update `IASB_SEASON`, `IASB_DEADLINE`, `IASB_KEY_DATES`, `IASB_RULES`, and re-check `IASB_CATEGORIES` against the new IASB rules PDF
 - [ ] Change `TEACHER_PIN` if desired
 - [ ] Commit and push all data.js changes
 - [ ] In teacher dashboard → Athletics Calendar Sync → run sync to pull all other sports
