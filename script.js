@@ -490,7 +490,7 @@ function navBar(active) {
         <a class="${active === 'indepth'  ? 'active' : ''}" data-nav="indepth">📺 In-Depth</a>
         <a class="${active === 'intro'    ? 'active' : ''}" data-nav="intro">🎓 Intro</a>
         <a class="${active === 'lessons'  ? 'active' : ''}" data-nav="lessons">📚 Lessons</a>
-        <a class="${active === 'icebreaker' ? 'active' : ''}" data-nav="icebreaker">🧊 Icebreaker</a>
+        <a class="${active === 'iasb' ? 'active' : ''}" data-nav="iasb">🏆 IASB</a>
         ${S.teacherMode ? `<a class="${active === 'dashboard' ? 'active' : ''}" data-nav="dashboard" style="color:var(--radio)">📊 Dashboard</a>` : ''}
         <button class="teacher-btn ${S.teacherMode ? 'active' : ''}" id="teacher-toggle">
           ${S.teacherMode ? '🔓 Teacher' : '🔑'}
@@ -2768,10 +2768,10 @@ function renderHome() {
         </div>
       </div>
       <div class="home-icebreaker-wrap">
-        <div class="class-card home-icebreaker-card" data-nav="icebreaker">
-          <div class="class-icon">🧊</div>
-          <div class="class-name">Icebreakers</div>
-          <div class="class-desc">Warm-up games and mixers to kick off class.</div>
+        <div class="class-card home-icebreaker-card" data-nav="iasb">
+          <div class="class-icon">🏆</div>
+          <div class="class-name">IASB Competition</div>
+          <div class="class-desc">2027 categories, rules, key dates, and submission folders.</div>
           <div class="class-enter">Enter →</div>
         </div>
       </div>
@@ -11443,9 +11443,9 @@ function renderIASB() {
     </div>`).join('');
 
   return `
-    ${navBar('radio')}
+    ${navBar('iasb')}
     <div class="class-page">
-      <button class="back-btn" data-nav="radio">← Back to Radio</button>
+      <button class="back-btn" data-nav="home">← Back to Home</button>
       <div class="iasb-page-header">
         <h1>IASB Competition</h1>
         <div class="iasb-season">${IASB_SEASON} Season</div>
@@ -11487,7 +11487,7 @@ function renderIASB() {
 
 function renderIASBCategory() {
   const cat = IASB_CATEGORIES.find(c => c.code === S.iasbCategory);
-  if (!cat) return `${navBar('radio')}<div class="class-page"><button class="back-btn" data-nav="iasb">← Back</button><p>Category not found.</p></div>`;
+  if (!cat) return `${navBar('iasb')}<div class="class-page"><button class="back-btn" data-nav="iasb">← Back</button><p>Category not found.</p></div>`;
 
   const entries = (S.iasbEntries || []).filter(e => e.code === cat.code);
   const atLimit = false;
@@ -11507,7 +11507,7 @@ function renderIASBCategory() {
     : `<p class="dim" style="font-size:0.8rem;line-height:1.5">Drive folder not linked.</p>`;
 
   return `
-    ${navBar('radio')}
+    ${navBar('iasb')}
     <div class="class-page">
       <button class="back-btn" data-nav="iasb">← Back to IASB Hub</button>
 

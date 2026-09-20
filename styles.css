@@ -254,10 +254,10 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
   text-align: center;
   padding: 22px 28px;
 }
-.home-icebreaker-card::before { background: #38bdf8; }
+.home-icebreaker-card::before { background: #fbbf24; }
 .home-icebreaker-card .class-icon { margin-bottom: 8px; }
 .home-icebreaker-card .class-desc { margin-bottom: 10px; }
-.home-icebreaker-card:hover .class-enter { color: #38bdf8; }
+.home-icebreaker-card:hover .class-enter { color: #fbbf24; }
 
 /* ── Intro Class Accordion ───────────────────────────────────── */
 .intro-acc-list { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
