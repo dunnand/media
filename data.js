@@ -520,63 +520,63 @@ const BROADCAST_CHECKLISTS = {
   ],
 };
 
-// Google Drive folder links — Dropbox 2027 in Audio Broadcasting shared drive.
-// NOTE: the Drive folders themselves are still titled with the 2026 IASB numbering
-// (e.g. "M6 - Sound Design"); keys below are the 2027 codes pointing at the right folder by name.
-// V2 shares the V1 spot folder; N10 and M10 have no folder yet.
-const IASB_DROPBOX_URL = 'https://drive.google.com/drive/folders/1Kg4UYcKzOLNYYqoEOG3fo2xbwNQtZCIY';
+// Google Drive submission folders: "2027 IASB" in the IASB (Rules and Submissions) shared drive.
+// Folder titles use the 2027 numbering; keys below are the 2027 IASB codes (47 categories).
+const IASB_DROPBOX_URL = 'https://drive.google.com/drive/folders/1UDO_cZrJ9KddJ_cZYgHQkQyZqGMy1JHi';
 
 const IASB_DRIVE_FOLDERS = {
   // Radio
-  R1: 'https://drive.google.com/drive/folders/1hbQe5g66WZdA8yGVZLv4UsU319rKsU0_',
-  R2: 'https://drive.google.com/drive/folders/1lfZdA9ZWW4B-Dh9rymSHmATpVG-xS3i1',
-  R3: 'https://drive.google.com/drive/folders/1Chda-yLZFyUwd6h7ftyeRFfl7wlaTIdR',
-  R4: 'https://drive.google.com/drive/folders/1D95DC1TEN8ycisRi-tSigcnODfnQBNso',
-  R5: 'https://drive.google.com/drive/folders/1UXqCTtVaujtEFYzC57f7BClBCQ6S4chR',
-  R6: 'https://drive.google.com/drive/folders/1-lkafPeyTOayCpgUdzef_GWzXv7k1iaL',
-  R7: 'https://drive.google.com/drive/folders/1MBicWR2Y-UulSdkIqttdqB_EkTwl2Xpm',
-  R8: 'https://drive.google.com/drive/folders/1K20xhwUEAmbCdIodrYRdcfUIROey1GOZ', // Podcast
+  R1:  'https://drive.google.com/drive/folders/1qWkcBQgj1ZC5w8fMoIjXMnIzXXGtVCaW', // Air Personality (LIVE)
+  R2:  'https://drive.google.com/drive/folders/1yYHHYD0gU1A63kOjicguWcakDVeH63R-', // Talk Show
+  R3:  'https://drive.google.com/drive/folders/10DJpJacetPtK68jFdZkuc5MX9kBP56Xt', // Radio Show
+  R4:  'https://drive.google.com/drive/folders/1VkMcPA5BZFt_TlSMC2NZZSJrQejkte57', // Spot Production
+  R5:  'https://drive.google.com/drive/folders/1MOgMzg5TjGl7U9MIa7rExlGlGB7KAFd1', // Imaging
+  R6:  'https://drive.google.com/drive/folders/1Vyb09NqN6cyq-G8uD67QSVEF1k4xStIs', // Copywriting
+  R7:  'https://drive.google.com/drive/folders/1so_AqgcFcRWsGvV1NLwW6P5yMrjiZPmu', // Interview
+  R8:  'https://drive.google.com/drive/folders/1xwZ4xfj5wAJnLywul4jFcmZmqhBvk9iV', // Podcast
   // Video
-  V1:  'https://drive.google.com/drive/folders/1V4xPfsejx5HNJrLnFCVbQVfUD_NVby0w', // Video Spot Production
-  V2:  'https://drive.google.com/drive/folders/1V4xPfsejx5HNJrLnFCVbQVfUD_NVby0w', // shares V1 spot folder
-  V3:  'https://drive.google.com/drive/folders/13fp8Sts3hfiaLJR4QzfYReiQlscKoHTH', // Music Video
-  V4:  'https://drive.google.com/drive/folders/1-F3n-pmzySpyDY3eB2GiTxZfNero6v4G',
-  V5:  'https://drive.google.com/drive/folders/1iy8fewFAzOe-Zag7xv_nwyvVA9ZLNBxF', // Short Film
-  V6:  'https://drive.google.com/drive/folders/1wXIKhiDh49fcxR13RJM03ECW2sDPudCq', // Video Copywriting
-  V7:  'https://drive.google.com/drive/folders/1phxJAxJGqv2dg-SzavV1Go6b3pVzQQVz', // Live Event
-  V8:  'https://drive.google.com/drive/folders/19nFKUgqKxwXm8TccSGBfIfaxM7bl3ENI', // Video Show Open
-  V9:  'https://drive.google.com/drive/folders/1jddduuMlCr2fLm6_RDVxf45KDgaXG8Kx', // Branded Hype Video
-  V10: 'https://drive.google.com/drive/folders/17jzYthFMtSxo92bm0eUmRUVsTzRwMFGv', // Vodcast
+  V1:  'https://drive.google.com/drive/folders/1UxaTRo-YwhMeL7wGe2M1-3fq3_5hsj3T', // Video Commercial Spot Production
+  V2:  'https://drive.google.com/drive/folders/1DuWOykPJ8sihjfeR3RpNjhCoY4un-RnU', // Video PSA Spot Production
+  V3:  'https://drive.google.com/drive/folders/1btXr-Jjo4csUGr75_3O2QnVbSA5Qhs0-', // Music Video
+  V4:  'https://drive.google.com/drive/folders/1hYXROOwzGd6r8SAkFxR6UX8z4-LnJlus', // Corporate Video
+  V5:  'https://drive.google.com/drive/folders/1E4CfuH_0EHcY07GkzZYpikmJmQcyev8Q', // Short Film
+  V6:  'https://drive.google.com/drive/folders/1Aushtw_pEstKpANkm4Lc1h3LH7iTSCUU', // Video Copywriting
+  V7:  'https://drive.google.com/drive/folders/1tIaK1YesOuXtgpXfI1ZLDVlQHnaayipr', // Live Event
+  V8:  'https://drive.google.com/drive/folders/1todUbcvS8E4oIxNVkWBny9EAa7K5_4KP', // Video Show Open
+  V9:  'https://drive.google.com/drive/folders/186oRmDD9HZ69dJymZOvZiEHdtYOJ044u', // Branded Hype Video
+  V10: 'https://drive.google.com/drive/folders/1PWAKSk12kFbi0oLTA1aZ3WY4hgQ9wrTp', // Video Podcast
   // News
-  N1: 'https://drive.google.com/drive/folders/1I99LTA5bs-1ziPLSnlYYWzUA4VsoXXrJ',
-  N2: 'https://drive.google.com/drive/folders/1xR9lcWruFXP55vzsIMDGrS4mz2pFLRWR', // Radio In-Depth
-  N3: 'https://drive.google.com/drive/folders/1Qhbbp4u3FTUD3HOGiQU7KaA2MininOrl',
-  N4: 'https://drive.google.com/drive/folders/18rOtbPAC75tauOKJH9nQyyUsftFxUUC9',
-  N5: 'https://drive.google.com/drive/folders/1U2Fx9YXrxNNDjjN0v4F4UA2o8bbTkQVr',
-  N6: 'https://drive.google.com/drive/folders/1cSHJiZMvX1o5PmMownlHBrE5Q1-Pna7c',
-  N7: 'https://drive.google.com/drive/folders/1J7_LsMHZPWTbVRjj6nAM64lkB2i1SzM2',
-  N8: 'https://drive.google.com/drive/folders/1OXer9j04zzv1SN5CKS1-Q5pCfEUKQBLt',
-  N9: 'https://drive.google.com/drive/folders/1YnuSnprA0kAJkwuEOu88ZBIlrteDiOT8', // Video Magazine
+  N1:  'https://drive.google.com/drive/folders/1zv8m3TjoWh_Mu_2OZE8G3RXl2RW1D8J2', // Radio News Anchor (LIVE)
+  N2:  'https://drive.google.com/drive/folders/1vPbIZ0EvZOwWadvsI3-F4zUnE6yB3ybS', // Audio In-Depth
+  N3:  'https://drive.google.com/drive/folders/1l5bSs2gG94mmu1eae4ISvdars8PB-odb', // TV News Anchor (LIVE)
+  N4:  'https://drive.google.com/drive/folders/1WuIHVXnoBdgvHabNbejofeB07uCC0OMv', // School Video Newscast
+  N5:  'https://drive.google.com/drive/folders/1770w-O-e3PLgl3jazbhQxxb8Vh4pKDzR', // Video News Package
+  N6:  'https://drive.google.com/drive/folders/1QnObLAtp6qnlq6IC_zR26I6ge2slAcpq', // Video In-Depth
+  N7:  'https://drive.google.com/drive/folders/1pj0Lr2Neg51A9NSEOJxKSWB1G7UK92KP', // Photojournalism
+  N8:  'https://drive.google.com/drive/folders/1u98rsqsq_5_tglr0JFsKssMroUQ2N8bx', // Video Field Reporter
+  N9:  'https://drive.google.com/drive/folders/1dOCuxqXURz1W0Td13Md2Mxi1bE6vXEsg', // Video Magazine
+  N10: 'https://drive.google.com/drive/folders/1N-bMREJa5kgbx-KZ05FJ58geboDAHqzK', // Video News Interview
   // Sports
-  S1: 'https://drive.google.com/drive/folders/1fW1Dg0n6v2m2KFBs28s-LSsHeY8eRYAd',
-  S2: 'https://drive.google.com/drive/folders/1Kww8NYoTAcwapQYo96EoZO8fjS3WPOca',
-  S3: 'https://drive.google.com/drive/folders/1p-Ec5m8U1w2Z0yVCVjr3yniYZ9M8NLhI',
-  S4: 'https://drive.google.com/drive/folders/1sY7FyennEVlFXotKaWCK7-nqmWDHUXr0',
-  S5: 'https://drive.google.com/drive/folders/1WuwAps6tIXegvs2ixSi5kZQH_3amEORI',
-  S6: 'https://drive.google.com/drive/folders/1sfVup-YAOtHYkm48WfOjI5Q7NxREFM-O',
-  S7: 'https://drive.google.com/drive/folders/1RzEPnl7Ew35qF1PHHor66JT8hMno_JB9',
-  S8: 'https://drive.google.com/drive/folders/1tFVweCwJ_CBbvzdk6AgPteDvJekacsDs',
-  S9: 'https://drive.google.com/drive/folders/14kc_uRpNZbbu96Su6cuQPx68hhTakHby',
+  S1:  'https://drive.google.com/drive/folders/1huiOhlfNf54dGVYuTLRzD7d184BlTTGF', // Radio Sports Update
+  S2:  'https://drive.google.com/drive/folders/1T5ZsOil--iy7q_XpLKqMDFH_XrHtnztI', // Sports Talk Show
+  S3:  'https://drive.google.com/drive/folders/1J4XjZ-JMTOJK3zU_lTZBZyyds94bh1Sx', // Basketball Play-By-Play
+  S4:  'https://drive.google.com/drive/folders/189pjzJ4K49UEkFG-metZpAzC75EZKMqI', // Football Play-By-Play
+  S5:  'https://drive.google.com/drive/folders/1AhOmqUelOQbZHRXgSgDMoGgTPdPDzScA', // Sporting Event Broadcast
+  S6:  'https://drive.google.com/drive/folders/1Tt1YNFOmaGIxx9ee_x3m4wHz872R6ZlP', // Video Live Sports (Football & Basketball only)
+  S7:  'https://drive.google.com/drive/folders/12kTmA1QWTEh2AGzsM2VXfmLzDxdfnIH2', // Video Live Sports (All Other Sports only)
+  S8:  'https://drive.google.com/drive/folders/1rC3MYsS0TLDxbt0yxLv8UER24NxCwaFp', // Video Sports Program
+  S9:  'https://drive.google.com/drive/folders/1_PErgpVt6OkM1fdXBuwMs7HBZYG7Kc7P', // Video Sports Package
   // Media Craft
-  M1: 'https://drive.google.com/drive/folders/1494gueNc4L0l7yIQlvPE0qkIFwXjsO78',
-  M2: 'https://drive.google.com/drive/folders/15EAddetFwuyODzHRRkSO4JGa5souZhAQ',
-  M3: 'https://drive.google.com/drive/folders/1dx5UHAXtGct7DYwk0OIqoPc17EyXg7Tq', // Video Comedy
-  M4: 'https://drive.google.com/drive/folders/1IUR-p16lYRxJc7Ie9VoJ0l0_37IUgVq4', // Cinematography
-  M5: 'https://drive.google.com/drive/folders/1MD2v5hBFikJCgZe3fgRuMJ5TQMf_iny_', // Sound Design
-  M6: 'https://drive.google.com/drive/folders/1ggz6IV_RzRH-kV7cbllWN9ER-4wRPifw', // Animated Story
-  M7: 'https://drive.google.com/drive/folders/1Al7h9YX9onmhCZoIx-aenWejf9BrcOax', // Motion Graphics
-  M8: 'https://drive.google.com/drive/folders/1fR3WoNs5VfiY6jBorian4eORBbyGBwcW', // Adapted Drama
-  M9: 'https://drive.google.com/drive/folders/1TbYun0vlO3-E1-ZKGVbqO8woy419RRM_', // Original Drama
+  M1:  'https://drive.google.com/drive/folders/1UDgIBiojggXi3pjFX7a8BoLeHiRDRvgD', // Student Media Website
+  M2:  'https://drive.google.com/drive/folders/1U8U0ZHrPnfsACy3VEr7wYWKHReSu5c7d', // Social Media Presence
+  M3:  'https://drive.google.com/drive/folders/1wvywBdSYiH7T_6qEoIaHr579nY8dqRQg', // Video Comedy and Parody
+  M4:  'https://drive.google.com/drive/folders/1AwIuK5jCX1OAEdhtCWJv18t0Dy4zAuCX', // Cinematography
+  M5:  'https://drive.google.com/drive/folders/1ozptFlEoV4Wsu00rUP8DJUChyDvwoM_I', // Sound Design
+  M6:  'https://drive.google.com/drive/folders/1mXQhHI3GWNGNyLQ_fO9q6kuNZfDe3ZU4', // Animated Story
+  M7:  'https://drive.google.com/drive/folders/1OVJQBgqCkItj5BaHHDYMR9W0lXizAsIg', // Motion Graphics
+  M8:  'https://drive.google.com/drive/folders/1iRvwpnSaV8vB5jjQjJfQYGArCybMvc-9', // Adapted Drama
+  M9:  'https://drive.google.com/drive/folders/1gESSjyyIkL0ZAbc0uaGMoCpB9L1b1TNy', // Original Drama
+  M10: 'https://drive.google.com/drive/folders/1aG59_rE84y3fFSGW9GUlJ4LVF0-yAmGN', // Short Narrative Film Script
 };
 
 // 2027 IASB High School Competition Criteria and Rules — key dates + rules shown on the hub

@@ -142,8 +142,8 @@ const GOOGLE_CAL_API_KEY  = 'AIzaSyCy5ZKtIjrF1lgDojmYgDlxit2Te7SKyeU'
 ### Other External Links
 
 ```javascript
-const IASB_DROPBOX_URL = 'https://drive.google.com/drive/folders/1Kg4UYcKzOLNYYqoEOG3fo2xbwNQtZCIY'
-// 45 IASB_DRIVE_FOLDERS entries keyed by 2027 codes (all categories except N10 and M10; V2 shares V1's folder)
+const IASB_DROPBOX_URL = 'https://drive.google.com/drive/folders/1UDO_cZrJ9KddJ_cZYgHQkQyZqGMy1JHi'
+// 47 IASB_DRIVE_FOLDERS entries keyed by 2027 codes (all categories), in the "2027 IASB" shared-drive folder
 // DJ Panel: https://wcyt.org/dj  (Password: Spartans — changed July 2026)
 // Walsworth: https://login.walsworthyearbooks.com/login
 // Broadcast Planner: https://wcyt.org/planner.html (hour-clock planner, lives in dunnand.github.io repo;
@@ -417,8 +417,8 @@ const IASB_SEASON   = '2027-2028'     // Update in data.js
 const IASB_DEADLINE = '2028-02-05'    // Update in data.js
 ```
 
-Drive submission folders are in `IASB_DRIVE_FOLDERS` in data.js (keyed by 2027 codes). The Drive folders themselves are still *titled* with the 2026 numbering (e.g. "M6 - Sound Design" is now M5) — rename them if the mismatch confuses students; N10 and M10 have no folder yet.  
-Main dropbox: https://drive.google.com/drive/folders/1Kg4UYcKzOLNYYqoEOG3fo2xbwNQtZCIY
+Drive submission folders are in `IASB_DRIVE_FOLDERS` in data.js (keyed by 2027 codes). The Drive folders (G: `IASB (Rules and Submissions)7 IASB`) were renamed to the 2027 numbering on Sept 20 2026, so titles and codes match.  
+Main dropbox: https://drive.google.com/drive/folders/1UDO_cZrJ9KddJ_cZYgHQkQyZqGMy1JHi
 
 ---
 
