@@ -1824,12 +1824,12 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 }
 .iasb-division-label:first-child { margin-top: 0; }
 .iasb-slides-link {
-  margin-left: 10px; padding: 3px 10px; border-radius: 999px;
-  border: 1px solid var(--border); color: var(--text, inherit);
-  font-size: 0.68rem; letter-spacing: 0.04em; text-transform: none;
-  text-decoration: none;
+  display: inline-block; margin-left: 14px; padding: 8px 18px; border-radius: 999px;
+  background: var(--sports); border: 1px solid var(--sports); color: #000;
+  font-size: 0.95rem; font-weight: 700; letter-spacing: 0.02em; text-transform: none;
+  text-decoration: none; vertical-align: middle;
 }
-.iasb-slides-link:hover { border-color: var(--sports); color: var(--sports); }
+.iasb-slides-link:hover { filter: brightness(1.12); transform: translateY(-1px); }
 
 .iasb-cat-grid {
   display: grid;
