@@ -522,6 +522,14 @@ const BROADCAST_CHECKLISTS = {
 
 // Google Drive submission folders: "2027 IASB" in the IASB (Rules and Submissions) shared drive.
 // Folder titles use the 2027 numbering; keys below are the 2027 IASB codes (47 categories).
+// Canva slide decks, one per division (view-only links)
+const IASB_DIVISION_SLIDES = {
+  'Radio':       'https://www.canva.com/design/DAHVwJ-DQas/6933cmT1KRgUN-UE8pcvPw/view',
+  'News':        'https://www.canva.com/design/DAHVwM0uy8E/FOhW7QG95wZO91wwAQJsLg/view',
+  'Sports':      'https://www.canva.com/design/DAHVwAFBXbI/Ck8qEy_R7lKwb3liYHkxNQ/view',
+  'Video':       'https://www.canva.com/design/DAHVwHCc_h0/0EKSh2TS2NisX4WAAOHXqg/view',
+  'Media Craft': 'https://www.canva.com/design/DAHVwF38UWg/7TUQoLq5algpriAOQUY_Xw/view'
+};
 const IASB_DROPBOX_URL = 'https://drive.google.com/drive/folders/1UDO_cZrJ9KddJ_cZYgHQkQyZqGMy1JHi';
 
 const IASB_DRIVE_FOLDERS = {

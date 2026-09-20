@@ -11408,7 +11408,7 @@ function renderIASB() {
   const catGrids = divisions.filter(d => byDivision[d]).map(div => {
     const cats = byDivision[div];
     return `
-      <div class="iasb-division-label">${div} Division</div>
+      <div class="iasb-division-label">${div} Division${IASB_DIVISION_SLIDES[div] ? ` <a class="iasb-slides-link" href="${IASB_DIVISION_SLIDES[div]}" target="_blank" rel="noopener">View ${div} slides →</a>` : ''}</div>
       <div class="iasb-cat-grid">
         ${cats.map(cat => {
           const catCount = entries.filter(e => e.code === cat.code).length;
