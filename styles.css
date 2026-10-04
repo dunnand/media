@@ -3347,8 +3347,9 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 .iasb-resource-link:hover { text-decoration: underline; }
 
 /* ── Voice Track Board ── */
-.vt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+.vt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
 .vt-tile { display: flex; flex-direction: column; gap: 2px; padding: 8px 6px; border-radius: 8px; border: 1px solid #333; background: transparent; color: var(--text); cursor: pointer; font: inherit; text-align: center; }
+.vt-hour { font-size: 1rem; font-weight: 700; }
 .vt-num { font-size: 0.72rem; opacity: .7; }
 .vt-who { font-size: 0.85rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .vt-tile.vt-open:hover { border-color: var(--radio); }

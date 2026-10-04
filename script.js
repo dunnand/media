@@ -2904,7 +2904,7 @@ function renderRadio() {
           <section class="card action-card radio-action">
             <div class="action-icon">🎤</div>
             <h3>Voice Track Board</h3>
-            <p>Claim this week's voice track slots and mark them recorded. Resets every Monday.</p>
+            <p>Claim this week's voice track hours and mark them recorded. Resets every Monday.</p>
             <button class="btn-primary" data-nav="voicetracks">Open Board →</button>
           </section>
           <section class="card action-card radio-action">
@@ -2935,11 +2935,16 @@ function renderRadio() {
 }
 
 // ── VOICE TRACK BOARD ─────────────────────────────────────────
-// Weekly claim board for the music-log voice track slots (VTM1–VTM40 per day).
-// One doc per claimed slot in hm_voicetracks, id `${monday}_${day}_${n}`.
+// Weekly claim board for voice track HOURS: 4 PM–11 PM, 8 hours a day, 5 voice tracks
+// per hour (VTM1–5 in the 4 PM hour … VTM36–40 in the 11 PM hour, per the music log).
+// One doc per claimed slot in hm_voicetracks, id `${monday}_${day}_${n}` where n = hour 1–8.
 // Weeks are keyed by Monday's date, so the board "resets" itself every week
 // (old weeks stay in Firestore as history). Sat/Sun show the upcoming week.
-const VT_SLOT_COUNT = 40;
+const VT_SLOT_COUNT = 8;
+const VT_PER_HOUR = 5;
+const VT_FIRST_HOUR = 16;
+function vtHourLabel(n) { const h = VT_FIRST_HOUR + n - 1; return `${h % 12 || 12} ${h < 12 ? 'AM' : 'PM'}`; }
+function vtRange(n) { return `VTM${(n - 1) * VT_PER_HOUR + 1}–${n * VT_PER_HOUR}`; }
 const VT_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 const VT_LOGS_URL = 'https://drive.google.com/drive/u/0/folders/109VQZfDuTe6kS6fFcBy-fxXRdMeiL4em';
 const VT_LIBRARY_URL = 'https://wcyt.org/images/music_library.json';
@@ -2987,13 +2992,14 @@ function renderVoiceTracks() {
     const mine = c && me && c.name === me;
     const cls = c ? (c.done ? 'vt-done' : 'vt-claimed') : 'vt-open';
     tiles += `<button class="vt-tile ${cls}${mine ? ' vt-mine' : ''}" onclick="vtTap(${day},${n})">
-      <span class="vt-num">VTM${n}</span>
+      <span class="vt-hour">${vtHourLabel(n)}</span>
+      <span class="vt-num">${vtRange(n)}</span>
       <span class="vt-who">${c ? esc(c.name) + (c.done ? ' ✓' : '') : 'Open'}</span>
     </button>`;
   }
   const mineList = Object.values(slots).filter(x => me && x.name === me)
     .sort((a, b) => a.day - b.day || a.n - b.n)
-    .map(x => `${VT_DAYS[x.day]} VTM${x.n}${x.done ? ' ✓' : ''}`).join(', ');
+    .map(x => `${VT_DAYS[x.day]} ${vtHourLabel(x.n)}${x.done ? ' ✓' : ''}`).join(', ');
   const wk = new Date(S.vtWeek + 'T00:00:00');
   const weekLabel = wk.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
   return `
@@ -3003,7 +3009,7 @@ function renderVoiceTracks() {
         <div>
           <button class="back-btn" data-nav="radio">← Back to Radio</button>
           <h1>🎤 Voice Track Board</h1>
-          <p>Week of ${esc(weekLabel)} · Tap an open slot to claim it, tap yours again to mark it recorded. Resets every Monday.</p>
+          <p>Week of ${esc(weekLabel)} · Tap an open hour to claim it, tap yours again to mark it recorded. Resets every Monday.</p>
         </div>
       </div>
       <div class="card" style="padding:16px 20px;margin-bottom:16px">
@@ -3013,7 +3019,7 @@ function renderVoiceTracks() {
           <a class="btn-primary" href="${VT_DROPBOX_URL}" target="_blank" rel="noopener">📥 Upload Voice Tracks ↗</a>
           <span class="vt-legend"><i class="vt-sw vt-open"></i>Open <i class="vt-sw vt-claimed"></i>Claimed <i class="vt-sw vt-done"></i>Recorded</span>
         </div>
-        <p style="margin:10px 0 0;font-size:0.85rem;opacity:.85">${me ? `You're <b>${esc(me)}</b>${mineList ? ` — your slots: ${esc(mineList)}` : ' — no slots yet this week'}.` : 'Your name is asked the first time you claim a slot.'}</p>
+        <p style="margin:10px 0 0;font-size:0.85rem;opacity:.85">${me ? `You're <b>${esc(me)}</b>${mineList ? ` — your hours: ${esc(mineList)}` : ' — no hours yet this week'}.` : 'Your name is asked the first time you claim a slot.'}</p>
       </div>
       <div class="card" style="padding:16px 20px;margin-bottom:16px">
         <h3 style="margin:0 0 8px">💡 Song Fact Lookup</h3>
@@ -3094,7 +3100,7 @@ async function vtTap(day, n) {
     return;
   }
   if (!S.teacherMode && c.name !== me) { alert(`${c.name} has this one.`); return; }
-  const choice = prompt(`${VT_DAYS[day]} VTM${n} — ${c.name}\n\n1 = ${c.done ? 'mark NOT recorded' : 'mark recorded ✓'}\n2 = release this slot`, '1');
+  const choice = prompt(`${VT_DAYS[day]} ${vtHourLabel(n)} (${vtRange(n)}) — ${c.name}\n\n1 = ${c.done ? 'mark NOT recorded' : 'mark recorded ✓'}\n2 = release this hour`, '1');
   if (choice === '1') {
     trackUsage('writes');
     await db.collection('hm_voicetracks').doc(id).update({ done: !c.done }).catch(e => console.error(e));
