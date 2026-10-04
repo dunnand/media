@@ -2884,7 +2884,6 @@ function renderRadio() {
           ${renderPointRecent()}
         </div>
         <div class="side-col">
-          ${renderEquipmentStatusCard()}
           <section class="card action-card radio-action">
             <div class="action-icon">🎙️</div>
             <h3>DJ Panel</h3>
@@ -2907,9 +2906,10 @@ function renderRadio() {
           </section>
           <section class="card action-card radio-action">
             <div class="action-icon">🎛️</div>
-            <h3>Broadcast Planner</h3>
-            <p>Build a full broadcast hour — pick songs from the station library, slot by slot, with DJ breaks.</p>
-            <a class="btn-primary" href="https://wcyt.org/planner.html" target="_blank" rel="noopener">Open Broadcast Planner ↗</a>
+            <h3>Broadcast Planner &amp; Music Library</h3>
+            <p>Build a full broadcast hour from the station library, or browse and search every song we have.</p>
+            <a class="btn-primary" href="https://wcyt.org/planner.html" target="_blank" rel="noopener">Broadcast Planner ↗</a>
+            <a class="btn-secondary" style="margin-top:8px;display:inline-block" href="https://wcyt.org/music" target="_blank" rel="noopener">🎵 Music Library ↗</a>
           </section>
           <section class="card action-card radio-action">
             <div class="action-icon">🏆</div>
