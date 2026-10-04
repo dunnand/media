@@ -2892,19 +2892,6 @@ function renderRadio() {
             <a class="btn-primary" href="https://wcyt.org/dj" target="_blank" rel="noopener">Open DJ Panel ↗</a>
           </section>
           <section class="card action-card radio-action">
-            <div class="action-icon">🧩</div>
-            <h3>Build Your Weekly Show</h3>
-            <p>Plan the basics of your show before you write a Talk Show script — topic, five episode ideas, a news segment, and a signature bit.</p>
-            <button class="btn-primary" id="start-showbuilder">Start Building →</button>
-          </section>
-          <section class="card action-card radio-action">
-            <div class="action-icon">✍️</div>
-            <h3>Show Planner</h3>
-            <p>Plan your talk show, air personality breaks, or radio show — step by step. Submitting files your plan into this week's shared folder automatically.</p>
-            <button class="btn-primary" id="start-planner">Start Planning →</button>
-            <a class="btn-secondary" style="margin-top:8px;display:inline-block" href="${AIR_WEEKLY_DRIVE_URL}" target="_blank" rel="noopener">🗂️ Browse Submitted Plans ↗</a>
-          </section>
-          <section class="card action-card radio-action">
             <div class="action-icon">🎛️</div>
             <h3>Broadcast Planner &amp; Music Library</h3>
             <p>Build a full broadcast hour from the station library, or browse and search every song we have.</p>
@@ -2924,6 +2911,14 @@ function renderRadio() {
             <p>Review submitted Talk Show plans.</p>
             <button class="btn-secondary" id="view-submissions">View All</button>
           </section>` : ''}
+          <section class="card action-card radio-action">
+            <div class="action-icon">✍️</div>
+            <h3>Plan Your Show</h3>
+            <p>Start with your weekly show basics, then plan each episode step by step. Submitting files your plan into this week's shared folder automatically.</p>
+            <button class="btn-primary" id="start-showbuilder">🧩 Build Your Weekly Show →</button>
+            <button class="btn-primary" id="start-planner" style="margin-top:8px">Start Planning →</button>
+            <a class="btn-secondary" style="margin-top:8px;display:inline-block" href="${AIR_WEEKLY_DRIVE_URL}" target="_blank" rel="noopener">🗂️ Browse Submitted Plans ↗</a>
+          </section>
           ${renderQuickLinksCard('radio')}
         </div>
       </div>
