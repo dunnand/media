@@ -3345,3 +3345,17 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 
 .iasb-resource-link { display: block; color: var(--radio); font-size: 0.875rem; font-weight: 600; text-decoration: none; padding: 4px 0; }
 .iasb-resource-link:hover { text-decoration: underline; }
+
+/* ── Voice Track Board ── */
+.vt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+.vt-tile { display: flex; flex-direction: column; gap: 2px; padding: 8px 6px; border-radius: 8px; border: 1px solid #333; background: transparent; color: var(--text); cursor: pointer; font: inherit; text-align: center; }
+.vt-num { font-size: 0.72rem; opacity: .7; }
+.vt-who { font-size: 0.85rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vt-tile.vt-open:hover { border-color: var(--radio); }
+.vt-tile.vt-claimed { border-color: var(--radio); background: rgba(255, 170, 0, .12); }
+.vt-tile.vt-done { border-color: #3a9d5d; background: rgba(58, 157, 93, .18); }
+.vt-tile.vt-mine { outline: 2px solid var(--text); }
+.vt-legend { margin-left: auto; font-size: 0.78rem; opacity: .85; }
+.vt-sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin: 0 4px 0 10px; border: 1px solid #555; }
+.vt-sw.vt-claimed { background: rgba(255, 170, 0, .5); }
+.vt-sw.vt-done { background: rgba(58, 157, 93, .7); }

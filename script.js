@@ -410,6 +410,7 @@ function loadIcebreakerGame(game) {
 function go(view, extra) {
   if (S.view === 'icebreaker' && view !== 'icebreaker') unsubIcebreakerGames();
   if (S.view === 'radio' && view !== 'radio') stopPointRecentPolling();
+  if (S.view === 'voicetracks' && view !== 'voicetracks') stopVoiceTrackBoard();
   S.view = view;
   if (extra) Object.assign(S, extra);
   if (view === 'icebreaker' && S.icebreakerGame === 'bingo') loadBingoState();
@@ -417,6 +418,7 @@ function go(view, extra) {
   render();
   window.scrollTo(0, 0);
   if (view === 'radio') startPointRecentPolling();
+  if (view === 'voicetracks') startVoiceTrackBoard();
   if (view === 'dashboard') { dashboardLoadPlans(); loadYearbookCoverage(); loadShowSchedule(); }
   if (view === 'yearbook')  loadYearbookCoverage();
   if (view === 'beats')   { loadBeatAssignments(); loadBeatSurveyResponses(); }
@@ -442,6 +444,7 @@ function render() {
   switch (S.view) {
     case 'home':      app.innerHTML = renderHome();      break;
     case 'radio':     app.innerHTML = renderRadio();     break;
+    case 'voicetracks': app.innerHTML = renderVoiceTracks(); break;
     case 'planner':   app.innerHTML = renderPlanner();   break;
     case 'showbuilder': app.innerHTML = renderShowBuilder(); break;
     case 'live':      app.innerHTML = renderLive();      break;
@@ -2899,6 +2902,12 @@ function renderRadio() {
             <a class="btn-secondary" style="margin-top:8px;display:inline-block" href="https://wcyt.org/music" target="_blank" rel="noopener">🎵 Music Library ↗</a>
           </section>
           <section class="card action-card radio-action">
+            <div class="action-icon">🎤</div>
+            <h3>Voice Track Board</h3>
+            <p>Claim this week's voice track slots and mark them recorded. Resets every Monday.</p>
+            <button class="btn-primary" data-nav="voicetracks">Open Board →</button>
+          </section>
+          <section class="card action-card radio-action">
             <div class="action-icon">🏆</div>
             <h3>IASB Competition</h3>
             <p>Track entries, checklists, and file uploads for IASB.</p>
@@ -2923,6 +2932,122 @@ function renderRadio() {
         </div>
       </div>
     </div>`;
+}
+
+// ── VOICE TRACK BOARD ─────────────────────────────────────────
+// Weekly claim board for the music-log voice track slots (VTM1–VTM40 per day).
+// One doc per claimed slot in hm_voicetracks, id `${monday}_${day}_${n}`.
+// Weeks are keyed by Monday's date, so the board "resets" itself every week
+// (old weeks stay in Firestore as history). Sat/Sun show the upcoming week.
+const VT_SLOT_COUNT = 40;
+const VT_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+const VT_LOGS_URL = 'https://drive.google.com/drive/u/0/folders/109VQZfDuTe6kS6fFcBy-fxXRdMeiL4em';
+const VT_DROPBOX_URL = 'https://drive.google.com/drive/u/0/folders/1-6vLEMM0OMrLXesGYTg-6h6lLGmPj4Ot';
+
+function vtWeekKey() {
+  const now = new Date();
+  const d = mondayOf(now);
+  if (now.getDay() === 0 || now.getDay() === 6) d.setDate(d.getDate() + 7);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function startVoiceTrackBoard() {
+  stopVoiceTrackBoard();
+  S.vtWeek = vtWeekKey();
+  if (S.vtDay == null) { const g = new Date().getDay(); S.vtDay = (g >= 1 && g <= 5) ? g - 1 : 0; }
+  S.vtSlots = {};
+  const db = getDB();
+  if (!db) return;
+  S.vtUnsub = db.collection('hm_voicetracks').where('week', '==', S.vtWeek).onSnapshot(snap => {
+    trackUsage('reads', snap.size || 1);
+    const map = {};
+    snap.forEach(doc => { map[doc.id] = doc.data(); });
+    S.vtSlots = map;
+    if (S.view === 'voicetracks') render();
+  }, e => console.error('voice track listen failed', e));
+}
+
+function stopVoiceTrackBoard() {
+  if (S.vtUnsub) { S.vtUnsub(); S.vtUnsub = null; }
+}
+
+function vtId(day, n) { return `${S.vtWeek}_${day}_${n}`; }
+
+function renderVoiceTracks() {
+  const day = S.vtDay || 0;
+  const me = shortenName(localStorage.getItem('hm_student_name') || '');
+  const slots = S.vtSlots || {};
+  const count = d => Object.values(slots).filter(x => x.day === d).length;
+  const tabs = VT_DAYS.map((d, i) =>
+    `<button class="btn-secondary${i === day ? ' yb-view-active' : ''}" onclick="vtPickDay(${i})">${d}${count(i) ? ` · ${count(i)}` : ''}</button>`).join('');
+  let tiles = '';
+  for (let n = 1; n <= VT_SLOT_COUNT; n++) {
+    const c = slots[vtId(day, n)];
+    const mine = c && me && c.name === me;
+    const cls = c ? (c.done ? 'vt-done' : 'vt-claimed') : 'vt-open';
+    tiles += `<button class="vt-tile ${cls}${mine ? ' vt-mine' : ''}" onclick="vtTap(${day},${n})">
+      <span class="vt-num">VTM${n}</span>
+      <span class="vt-who">${c ? esc(c.name) + (c.done ? ' ✓' : '') : 'Open'}</span>
+    </button>`;
+  }
+  const mineList = Object.values(slots).filter(x => me && x.name === me)
+    .sort((a, b) => a.day - b.day || a.n - b.n)
+    .map(x => `${VT_DAYS[x.day]} VTM${x.n}${x.done ? ' ✓' : ''}`).join(', ');
+  const wk = new Date(S.vtWeek + 'T00:00:00');
+  const weekLabel = wk.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+  return `
+    ${navBar('radio')}
+    <div class="class-page">
+      <div class="class-header">
+        <div>
+          <button class="back-btn" data-nav="radio">← Back to Radio</button>
+          <h1>🎤 Voice Track Board</h1>
+          <p>Week of ${esc(weekLabel)} · Tap an open slot to claim it, tap yours again to mark it recorded. Resets every Monday.</p>
+        </div>
+      </div>
+      <div class="card" style="padding:16px 20px;margin-bottom:16px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <a class="btn-secondary" href="${VT_LOGS_URL}" target="_blank" rel="noopener">📄 Music Logs ↗</a>
+          <a class="btn-primary" href="${VT_DROPBOX_URL}" target="_blank" rel="noopener">📥 Upload Voice Tracks ↗</a>
+          <span class="vt-legend"><i class="vt-sw vt-open"></i>Open <i class="vt-sw vt-claimed"></i>Claimed <i class="vt-sw vt-done"></i>Recorded</span>
+        </div>
+        <p style="margin:10px 0 0;font-size:0.85rem;opacity:.85">${me ? `You're <b>${esc(me)}</b>${mineList ? ` — your slots: ${esc(mineList)}` : ' — no slots yet this week'}.` : 'Your name is asked the first time you claim a slot.'}</p>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">${tabs}</div>
+      <div class="vt-grid">${tiles}</div>
+    </div>`;
+}
+
+function vtPickDay(i) { S.vtDay = i; render(); }
+
+async function vtTap(day, n) {
+  const db = getDB();
+  if (!db) return;
+  const id = vtId(day, n);
+  const c = (S.vtSlots || {})[id];
+  let me = shortenName(localStorage.getItem('hm_student_name') || '');
+  if (!c) {
+    if (!me) {
+      const entered = prompt('First and last name:');
+      if (!entered || !entered.trim()) return;
+      localStorage.setItem('hm_student_name', entered.trim());
+      me = shortenName(entered.trim());
+    }
+    S.vtSlots[id] = { week: S.vtWeek, day, n, name: me, done: false };
+    render();
+    trackUsage('writes');
+    await db.collection('hm_voicetracks').doc(id).set({ week: S.vtWeek, day, n, name: me, done: false, at: Date.now() }).catch(e => console.error(e));
+    return;
+  }
+  if (!S.teacherMode && c.name !== me) { alert(`${c.name} has this one.`); return; }
+  const choice = prompt(`${VT_DAYS[day]} VTM${n} — ${c.name}\n\n1 = ${c.done ? 'mark NOT recorded' : 'mark recorded ✓'}\n2 = release this slot`, '1');
+  if (choice === '1') {
+    trackUsage('writes');
+    await db.collection('hm_voicetracks').doc(id).update({ done: !c.done }).catch(e => console.error(e));
+  } else if (choice === '2') {
+    trackUsage('writes');
+    await db.collection('hm_voicetracks').doc(id).delete().catch(e => console.error(e));
+  }
 }
 
 // ── TALK SHOW PLANNER ─────────────────────────────────────────
