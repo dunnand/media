@@ -2942,6 +2942,7 @@ function renderRadio() {
 const VT_SLOT_COUNT = 40;
 const VT_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 const VT_LOGS_URL = 'https://drive.google.com/drive/u/0/folders/109VQZfDuTe6kS6fFcBy-fxXRdMeiL4em';
+const VT_LIBRARY_URL = 'https://wcyt.org/images/music_library.json';
 const VT_DROPBOX_URL = 'https://drive.google.com/drive/u/0/folders/1-6vLEMM0OMrLXesGYTg-6h6lLGmPj4Ot';
 
 function vtWeekKey() {
@@ -2963,7 +2964,7 @@ function startVoiceTrackBoard() {
     const map = {};
     snap.forEach(doc => { map[doc.id] = doc.data(); });
     S.vtSlots = map;
-    if (S.view === 'voicetracks') render();
+    if (S.view === 'voicetracks' && document.activeElement?.id !== 'vt-q') render();
   }, e => console.error('voice track listen failed', e));
 }
 
@@ -3008,14 +3009,67 @@ function renderVoiceTracks() {
       <div class="card" style="padding:16px 20px;margin-bottom:16px">
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
           <a class="btn-secondary" href="${VT_LOGS_URL}" target="_blank" rel="noopener">📄 Music Logs ↗</a>
+          <a class="btn-secondary" href="https://wcyt.org/music" target="_blank" rel="noopener">🎵 Music Library ↗</a>
           <a class="btn-primary" href="${VT_DROPBOX_URL}" target="_blank" rel="noopener">📥 Upload Voice Tracks ↗</a>
           <span class="vt-legend"><i class="vt-sw vt-open"></i>Open <i class="vt-sw vt-claimed"></i>Claimed <i class="vt-sw vt-done"></i>Recorded</span>
         </div>
         <p style="margin:10px 0 0;font-size:0.85rem;opacity:.85">${me ? `You're <b>${esc(me)}</b>${mineList ? ` — your slots: ${esc(mineList)}` : ' — no slots yet this week'}.` : 'Your name is asked the first time you claim a slot.'}</p>
       </div>
+      <div class="card" style="padding:16px 20px;margin-bottom:16px">
+        <h3 style="margin:0 0 8px">💡 Song Fact Lookup</h3>
+        <input id="vt-q" class="form-input" type="search" autocomplete="off" placeholder="Type a song or artist to see its DJ fact…" value="${esc(S.vtQuery || '')}" oninput="vtSearch(this.value)" onfocus="vtLoadLibrary()" style="width:100%">
+        <div id="vt-results" style="margin-top:10px">${vtResultsHtml()}</div>
+      </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">${tabs}</div>
       <div class="vt-grid">${tiles}</div>
     </div>`;
+}
+
+async function vtLoadLibrary() {
+  if (S.vtLib || S.vtLibLoading) return;
+  S.vtLibLoading = true;
+  try {
+    const res = await fetch(VT_LIBRARY_URL);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    S.vtLib = (await res.json()).map(x => ({ ...x, _k: `${x.title} ${x.artist}`.toLowerCase() }));
+  } catch (e) {
+    console.error('library load failed', e);
+    S.vtLibError = true;
+  }
+  S.vtLibLoading = false;
+  vtRefreshResults();
+}
+
+function vtSearch(q) {
+  S.vtQuery = q;
+  vtLoadLibrary();
+  vtRefreshResults();
+}
+
+function vtRefreshResults() {
+  const el = document.getElementById('vt-results');
+  if (el) el.innerHTML = vtResultsHtml();
+}
+
+function vtResultsHtml() {
+  const q = (S.vtQuery || '').trim().toLowerCase();
+  if (!q) return '<p style="margin:0;font-size:0.85rem;opacity:.7">Search the station library — matching songs show their fact right here.</p>';
+  if (S.vtLibError) return '<p style="margin:0;font-size:0.85rem">Could not load the library right now — try wcyt.org/music.</p>';
+  if (!S.vtLib) return '<p style="margin:0;font-size:0.85rem;opacity:.7">Loading library…</p>';
+  const words = q.split(/\s+/);
+  const hits = S.vtLib.filter(x => words.every(w => x._k.includes(w)));
+  if (!hits.length) return '<p style="margin:0;font-size:0.85rem;opacity:.7">No songs match.</p>';
+  const withFact = hits.filter(x => x.fact);
+  const shown = withFact.slice(0, 5);
+  const rows = shown.map(x => `
+    <div style="padding:8px 0;border-top:1px solid #2a2a2a">
+      <div style="font-weight:600">${esc(x.title)} <span style="font-weight:400;opacity:.8">— ${esc(x.artist)}${x.year ? ` (${esc(String(x.year))})` : ''}</span></div>
+      <div style="font-size:0.88rem;margin-top:4px">${esc(x.fact)}${x.source ? ` <a href="${esc(x.source)}" target="_blank" rel="noopener">source</a>` : ''}</div>
+    </div>`).join('');
+  const note = withFact.length
+    ? (withFact.length > shown.length ? `<p style="margin:8px 0 0;font-size:0.8rem;opacity:.7">Showing ${shown.length} of ${withFact.length} songs with facts — keep typing to narrow it down.</p>` : '')
+    : `<p style="margin:0;font-size:0.85rem;opacity:.7">${hits.length} song${hits.length === 1 ? '' : 's'} match, but no DJ fact yet.</p>`;
+  return rows + note;
 }
 
 function vtPickDay(i) { S.vtDay = i; render(); }
