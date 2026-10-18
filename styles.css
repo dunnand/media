@@ -3371,3 +3371,8 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 .gfx-name { font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .gfx-vote-btn { width: 100%; font-size: 0.82rem; padding: 6px; }
 .gfx-voters { font-size: 0.78rem; color: var(--dim); }
+.gfx-status { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.gfx-turnin { display: flex; align-items: center; gap: 6px; font-size: 0.875rem; font-weight: 600; cursor: pointer; }
+.gfx-badge { font-size: 0.78rem; color: var(--dim); }
+.gfx-badge-yes { color: #22c55e; font-weight: 700; }
+.gfx-vote-btn:disabled { opacity: 0.45; cursor: not-allowed; }

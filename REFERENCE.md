@@ -302,6 +302,7 @@ TARGET_CAL_ID = '2b9bdfdee65f7330d8d5d2fd1d4877c1b709289fa0b0747427f57fd62516bed
 - `?action=addEvent&title=X&date=YYYY-MM-DD&time=X` — Add event to calendar
 - `?action=deleteEvent&calEventId=X` — Delete event from calendar
 - `?action=listGraphics` — List subfolders + files of the Basketball Graphics Package Drive folder (`GRAPHICS_ROOT_FOLDER_ID`); powers the `graphics` view. Votes are stored in Firestore `hm_graphic_votes` (doc id `<folderId>__<voterKey>`: `{folderId,fileId,voter,voterKey,updatedAt}`) — one vote per student per folder, changeable. Needs the web app re-deployed after Code.gs changes.
+  Turn-ins (student self-check, unlocks voting for that folder) are in `hm_graphic_turnins` (same doc id pattern: `{folderId,voter,voterKey,updatedAt}`).
 
 > Note: Reading calendar events does NOT go through Apps Script anymore.  
 > The site uses the Google Calendar API directly (see below).

@@ -259,6 +259,7 @@ const S = {
   calendarYbEvents: [],
   gfxFolders: null,           // Basketball graphics folders from Apps Script (null = not loaded)
   gfxVotes: [],               // hm_graphic_votes docs
+  gfxTurnins: [],             // hm_graphic_turnins docs (student says they turned in a graphic for a folder)
   gfxError: '',
   calendarBroadcastEvents: [],
   ybShowAway: false,
@@ -12373,6 +12374,9 @@ async function loadGraphics() {
       const snap = await db.collection('hm_graphic_votes').get();
       trackUsage('reads', snap.size);
       S.gfxVotes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const tsnap = await db.collection('hm_graphic_turnins').get();
+      trackUsage('reads', tsnap.size);
+      S.gfxTurnins = tsnap.docs.map(d => ({ id: d.id, ...d.data() }));
     } catch (e) {}
   }
   if (S.view === 'graphics') render();
@@ -12387,6 +12391,8 @@ function renderGraphics() {
     : folders.map(f => {
         const votes = S.gfxVotes.filter(v => v.folderId === f.id);
         const mine = myKey ? votes.find(v => v.voterKey === myKey) : null;
+        const turnins = S.gfxTurnins.filter(t => t.folderId === f.id);
+        const turnedIn = !!(myKey && turnins.some(t => t.voterKey === myKey));
         const files = f.files.map(file => {
           const fileVotes = votes.filter(v => v.fileId === file.id);
           const isMine = mine && mine.fileId === file.id;
@@ -12396,7 +12402,7 @@ function renderGraphics() {
                 <img class="gfx-thumb" src="${gfxThumb(file.id)}" alt="${esc(file.name)}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'gfx-nothumb',textContent:'No preview — open in Drive'}))">
               </a>
               <div class="gfx-name" title="${esc(file.name)}">${esc(file.name)}</div>
-              <button class="${isMine ? 'btn-primary' : 'btn-secondary'} gfx-vote-btn" data-gfx-vote="${esc(file.id)}" data-gfx-folder="${esc(f.id)}">${isMine ? '✓ Your vote' : 'Vote'}</button>
+              <button class="${isMine ? 'btn-primary' : 'btn-secondary'} gfx-vote-btn" data-gfx-vote="${esc(file.id)}" data-gfx-folder="${esc(f.id)}" ${turnedIn ? '' : 'disabled title="Turn in your own graphic first"'}>${isMine ? '✓ Your vote' : mine ? 'Change vote to this' : 'Vote'}</button>
               ${S.teacherMode ? `<div class="gfx-voters"><strong>${fileVotes.length} vote${fileVotes.length === 1 ? '' : 's'}</strong>${fileVotes.length ? ': ' + fileVotes.map(v => esc(v.voter)).join(', ') : ''}</div>` : ''}
             </div>`;
         }).join('');
@@ -12406,8 +12412,12 @@ function renderGraphics() {
               <h2>${esc(f.name)}</h2>
               <a href="${esc(f.url)}" target="_blank" rel="noopener" class="dim" style="font-size:0.8rem">Open folder in Drive ↗</a>
             </div>
+            <div class="gfx-status">
+              <label class="gfx-turnin"><input type="checkbox" data-gfx-turnin="${esc(f.id)}" ${turnedIn ? 'checked' : ''}> I turned in my graphic</label>
+              <span class="gfx-badge ${mine ? 'gfx-badge-yes' : ''}">${mine ? '✓ You voted' : turnedIn ? 'Not voted yet' : 'Voting locked until you turn one in'}</span>
+            </div>
             ${f.files.length ? `<div class="gfx-grid">${files}</div>` : `<p class="dim" style="font-size:0.875rem;margin:0">No graphics uploaded yet.</p>`}
-            ${S.teacherMode && f.files.length ? `<div class="dim" style="font-size:0.8rem;margin-top:10px">${votes.length} total vote${votes.length === 1 ? '' : 's'} in this folder</div>` : ''}
+            ${S.teacherMode ? `<div class="dim" style="font-size:0.8rem;margin-top:10px">${votes.length} total vote${votes.length === 1 ? '' : 's'} · Turned in (${turnins.length}): ${turnins.length ? turnins.map(t => esc(t.voter)).join(', ') : 'nobody yet'}</div>` : ''}
           </section>`;
       }).join('');
   return `
@@ -12425,6 +12435,31 @@ function renderGraphics() {
     </div>`;
 }
 
+document.addEventListener('change', async ev => {
+  const box = ev.target.closest('[data-gfx-turnin]');
+  if (!box) return;
+  const nameEl = document.getElementById('gfx-name');
+  const full = (nameEl && nameEl.value.trim()) || localStorage.getItem('hm_student_name') || '';
+  if (!full) { box.checked = false; alert('Enter your name first.'); if (nameEl) nameEl.focus(); return; }
+  localStorage.setItem('hm_student_name', full);
+  const voter = shortenName(full), key = gfxVoterKey(voter), folderId = box.dataset.gfxTurnin;
+  const db = getDB();
+  if (!db) return;
+  const docId = folderId + '__' + key;
+  try {
+    trackUsage('writes');
+    if (box.checked) {
+      const doc = { folderId, voter, voterKey: key, updatedAt: Date.now() };
+      await db.collection('hm_graphic_turnins').doc(docId).set(doc);
+      S.gfxTurnins = S.gfxTurnins.filter(t => t.id !== docId).concat({ id: docId, ...doc });
+    } else {
+      await db.collection('hm_graphic_turnins').doc(docId).delete();
+      S.gfxTurnins = S.gfxTurnins.filter(t => t.id !== docId);
+    }
+  } catch (e) { alert('Could not save. Try again.'); }
+  render();
+});
+
 document.addEventListener('click', async ev => {
   if (ev.target.closest('#gfx-refresh')) { S.gfxFolders = null; render(); loadGraphics(); return; }
   const btn = ev.target.closest('[data-gfx-vote]');
@@ -12439,6 +12474,7 @@ document.addEventListener('click', async ev => {
   const db = getDB();
   if (!db) return;
   const docId = folderId + '__' + key;
+  if (!S.gfxTurnins.some(t => t.id === docId)) { alert('Turn in your own graphic for this folder before voting.'); return; }
   const doc = { folderId, fileId, voter, voterKey: key, updatedAt: Date.now() };
   btn.disabled = true;
   try {
