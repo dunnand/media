@@ -12410,30 +12410,35 @@ function renderGraphics() {
   // ── Detail page: one folder's graphics + voting ──
   if (open) {
     const f = open, { votes, turnins, mine, turnedIn } = status(f);
-    const files = f.files.map(file => {
+    // Blind judging: stable order unrelated to upload time/author, generic labels, no file names for students.
+    const ordered = f.files.slice().sort((a, b) => a.id.localeCompare(b.id));
+    const label = file => 'Graphic ' + (ordered.indexOf(file) + 1);
+    const files = ordered.map(file => {
       const fileVotes = votes.filter(v => v.fileId === file.id);
       const isMine = mine && mine.fileId === file.id;
       return `
             <div class="gfx-item${isMine ? ' gfx-mine' : ''}">
               <button type="button" class="gfx-thumb-wrap" data-gfx-zoom="${esc(file.id)}" title="Click to enlarge">
-                <img class="gfx-thumb" src="${gfxThumb(file.id)}" alt="${esc(file.name)}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'gfx-nothumb',textContent:'No preview — click to open'}))">
+                <img class="gfx-thumb" src="${gfxThumb(file.id)}" alt="${label(file)}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'gfx-nothumb',textContent:'No preview available'}))">
               </button>
-              <div class="gfx-name" title="${esc(file.name)}">${esc(file.name)}</div>
+              <div class="gfx-name">${label(file)}${S.teacherMode ? ` <span class="dim">· ${esc(file.name)}</span>` : ''}</div>
               <button class="${isMine ? 'btn-primary' : 'btn-secondary'} gfx-vote-btn" data-gfx-vote="${esc(file.id)}" data-gfx-folder="${esc(f.id)}" ${turnedIn ? '' : 'disabled title="Turn in your own graphic first"'}>${isMine ? '✓ Your vote' : mine ? 'Change vote to this' : 'Vote'}</button>
               ${S.teacherMode ? `<div class="gfx-voters"><strong>${fileVotes.length} vote${fileVotes.length === 1 ? '' : 's'}</strong>${fileVotes.length ? ': ' + fileVotes.map(v => esc(v.voter)).join(', ') : ''}</div>` : ''}
             </div>`;
     }).join('');
-    const zoomFile = S.gfxZoomId ? f.files.find(x => x.id === S.gfxZoomId) : null;
+    const zoomFile = S.gfxZoomId ? ordered.find(x => x.id === S.gfxZoomId) : null;
+    const zoomIdx = zoomFile ? ordered.indexOf(zoomFile) : -1;
     const zoomIsMine = zoomFile && mine && mine.fileId === zoomFile.id;
     const overlay = zoomFile ? `
     <div class="gfx-overlay" id="gfx-overlay">
       <div class="gfx-overlay-box">
         <button class="gfx-overlay-close" id="gfx-zoom-close" aria-label="Close">✕</button>
-        <img class="gfx-overlay-img" src="${gfxThumb(zoomFile.id).replace('sz=w600', 'sz=w1600')}" alt="${esc(zoomFile.name)}">
+        ${ordered.length > 1 ? `<button class="gfx-nav gfx-nav-prev" data-gfx-step="-1" aria-label="Previous graphic">‹</button><button class="gfx-nav gfx-nav-next" data-gfx-step="1" aria-label="Next graphic">›</button>` : ''}
+        <img class="gfx-overlay-img" src="${gfxThumb(zoomFile.id).replace('sz=w600', 'sz=w1600')}" alt="${label(zoomFile)}">
         <div class="gfx-overlay-bar">
-          <span class="gfx-name" style="flex:1">${esc(zoomFile.name)}</span>
+          <span class="gfx-name" style="flex:1">${label(zoomFile)} of ${ordered.length}${S.teacherMode ? ` <span class="dim">· ${esc(zoomFile.name)}</span>` : ''}</span>
           <button class="${zoomIsMine ? 'btn-primary' : 'btn-secondary'}" data-gfx-vote="${esc(zoomFile.id)}" data-gfx-folder="${esc(f.id)}" ${turnedIn ? '' : 'disabled title="Turn in your own graphic first"'}>${zoomIsMine ? '✓ Your vote' : mine ? 'Change vote to this' : 'Vote'}</button>
-          <a class="btn-primary" href="${esc(zoomFile.url)}" target="_blank" rel="noopener" style="text-decoration:none">Open in Drive ↗</a>
+          ${S.teacherMode ? `<a class="btn-primary" href="${esc(zoomFile.url)}" target="_blank" rel="noopener" style="text-decoration:none">Open in Drive ↗</a>` : ''}
         </div>
       </div>
     </div>` : '';
@@ -12443,12 +12448,12 @@ function renderGraphics() {
       ${overlay}
       <button class="back-btn" id="gfx-back">← All graphics</button>
       <h1 style="margin:8px 0 4px">🎨 ${esc(f.name)}</h1>
-      <p class="dim" style="margin:0 0 14px">Click a graphic to enlarge it, then open it in Drive from there. ${turnedIn ? 'Vote for your favorite — you can change your vote anytime.' : 'Voting unlocks once you mark your graphic as turned in on the All graphics page.'}</p>
+      <p class="dim" style="margin:0 0 14px">Click a graphic to enlarge it and flip through them with the arrows — vote on the design only, names are hidden. ${turnedIn ? 'Vote for your favorite — you can change your vote anytime.' : 'Voting unlocks once you mark your graphic as turned in on the All graphics page.'}</p>
       ${nameBar}
       <section class="card">
         <div class="card-header">
           <h2>${turnedIn ? (mine ? '✓ You voted' : 'Not voted yet') : 'Voting locked'}</h2>
-          <a href="${esc(f.url)}" target="_blank" rel="noopener" class="dim" style="font-size:0.8rem">Open folder in Drive ↗</a>
+          ${S.teacherMode ? `<a href="${esc(f.url)}" target="_blank" rel="noopener" class="dim" style="font-size:0.8rem">Open folder in Drive ↗</a>` : ''}
         </div>
         ${f.files.length ? `<div class="gfx-grid">${files}</div>` : `<p class="dim" style="font-size:0.875rem;margin:0">No graphics uploaded yet.</p>`}
         ${S.teacherMode ? `<div class="dim" style="font-size:0.8rem;margin-top:10px">${votes.length} total vote${votes.length === 1 ? '' : 's'} · Turned in (${turnins.length}): ${turnins.length ? turnins.map(t => esc(t.voter)).join(', ') : 'nobody yet'}</div>` : ''}
@@ -12481,8 +12486,21 @@ function renderGraphics() {
     </div>`;
 }
 
+function gfxStep(dir) {
+  const f = (S.gfxFolders || []).find(x => x.id === S.gfxFolderId);
+  if (!f || !S.gfxZoomId) return;
+  const ordered = f.files.slice().sort((a, b) => a.id.localeCompare(b.id));
+  const i = ordered.findIndex(x => x.id === S.gfxZoomId);
+  if (i < 0 || !ordered.length) return;
+  S.gfxZoomId = ordered[(i + dir + ordered.length) % ordered.length].id;
+  render();
+}
+
 document.addEventListener('keydown', ev => {
-  if (ev.key === 'Escape' && S.gfxZoomId) { S.gfxZoomId = null; render(); }
+  if (!S.gfxZoomId) return;
+  if (ev.key === 'Escape') { S.gfxZoomId = null; render(); }
+  else if (ev.key === 'ArrowRight') gfxStep(1);
+  else if (ev.key === 'ArrowLeft') gfxStep(-1);
 });
 
 document.addEventListener('change', async ev => {
@@ -12511,6 +12529,8 @@ document.addEventListener('change', async ev => {
 });
 
 document.addEventListener('click', async ev => {
+  const stepBtn = ev.target.closest('[data-gfx-step]');
+  if (stepBtn) { gfxStep(Number(stepBtn.dataset.gfxStep)); return; }
   const zoomBtn = ev.target.closest('[data-gfx-zoom]');
   if (zoomBtn) { S.gfxZoomId = zoomBtn.dataset.gfxZoom; render(); return; }
   if (ev.target.closest('#gfx-zoom-close') || ev.target.id === 'gfx-overlay') { S.gfxZoomId = null; render(); return; }
