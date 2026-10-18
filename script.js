@@ -261,6 +261,7 @@ const S = {
   gfxVotes: [],               // hm_graphic_votes docs
   gfxTurnins: [],             // hm_graphic_turnins docs (student says they turned in a graphic for a folder)
   gfxError: '',
+  gfxZoomId: null,            // file id shown in the enlarged preview overlay
   gfxFolderId: null,          // open graphics folder (null = selection list)
   calendarBroadcastEvents: [],
   ybShowAway: false,
@@ -12413,20 +12414,35 @@ function renderGraphics() {
       const isMine = mine && mine.fileId === file.id;
       return `
             <div class="gfx-item${isMine ? ' gfx-mine' : ''}">
-              <a href="${esc(file.url)}" target="_blank" rel="noopener" class="gfx-thumb-wrap">
-                <img class="gfx-thumb" src="${gfxThumb(file.id)}" alt="${esc(file.name)}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'gfx-nothumb',textContent:'No preview — open in Drive'}))">
-              </a>
+              <button type="button" class="gfx-thumb-wrap" data-gfx-zoom="${esc(file.id)}" title="Click to enlarge">
+                <img class="gfx-thumb" src="${gfxThumb(file.id)}" alt="${esc(file.name)}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'gfx-nothumb',textContent:'No preview — click to open'}))">
+              </button>
               <div class="gfx-name" title="${esc(file.name)}">${esc(file.name)}</div>
               <button class="${isMine ? 'btn-primary' : 'btn-secondary'} gfx-vote-btn" data-gfx-vote="${esc(file.id)}" data-gfx-folder="${esc(f.id)}" ${turnedIn ? '' : 'disabled title="Turn in your own graphic first"'}>${isMine ? '✓ Your vote' : mine ? 'Change vote to this' : 'Vote'}</button>
               ${S.teacherMode ? `<div class="gfx-voters"><strong>${fileVotes.length} vote${fileVotes.length === 1 ? '' : 's'}</strong>${fileVotes.length ? ': ' + fileVotes.map(v => esc(v.voter)).join(', ') : ''}</div>` : ''}
             </div>`;
     }).join('');
+    const zoomFile = S.gfxZoomId ? f.files.find(x => x.id === S.gfxZoomId) : null;
+    const zoomIsMine = zoomFile && mine && mine.fileId === zoomFile.id;
+    const overlay = zoomFile ? `
+    <div class="gfx-overlay" id="gfx-overlay">
+      <div class="gfx-overlay-box">
+        <button class="gfx-overlay-close" id="gfx-zoom-close" aria-label="Close">✕</button>
+        <img class="gfx-overlay-img" src="${gfxThumb(zoomFile.id).replace('sz=w600', 'sz=w1600')}" alt="${esc(zoomFile.name)}">
+        <div class="gfx-overlay-bar">
+          <span class="gfx-name" style="flex:1">${esc(zoomFile.name)}</span>
+          <button class="${zoomIsMine ? 'btn-primary' : 'btn-secondary'}" data-gfx-vote="${esc(zoomFile.id)}" data-gfx-folder="${esc(f.id)}" ${turnedIn ? '' : 'disabled title="Turn in your own graphic first"'}>${zoomIsMine ? '✓ Your vote' : mine ? 'Change vote to this' : 'Vote'}</button>
+          <a class="btn-primary" href="${esc(zoomFile.url)}" target="_blank" rel="noopener" style="text-decoration:none">Open in Drive ↗</a>
+        </div>
+      </div>
+    </div>` : '';
     return `
     ${navBar('live')}
     <div class="class-page">
+      ${overlay}
       <button class="back-btn" id="gfx-back">← All graphics</button>
       <h1 style="margin:8px 0 4px">🎨 ${esc(f.name)}</h1>
-      <p class="dim" style="margin:0 0 14px">Click a graphic to open it in Drive. ${turnedIn ? 'Vote for your favorite — you can change your vote anytime.' : 'Voting unlocks once you mark your graphic as turned in on the All graphics page.'}</p>
+      <p class="dim" style="margin:0 0 14px">Click a graphic to enlarge it, then open it in Drive from there. ${turnedIn ? 'Vote for your favorite — you can change your vote anytime.' : 'Voting unlocks once you mark your graphic as turned in on the All graphics page.'}</p>
       ${nameBar}
       <section class="card">
         <div class="card-header">
@@ -12464,6 +12480,10 @@ function renderGraphics() {
     </div>`;
 }
 
+document.addEventListener('keydown', ev => {
+  if (ev.key === 'Escape' && S.gfxZoomId) { S.gfxZoomId = null; render(); }
+});
+
 document.addEventListener('change', async ev => {
   const box = ev.target.closest('[data-gfx-turnin]');
   if (!box) return;
@@ -12490,9 +12510,12 @@ document.addEventListener('change', async ev => {
 });
 
 document.addEventListener('click', async ev => {
+  const zoomBtn = ev.target.closest('[data-gfx-zoom]');
+  if (zoomBtn) { S.gfxZoomId = zoomBtn.dataset.gfxZoom; render(); return; }
+  if (ev.target.closest('#gfx-zoom-close') || ev.target.id === 'gfx-overlay') { S.gfxZoomId = null; render(); return; }
   const openBtn = ev.target.closest('[data-gfx-open]');
-  if (openBtn) { S.gfxFolderId = openBtn.dataset.gfxOpen; render(); window.scrollTo(0, 0); return; }
-  if (ev.target.closest('#gfx-back')) { S.gfxFolderId = null; render(); window.scrollTo(0, 0); return; }
+  if (openBtn) { S.gfxFolderId = openBtn.dataset.gfxOpen; S.gfxZoomId = null; render(); window.scrollTo(0, 0); return; }
+  if (ev.target.closest('#gfx-back')) { S.gfxFolderId = null; S.gfxZoomId = null; render(); window.scrollTo(0, 0); return; }
   if (ev.target.closest('#gfx-refresh')) { S.gfxFolders = null; render(); loadGraphics(); return; }
   const btn = ev.target.closest('[data-gfx-vote]');
   if (!btn) return;
