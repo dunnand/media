@@ -4158,7 +4158,7 @@ function renderLive() {
         <div class="next-event-type" style="color:${et.color}">${et.label}</div>
         <div class="next-event-name">${esc(next.title)}</div>
         <div class="next-date">${fmtDate(next.date, true)}</div>
-        ${next.gameTime ? `
+        ${next.gameTime && !/^canceled/i.test(next.title) ? `
         <div class="next-times">
           <span class="next-door33">${doorLabel(next.type)} ${computeDoor33(next.gameTime, next.type)}</span>
           <span style="color:var(--border)">·</span>
@@ -4166,7 +4166,7 @@ function renderLive() {
           <span style="color:var(--border)">·</span>
           <span class="next-gametime">Game ${esc(next.gameTime)}</span>
         </div>` : ''}
-        <div class="countdown">${days <= 0 ? 'TODAY' : days === 1 ? '1 day away' : days + ' days away'}</div>
+        <div class="countdown"${/^canceled/i.test(next.title) ? ' style="color:#ef4444"' : ''}>${/^canceled/i.test(next.title) ? 'CANCELED' : days <= 0 ? 'TODAY' : days === 1 ? '1 day away' : days + ' days away'}</div>
         <button class="btn-primary" data-broadcast="${next.id}" style="background:var(--live);color:#000">
           View Broadcast Prep →
         </button>
