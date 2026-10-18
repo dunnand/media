@@ -261,6 +261,7 @@ const S = {
   gfxVotes: [],               // hm_graphic_votes docs
   gfxTurnins: [],             // hm_graphic_turnins docs (student says they turned in a graphic for a folder)
   gfxError: '',
+  gfxFolderId: null,          // open graphics folder (null = selection list)
   calendarBroadcastEvents: [],
   ybShowAway: false,
   ybDashView: 'event',
@@ -425,7 +426,7 @@ function go(view, extra) {
   if (view === 'voicetracks') startVoiceTrackBoard();
   if (view === 'dashboard') { dashboardLoadPlans(); loadYearbookCoverage(); loadShowSchedule(); }
   if (view === 'yearbook')  loadYearbookCoverage();
-  if (view === 'graphics')  loadGraphics();
+  if (view === 'graphics')  { S.gfxFolderId = null; loadGraphics(); }
   if (view === 'beats')   { loadBeatAssignments(); loadBeatSurveyResponses(); }
   if (view === 'storyplans') loadStoryPlans();
   if (view === 'indepth') loadRundownData();
@@ -12386,17 +12387,31 @@ function renderGraphics() {
   const myName = localStorage.getItem('hm_student_name') || '';
   const myKey = gfxVoterKey(shortenName(myName));
   const folders = S.gfxFolders;
-  const body = !folders
-    ? `<p class="dim">${S.gfxError ? esc(S.gfxError) : 'Loading graphics…'}</p>`
-    : folders.map(f => {
-        const votes = S.gfxVotes.filter(v => v.folderId === f.id);
-        const mine = myKey ? votes.find(v => v.voterKey === myKey) : null;
-        const turnins = S.gfxTurnins.filter(t => t.folderId === f.id);
-        const turnedIn = !!(myKey && turnins.some(t => t.voterKey === myKey));
-        const files = f.files.map(file => {
-          const fileVotes = votes.filter(v => v.fileId === file.id);
-          const isMine = mine && mine.fileId === file.id;
-          return `
+  const nameBar = `
+      <div class="card" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <label for="gfx-name" style="font-weight:600">Your name</label>
+        <input id="gfx-name" type="text" placeholder="First and last name" value="${esc(myName)}" style="flex:1;min-width:180px">
+        <button class="btn-secondary" id="gfx-refresh">↻ Refresh</button>
+      </div>`;
+  const status = f => {
+    const votes = S.gfxVotes.filter(v => v.folderId === f.id);
+    const turnins = S.gfxTurnins.filter(t => t.folderId === f.id);
+    return {
+      votes, turnins,
+      mine: myKey ? votes.find(v => v.voterKey === myKey) : null,
+      turnedIn: !!(myKey && turnins.some(t => t.voterKey === myKey)),
+    };
+  };
+  const loading = `<p class="dim">${S.gfxError ? esc(S.gfxError) : 'Loading graphics…'}</p>`;
+  const open = folders && S.gfxFolderId ? folders.find(f => f.id === S.gfxFolderId) : null;
+
+  // ── Detail page: one folder's graphics + voting ──
+  if (open) {
+    const f = open, { votes, turnins, mine, turnedIn } = status(f);
+    const files = f.files.map(file => {
+      const fileVotes = votes.filter(v => v.fileId === file.id);
+      const isMine = mine && mine.fileId === file.id;
+      return `
             <div class="gfx-item${isMine ? ' gfx-mine' : ''}">
               <a href="${esc(file.url)}" target="_blank" rel="noopener" class="gfx-thumb-wrap">
                 <img class="gfx-thumb" src="${gfxThumb(file.id)}" alt="${esc(file.name)}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'gfx-nothumb',textContent:'No preview — open in Drive'}))">
@@ -12405,33 +12420,47 @@ function renderGraphics() {
               <button class="${isMine ? 'btn-primary' : 'btn-secondary'} gfx-vote-btn" data-gfx-vote="${esc(file.id)}" data-gfx-folder="${esc(f.id)}" ${turnedIn ? '' : 'disabled title="Turn in your own graphic first"'}>${isMine ? '✓ Your vote' : mine ? 'Change vote to this' : 'Vote'}</button>
               ${S.teacherMode ? `<div class="gfx-voters"><strong>${fileVotes.length} vote${fileVotes.length === 1 ? '' : 's'}</strong>${fileVotes.length ? ': ' + fileVotes.map(v => esc(v.voter)).join(', ') : ''}</div>` : ''}
             </div>`;
-        }).join('');
-        return `
-          <section class="card">
-            <div class="card-header">
-              <h2>${esc(f.name)}</h2>
-              <a href="${esc(f.url)}" target="_blank" rel="noopener" class="dim" style="font-size:0.8rem">Open folder in Drive ↗</a>
-            </div>
-            <div class="gfx-status">
-              <label class="gfx-turnin"><input type="checkbox" data-gfx-turnin="${esc(f.id)}" ${turnedIn ? 'checked' : ''}> I turned in my graphic</label>
-              <span class="gfx-badge ${mine ? 'gfx-badge-yes' : ''}">${mine ? '✓ You voted' : turnedIn ? 'Not voted yet' : 'Voting locked until you turn one in'}</span>
-            </div>
-            ${f.files.length ? `<div class="gfx-grid">${files}</div>` : `<p class="dim" style="font-size:0.875rem;margin:0">No graphics uploaded yet.</p>`}
-            ${S.teacherMode ? `<div class="dim" style="font-size:0.8rem;margin-top:10px">${votes.length} total vote${votes.length === 1 ? '' : 's'} · Turned in (${turnins.length}): ${turnins.length ? turnins.map(t => esc(t.voter)).join(', ') : 'nobody yet'}</div>` : ''}
-          </section>`;
-      }).join('');
+    }).join('');
+    return `
+    ${navBar('live')}
+    <div class="class-page">
+      <button class="back-btn" id="gfx-back">← All graphics</button>
+      <h1 style="margin:8px 0 4px">🎨 ${esc(f.name)}</h1>
+      <p class="dim" style="margin:0 0 14px">Click a graphic to open it in Drive. ${turnedIn ? 'Vote for your favorite — you can change your vote anytime.' : 'Voting unlocks once you mark your graphic as turned in on the All graphics page.'}</p>
+      ${nameBar}
+      <section class="card">
+        <div class="card-header">
+          <h2>${turnedIn ? (mine ? '✓ You voted' : 'Not voted yet') : 'Voting locked'}</h2>
+          <a href="${esc(f.url)}" target="_blank" rel="noopener" class="dim" style="font-size:0.8rem">Open folder in Drive ↗</a>
+        </div>
+        ${f.files.length ? `<div class="gfx-grid">${files}</div>` : `<p class="dim" style="font-size:0.875rem;margin:0">No graphics uploaded yet.</p>`}
+        ${S.teacherMode ? `<div class="dim" style="font-size:0.8rem;margin-top:10px">${votes.length} total vote${votes.length === 1 ? '' : 's'} · Turned in (${turnins.length}): ${turnins.length ? turnins.map(t => esc(t.voter)).join(', ') : 'nobody yet'}</div>` : ''}
+      </section>
+    </div>`;
+  }
+
+  // ── Selection page: every folder, with turn-in checkbox + voted status ──
+  const rows = !folders ? loading : folders.map(f => {
+    const { votes, turnins, mine, turnedIn } = status(f);
+    return `
+        <div class="gfx-row">
+          <label class="gfx-turnin" title="Check when you've uploaded your graphic to this folder"><input type="checkbox" data-gfx-turnin="${esc(f.id)}" ${turnedIn ? 'checked' : ''}> Turned in</label>
+          <button class="gfx-row-main" data-gfx-open="${esc(f.id)}">
+            <span class="gfx-row-name">${esc(f.name)}</span>
+            <span class="gfx-row-meta">${f.files.length} graphic${f.files.length === 1 ? '' : 's'}${S.teacherMode ? ` · ${turnins.length} turned in · ${votes.length} vote${votes.length === 1 ? '' : 's'}` : ''}</span>
+          </button>
+          <span class="gfx-badge ${mine ? 'gfx-badge-yes' : ''}">${mine ? '✓ Voted' : turnedIn ? 'Not voted' : 'Locked'}</span>
+          <button class="btn-secondary gfx-open-btn" data-gfx-open="${esc(f.id)}">Open →</button>
+        </div>`;
+  }).join('');
   return `
     ${navBar('live')}
     <div class="class-page">
       <button class="back-btn" data-nav="live">← Back to Homestead Live</button>
       <h1 style="margin:8px 0 4px">🎨 Basketball Graphics Package 2026-27</h1>
-      <p class="dim" style="margin:0 0 14px">Click a graphic to open it in Drive. Vote for your favorite in each category — one vote per category, and you can change it anytime.</p>
-      <div class="card" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-        <label for="gfx-name" style="font-weight:600">Your name</label>
-        <input id="gfx-name" type="text" placeholder="First and last name" value="${esc(myName)}" style="flex:1;min-width:180px">
-        <button class="btn-secondary" id="gfx-refresh">↻ Refresh</button>
-      </div>
-      ${body}
+      <p class="dim" style="margin:0 0 14px">Check "Turned in" once you've uploaded your graphic to a folder — that unlocks voting for it. Open a folder to preview the graphics and vote for your favorite.</p>
+      ${nameBar}
+      <section class="card gfx-list">${rows}</section>
     </div>`;
 }
 
@@ -12461,6 +12490,9 @@ document.addEventListener('change', async ev => {
 });
 
 document.addEventListener('click', async ev => {
+  const openBtn = ev.target.closest('[data-gfx-open]');
+  if (openBtn) { S.gfxFolderId = openBtn.dataset.gfxOpen; render(); window.scrollTo(0, 0); return; }
+  if (ev.target.closest('#gfx-back')) { S.gfxFolderId = null; render(); window.scrollTo(0, 0); return; }
   if (ev.target.closest('#gfx-refresh')) { S.gfxFolders = null; render(); loadGraphics(); return; }
   const btn = ev.target.closest('[data-gfx-vote]');
   if (!btn) return;

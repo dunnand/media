@@ -3376,3 +3376,11 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 .gfx-badge { font-size: 0.78rem; color: var(--dim); }
 .gfx-badge-yes { color: #22c55e; font-weight: 700; }
 .gfx-vote-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.gfx-list { display: flex; flex-direction: column; gap: 8px; }
+.gfx-row { display: flex; align-items: center; gap: 12px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; }
+.gfx-row .gfx-turnin { flex: 0 0 auto; white-space: nowrap; }
+.gfx-row-main { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; background: none; border: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; padding: 0; }
+.gfx-row-name { font-weight: 700; }
+.gfx-row-meta { font-size: 0.78rem; color: var(--dim); }
+.gfx-row .gfx-badge { flex: 0 0 auto; min-width: 70px; text-align: center; }
+.gfx-open-btn { flex: 0 0 auto; font-size: 0.8rem; padding: 5px 12px; }
