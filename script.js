@@ -9606,7 +9606,7 @@ async function syncBroadcastsFromCalendar() {
   if (!db) return 0;
   const existingIds  = new Set((S.broadcasts || []).map(b => b.id));
   const existingKeys = new Set((S.broadcasts || []).map(b => b.type + '|' + b.date));
-  const BLOCKED_BROADCAST_IDS = new Set(['bc-69gm6e1k6gsm4b9ic4qj']); // canceled — Girls Volleyball Regional 2026-10-24
+  const BLOCKED_BROADCAST_IDS = new Set(['bc-69gm6e1k6gsm4b9ic4qj', 'bc-gdmrmftbfce2g4avsh0u', 'bc-9610je56sjgenrca93tj']); // canceled — Girls Volleyball Regional 10/24; basketball scrimmages (Blackford 11/21, Penn 10/28)
   const candidates = (S.calendarBroadcastEvents || []).filter(e =>
     !BLOCKED_BROADCAST_IDS.has(e.id) &&
     !existingIds.has(e.id) &&
