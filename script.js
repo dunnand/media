@@ -4221,6 +4221,11 @@ function renderLive() {
       <div id="bellringer-wrap" class="bellringer-wrap">${renderBellRingerBanner('live')}</div>
       <div class="page-grid">
         <div class="main-col">
+          <section class="card">
+            <div class="card-header"><h2>🎨 Basketball Graphics Package</h2></div>
+            <p class="dim" style="font-size:0.875rem;margin:0 0 10px">Preview the graphics students have uploaded and vote for your favorite in each category.</p>
+            <button class="btn-primary" data-nav="graphics">View &amp; Vote →</button>
+          </section>
           ${countdownBlock}
           ${S.teacherMode ? `
           <a href="?board=crew-history" target="_blank" class="btn-secondary" style="display:inline-block;margin:-8px 0 12px;font-size:0.8rem;padding:5px 12px;text-decoration:none">🖥️ Open Crew History Board</a>` : ''}
@@ -4273,11 +4278,6 @@ function renderLive() {
               : ''}
             </section>`;
           })()}
-          <section class="card">
-            <div class="card-header"><h2>🎨 Basketball Graphics Package</h2></div>
-            <p class="dim" style="font-size:0.875rem;margin:0 0 10px">Preview the graphics students have uploaded and vote for your favorite in each category.</p>
-            <button class="btn-primary" data-nav="graphics">View &amp; Vote →</button>
-          </section>
           <section class="card">
             <div class="card-header">
               <h2>Next 5 Broadcasts</h2>
@@ -11247,6 +11247,7 @@ async function loadBellRingerQuestions() {
 }
 
 function renderBellRingerBanner(classKey) {
+  if (!SHOW_BELLRINGERS) return '';
   const isEditing = _brQDraft !== null && _brQEditingClass === classKey;
   if (isEditing) return renderBellRingerQuestionsEditor(classKey);
 

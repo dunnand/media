@@ -59,6 +59,9 @@ const EVENT_TYPES = {
 // Broadcast Rundown card (segment/PBP/color/GFX/cam table) on each broadcast's page
 const SHOW_BROADCAST_RUNDOWN = false; // set true to show the Broadcast Rundown card again
 
+// Bell ringer banner on each class page (and its question editor)
+const SHOW_BELLRINGERS = false; // set true to show bell ringers again
+
 // Weekly-updated production sheets (Google Docs), linked from each sport's broadcast rundown
 const SHOW_PRODUCTION_SHEETS = true; // set false to hide the "Production Sheet" link
 const PRODUCTION_SHEETS = {
