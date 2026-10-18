@@ -257,6 +257,9 @@ const S = {
   yearbookCoverage: [],
   customYbEvents: [],
   calendarYbEvents: [],
+  gfxFolders: null,           // Basketball graphics folders from Apps Script (null = not loaded)
+  gfxVotes: [],               // hm_graphic_votes docs
+  gfxError: '',
   calendarBroadcastEvents: [],
   ybShowAway: false,
   ybDashView: 'event',
@@ -421,6 +424,7 @@ function go(view, extra) {
   if (view === 'voicetracks') startVoiceTrackBoard();
   if (view === 'dashboard') { dashboardLoadPlans(); loadYearbookCoverage(); loadShowSchedule(); }
   if (view === 'yearbook')  loadYearbookCoverage();
+  if (view === 'graphics')  loadGraphics();
   if (view === 'beats')   { loadBeatAssignments(); loadBeatSurveyResponses(); }
   if (view === 'storyplans') loadStoryPlans();
   if (view === 'indepth') loadRundownData();
@@ -450,6 +454,7 @@ function render() {
     case 'live':      app.innerHTML = renderLive();      break;
     case 'broadcast': app.innerHTML = renderBroadcast(); break;
     case 'schedule':  app.innerHTML = renderSchedule();  break;
+    case 'graphics':  app.innerHTML = renderGraphics();  break;
     case 'availability':  app.innerHTML = renderAvailabilityPage(); break;
     case 'yearbook':      app.innerHTML = renderYearbook();      break;
     case 'sports':        app.innerHTML = renderSports();        break;
@@ -4265,6 +4270,11 @@ function renderLive() {
               : ''}
             </section>`;
           })()}
+          <section class="card">
+            <div class="card-header"><h2>🎨 Basketball Graphics Package</h2></div>
+            <p class="dim" style="font-size:0.875rem;margin:0 0 10px">Preview the graphics students have uploaded and vote for your favorite in each category.</p>
+            <button class="btn-primary" data-nav="graphics">View &amp; Vote →</button>
+          </section>
           <section class="card">
             <div class="card-header">
               <h2>Next 5 Broadcasts</h2>
@@ -12338,3 +12348,103 @@ function showRegisterIASBModal(cat) {
     saveIASBEntry(data);
   });
 }
+
+
+// ── Basketball Graphics Package — preview + voting ────────────
+// Files live in the shared Drive folder (one subfolder per graphic). Apps Script
+// (?action=listGraphics) lists them; previews use Drive's public thumbnail URL.
+// Votes: hm_graphic_votes, one doc per (folder, voter) so each student gets one
+// vote per graphic folder and can change it. Counts + voter names are teacher-only.
+function gfxVoterKey(name) { return String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+function gfxThumb(id) { return `https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w600`; }
+
+async function loadGraphics() {
+  S.gfxError = '';
+  const db = getDB();
+  try {
+    if (SYNC_SCRIPT_URL) {
+      const data = await fetchJsonp(`${SYNC_SCRIPT_URL}?action=listGraphics`);
+      if (data && data.success) S.gfxFolders = data.folders;
+      else S.gfxError = (data && data.error) || 'Could not load graphics.';
+    }
+  } catch (e) { S.gfxError = 'Could not reach the graphics list. The Apps Script may need to be re-deployed with the latest Code.gs.'; }
+  if (db) {
+    try {
+      const snap = await db.collection('hm_graphic_votes').get();
+      trackUsage('reads', snap.size);
+      S.gfxVotes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch (e) {}
+  }
+  if (S.view === 'graphics') render();
+}
+
+function renderGraphics() {
+  const myName = localStorage.getItem('hm_student_name') || '';
+  const myKey = gfxVoterKey(shortenName(myName));
+  const folders = S.gfxFolders;
+  const body = !folders
+    ? `<p class="dim">${S.gfxError ? esc(S.gfxError) : 'Loading graphics…'}</p>`
+    : folders.map(f => {
+        const votes = S.gfxVotes.filter(v => v.folderId === f.id);
+        const mine = myKey ? votes.find(v => v.voterKey === myKey) : null;
+        const files = f.files.map(file => {
+          const fileVotes = votes.filter(v => v.fileId === file.id);
+          const isMine = mine && mine.fileId === file.id;
+          return `
+            <div class="gfx-item${isMine ? ' gfx-mine' : ''}">
+              <a href="${esc(file.url)}" target="_blank" rel="noopener" class="gfx-thumb-wrap">
+                <img class="gfx-thumb" src="${gfxThumb(file.id)}" alt="${esc(file.name)}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'gfx-nothumb',textContent:'No preview — open in Drive'}))">
+              </a>
+              <div class="gfx-name" title="${esc(file.name)}">${esc(file.name)}</div>
+              <button class="${isMine ? 'btn-primary' : 'btn-secondary'} gfx-vote-btn" data-gfx-vote="${esc(file.id)}" data-gfx-folder="${esc(f.id)}">${isMine ? '✓ Your vote' : 'Vote'}</button>
+              ${S.teacherMode ? `<div class="gfx-voters"><strong>${fileVotes.length} vote${fileVotes.length === 1 ? '' : 's'}</strong>${fileVotes.length ? ': ' + fileVotes.map(v => esc(v.voter)).join(', ') : ''}</div>` : ''}
+            </div>`;
+        }).join('');
+        return `
+          <section class="card">
+            <div class="card-header">
+              <h2>${esc(f.name)}</h2>
+              <a href="${esc(f.url)}" target="_blank" rel="noopener" class="dim" style="font-size:0.8rem">Open folder in Drive ↗</a>
+            </div>
+            ${f.files.length ? `<div class="gfx-grid">${files}</div>` : `<p class="dim" style="font-size:0.875rem;margin:0">No graphics uploaded yet.</p>`}
+            ${S.teacherMode && f.files.length ? `<div class="dim" style="font-size:0.8rem;margin-top:10px">${votes.length} total vote${votes.length === 1 ? '' : 's'} in this folder</div>` : ''}
+          </section>`;
+      }).join('');
+  return `
+    ${navBar('live')}
+    <div class="class-page">
+      <button class="back-btn" data-nav="live">← Back to Homestead Live</button>
+      <h1 style="margin:8px 0 4px">🎨 Basketball Graphics Package 2026-27</h1>
+      <p class="dim" style="margin:0 0 14px">Click a graphic to open it in Drive. Vote for your favorite in each category — one vote per category, and you can change it anytime.</p>
+      <div class="card" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <label for="gfx-name" style="font-weight:600">Your name</label>
+        <input id="gfx-name" type="text" placeholder="First and last name" value="${esc(myName)}" style="flex:1;min-width:180px">
+        <button class="btn-secondary" id="gfx-refresh">↻ Refresh</button>
+      </div>
+      ${body}
+    </div>`;
+}
+
+document.addEventListener('click', async ev => {
+  if (ev.target.closest('#gfx-refresh')) { S.gfxFolders = null; render(); loadGraphics(); return; }
+  const btn = ev.target.closest('[data-gfx-vote]');
+  if (!btn) return;
+  const nameEl = document.getElementById('gfx-name');
+  const full = (nameEl && nameEl.value.trim()) || localStorage.getItem('hm_student_name') || '';
+  if (!full) { alert('Enter your name first so your vote counts.'); if (nameEl) nameEl.focus(); return; }
+  localStorage.setItem('hm_student_name', full);
+  const voter = shortenName(full);
+  const key = gfxVoterKey(voter);
+  const folderId = btn.dataset.gfxFolder, fileId = btn.dataset.gfxVote;
+  const db = getDB();
+  if (!db) return;
+  const docId = folderId + '__' + key;
+  const doc = { folderId, fileId, voter, voterKey: key, updatedAt: Date.now() };
+  btn.disabled = true;
+  try {
+    trackUsage('writes');
+    await db.collection('hm_graphic_votes').doc(docId).set(doc);
+    S.gfxVotes = S.gfxVotes.filter(v => v.id !== docId).concat({ id: docId, ...doc });
+  } catch (e) { alert('Could not save your vote. Try again.'); }
+  render();
+});

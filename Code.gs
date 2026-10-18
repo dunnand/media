@@ -60,6 +60,7 @@ function doGet(e) {
     if (action === 'addEvent')    return out(addCalendarEvent(e.parameter));
     if (action === 'deleteEvent') return out(deleteCalendarEvent(e.parameter.calEventId));
     if (action === 'createFutureFolders') return out(createFutureWeeklyFolders());
+    if (action === 'listGraphics') return out(listGraphics());
     return out({ success: false, error: 'Unknown action: ' + action });
   } catch(err) {
     return out({ success: false, error: err.toString() });
@@ -569,3 +570,42 @@ function fileAirPlan(data) {
   }
 }
 
+
+
+// ── Basketball Graphics Package voting ────────────────────────
+// Lists each subfolder of the "Basketball Graphics Package 2026-27" Drive
+// folder with the files students have uploaded (PSDs etc.). The site shows
+// these as preview thumbnails and collects votes in Firestore (hm_graphic_votes).
+// Re-deploy the web app (Deploy → Manage deployments → Edit → New version)
+// after changing this so ?action=listGraphics goes live.
+const GRAPHICS_ROOT_FOLDER_ID = '1ZJrud44_7oSXxuVhTIDyTmIwbFrpsvma';
+
+function listGraphics() {
+  const cache = CacheService.getScriptCache();
+  const hit = cache.get('graphics_list');
+  if (hit) return JSON.parse(hit);
+  const root = DriveApp.getFolderById(GRAPHICS_ROOT_FOLDER_ID);
+  const folders = [];
+  const subs = root.getFolders();
+  while (subs.hasNext()) {
+    const f = subs.next();
+    const files = [];
+    const it = f.getFiles();
+    while (it.hasNext()) {
+      const file = it.next();
+      files.push({
+        id: file.getId(),
+        name: file.getName(),
+        mime: file.getMimeType(),
+        modified: file.getLastUpdated().getTime(),
+        url: file.getUrl(),
+      });
+    }
+    files.sort((a, b) => b.modified - a.modified);
+    folders.push({ id: f.getId(), name: f.getName(), url: f.getUrl(), files: files });
+  }
+  folders.sort((a, b) => a.name.localeCompare(b.name));
+  const result = { success: true, folders: folders };
+  try { cache.put('graphics_list', JSON.stringify(result), 60); } catch (e) {}
+  return result;
+}

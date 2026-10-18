@@ -186,6 +186,7 @@ The app has one HTML file. Navigation is via `go('viewname')` which sets `S.view
 | `live` | Next broadcast countdown, crew roles, mini calendar sidebar |
 | `broadcast` | Single broadcast: crew assignments, student sign-ups, checklist, notes |
 | `schedule` | All broadcasts in date order |
+| `graphics` | Basketball Graphics Package: Drive previews + student voting (teacher sees counts/voters) |
 | `availability` | Students sign up for broadcasts + choose role preferences |
 | `sports` | Coming soon placeholder |
 | `yearbook` | Event coverage sign-ups, calendar embed, shot list tips |
@@ -300,6 +301,7 @@ TARGET_CAL_ID = '2b9bdfdee65f7330d8d5d2fd1d4877c1b709289fa0b0747427f57fd62516bed
 - `?action=sync` — Sync varsity events from source → target calendar
 - `?action=addEvent&title=X&date=YYYY-MM-DD&time=X` — Add event to calendar
 - `?action=deleteEvent&calEventId=X` — Delete event from calendar
+- `?action=listGraphics` — List subfolders + files of the Basketball Graphics Package Drive folder (`GRAPHICS_ROOT_FOLDER_ID`); powers the `graphics` view. Votes are stored in Firestore `hm_graphic_votes` (doc id `<folderId>__<voterKey>`: `{folderId,fileId,voter,voterKey,updatedAt}`) — one vote per student per folder, changeable. Needs the web app re-deployed after Code.gs changes.
 
 > Note: Reading calendar events does NOT go through Apps Script anymore.  
 > The site uses the Google Calendar API directly (see below).
