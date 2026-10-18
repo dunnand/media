@@ -6100,7 +6100,8 @@ function allYbEvents() {
     seenCal.add(key);
     return true;
   });
-  const all = [...base, ...fromCal];
+  const HIDDEN_YB_KEYS = new Set(['basketball_girls|2026-10-28', 'basketball_boys|2026-11-21']); // basketball scrimmages — dropped
+  const all = [...base, ...fromCal].filter(e => !HIDDEN_YB_KEYS.has(e.type + '|' + e.date));
   return S.ybShowAway ? all : all.filter(e => e.home !== false || YB_ALWAYS_SHOW.has(e.type));
 }
 
