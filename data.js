@@ -115,6 +115,8 @@ const FOOTBALL_HOME_GAMES = [
   { id: 'fb26-0904', title: 'Football vs. South Side',              date: '2026-09-04', type: 'football', gameTime: '7:00 PM', roles: {}, checks: {}, notes: 'Spartan Stadium' },
   { id: 'fb26-0918', title: 'Football vs. Bishop Dwenger',          date: '2026-09-18', type: 'football', gameTime: '7:00 PM', roles: {}, checks: {}, notes: 'Spartan Stadium' },
   { id: 'fb26-1002', title: 'Football vs. Carroll High School',     date: '2026-10-02', type: 'football', gameTime: '7:00 PM', roles: {}, checks: {}, notes: 'Spartan Stadium' },
+  { id: 'fb26-1030', title: 'Football vs. Northrop',                date: '2026-10-30', type: 'football', gameTime: '7:00 PM', roles: {}, checks: {}, notes: 'Spartan Stadium' },
+  { id: 'fb26-1102', title: 'Football vs. Carroll High School',     date: '2026-11-02', type: 'football', gameTime: '7:00 PM', roles: {}, checks: {}, notes: 'Possible game — date/time TBD — update when confirmed' },
 ];
 
 // -- 2026 Football Roster & Depth Chart --
