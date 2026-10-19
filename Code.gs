@@ -353,10 +353,10 @@ function onWeeklyFormSubmit(e) {
   if (uploadIds.length) {
     body.appendParagraph('Uploaded files:');
     uploadIds.forEach(id => {
-      let file = null;
-      try { file = DriveApp.getFileById(id); } catch (err) {}
-      if (!file) { body.appendParagraph('Could not move this upload (no access) — open it here: https://drive.google.com/file/d/' + id + '/view'); return; }
-      try { file.moveTo(folder); } catch (err) { /* keep in place, linked below */ }
+      let file = null, why = '';
+      try { file = DriveApp.getFileById(id); } catch (err) { why = String(err); }
+      if (!file) { body.appendParagraph('Could not move this upload (' + why + ' | running as ' + Session.getEffectiveUser().getEmail() + ') — open it here: https://drive.google.com/file/d/' + id + '/view'); return; }
+      try { file.moveTo(folder); } catch (err) { body.appendParagraph('(left in place: ' + String(err) + ')'); }
       body.appendParagraph(file.getName() + ' — ' + file.getUrl());
     });
   }
