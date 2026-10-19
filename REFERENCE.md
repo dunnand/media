@@ -440,6 +440,9 @@ Do this each August before school starts:
 - [ ] In teacher dashboard → Athletics Calendar Sync → run sync to pull all other sports
 - [ ] In teacher dashboard → Yearbook Event Manager → ↻ Refresh Calendar Events
 - [ ] Review show schedule (all Fridays) and mark any that won't have a broadcast
+- [ ] **Weekly Accomplishments (Yearbook):** create the new year's week folders in the shared Drive, then update the week list in ALL THREE places: `YB_WEEKLY_FOLDERS` (script.js), `WEEKLY_FOLDERS` (Code.gs), and `WEEKLY_FOLDERS` in `WeeklyFormOwner.gs`. Paste the updated `WeeklyFormOwner.gs` into the form owner's (work account) Apps Script project — it is NOT part of the main deployment. Second-semester folderIds start empty: run the dashboard's "Set Up Any New Weekly Folders" in January, then paste the IDs into all three lists.
+- [ ] If a NEW Weekly Accomplishments form is created (instead of reusing the current one): update `YB_WEEKLY_FORM_URL` (script.js), `WEEKLY_FORM_EDIT_URL` in `WeeklyFormOwner.gs`, re-run `setupWeeklyFormTrigger()` as the form owner, and delete the old form's trigger. Triggers don't carry over to a copied form.
+- [ ] **Basketball Graphics Package:** set `GRAPHICS_ROOT_FOLDER_ID` in Code.gs to the new season's Drive folder and re-deploy the web app (Deploy → Manage deployments → Edit → New version). Old votes/turn-ins stay in Firestore (`hm_graphic_votes`, `hm_graphic_turnins`) — delete those docs to start fresh.
 
 ---
 
@@ -511,3 +514,12 @@ m.querySelector('#modal-save').addEventListener('click', async () => {
 - **Firestore cal_cache TTL** — 6 hours. If calendar events look stale in the yearbook dropdown, teacher hits ↻ Refresh in dashboard.
 - **YEARBOOK_EVENTS de-duplication** — `allYbEvents()` de-dupes calendar events against hardcoded + custom events using `type|date` as the key.
 - **inferYbType()** — Maps calendar event titles to type keys by checking for keywords (e.g., title includes "volleyball" → `volleyball`). If a sport isn't being categorized correctly, add a rule in this function in script.js.
+
+---
+
+## Weekly Accomplishments filing (who runs what)
+
+- The form's responses are filed by `onWeeklyFormSubmit` in **`WeeklyFormOwner.gs`**, running in a standalone Apps Script project under the **form owner's account** (form uploads are owned by the form owner, so only that account can reliably move them). The trigger was created by running `setupWeeklyFormTrigger()` there.
+- The main `Code.gs` project still has its own copy of `onWeeklyFormSubmit`, but its trigger was deleted — do not re-add it or responses will be filed twice (and uploads fail).
+- If responses stop appearing in the week folders: check the form owner's project → Triggers for the `onWeeklyFormSubmit` row and Executions for errors; confirm that account can edit the weekly folders.
+
