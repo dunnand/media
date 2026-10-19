@@ -3393,3 +3393,6 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 .gfx-nav { position: absolute; top: 40%; z-index: 1; width: 44px; height: 64px; border: 0; border-radius: 8px; background: rgba(255,255,255,0.85); color: #000; font-size: 2rem; line-height: 1; cursor: pointer; }
 .gfx-nav-prev { left: 8px; }
 .gfx-nav-next { right: 8px; }
+.gfx-thumb-wrap { position: relative; }
+.gfx-play { position: absolute; inset: 0; margin: auto; width: 44px; height: 44px; border-radius: 50%; background: rgba(0,0,0,0.6); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; pointer-events: none; }
+.gfx-overlay-video { width: min(1100px, 92vw); aspect-ratio: 16 / 9; max-height: 75vh; border: 0; border-radius: 8px; background: #000; }

@@ -12360,6 +12360,7 @@ function showRegisterIASBModal(cat) {
 // Votes: hm_graphic_votes, one doc per (folder, voter) so each student gets one
 // vote per graphic folder and can change it. Counts + voter names are teacher-only.
 function gfxVoterKey(name) { return String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+function gfxIsVideo(file) { return /^video\//.test(file.mime || '') || /\.(mp4|mov|m4v|webm|avi|mkv)$/i.test(file.name || ''); }
 function gfxThumb(id) { return `https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w600`; }
 
 async function loadGraphics() {
@@ -12420,6 +12421,7 @@ function renderGraphics() {
             <div class="gfx-item${isMine ? ' gfx-mine' : ''}">
               <button type="button" class="gfx-thumb-wrap" data-gfx-zoom="${esc(file.id)}" title="Click to enlarge">
                 <img class="gfx-thumb" src="${gfxThumb(file.id)}" alt="${label(file)}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'gfx-nothumb',textContent:'No preview available'}))">
+                ${gfxIsVideo(file) ? '<span class="gfx-play">▶</span>' : ''}
               </button>
               <div class="gfx-name">${label(file)}${S.teacherMode ? ` <span class="dim">· ${esc(file.name)}</span>` : ''}</div>
               <button class="${isMine ? 'btn-primary' : 'btn-secondary'} gfx-vote-btn" data-gfx-vote="${esc(file.id)}" data-gfx-folder="${esc(f.id)}" ${turnedIn ? '' : 'disabled title="Turn in your own graphic first"'}>${isMine ? '✓ Your vote' : mine ? 'Change vote to this' : 'Vote'}</button>
@@ -12434,7 +12436,9 @@ function renderGraphics() {
       <div class="gfx-overlay-box">
         <button class="gfx-overlay-close" id="gfx-zoom-close" aria-label="Close">✕</button>
         ${ordered.length > 1 ? `<button class="gfx-nav gfx-nav-prev" data-gfx-step="-1" aria-label="Previous graphic">‹</button><button class="gfx-nav gfx-nav-next" data-gfx-step="1" aria-label="Next graphic">›</button>` : ''}
-        <img class="gfx-overlay-img" src="${gfxThumb(zoomFile.id).replace('sz=w600', 'sz=w1600')}" alt="${label(zoomFile)}">
+        ${gfxIsVideo(zoomFile)
+          ? `<iframe class="gfx-overlay-video" src="https://drive.google.com/file/d/${encodeURIComponent(zoomFile.id)}/preview" allow="autoplay; fullscreen" allowfullscreen></iframe>`
+          : `<img class="gfx-overlay-img" src="${gfxThumb(zoomFile.id).replace('sz=w600', 'sz=w1600')}" alt="${label(zoomFile)}">`}
         <div class="gfx-overlay-bar">
           <span class="gfx-name" style="flex:1">${label(zoomFile)} of ${ordered.length}${S.teacherMode ? ` <span class="dim">· ${esc(zoomFile.name)}</span>` : ''}</span>
           <button class="${zoomIsMine ? 'btn-primary' : 'btn-secondary'}" data-gfx-vote="${esc(zoomFile.id)}" data-gfx-folder="${esc(f.id)}" ${turnedIn ? '' : 'disabled title="Turn in your own graphic first"'}>${zoomIsMine ? '✓ Your vote' : mine ? 'Change vote to this' : 'Vote'}</button>
