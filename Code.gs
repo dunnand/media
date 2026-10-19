@@ -303,6 +303,23 @@ function createWeeklyAccomplishmentsForm() {
   return form.getPublishedUrl();
 }
 
+// Re-attach the auto-filing trigger after the Form's owner changes (a copied or
+// transferred Form doesn't keep its triggers). Paste the new Form's EDIT url
+// (https://docs.google.com/forms/d/<ID>/edit — NOT the /viewform link) below,
+// then run this ONCE from the Apps Script editor while signed in as an account
+// that can edit that Form. Safe to re-run: it removes old onWeeklyFormSubmit
+// triggers first so submissions are never filed twice.
+const WEEKLY_FORM_EDIT_URL = ''; // <-- paste the new Form's edit URL here
+function attachWeeklyFormTrigger() {
+  if (!WEEKLY_FORM_EDIT_URL) throw new Error('Paste the Form edit URL into WEEKLY_FORM_EDIT_URL first.');
+  const form = FormApp.openByUrl(WEEKLY_FORM_EDIT_URL);
+  ScriptApp.getProjectTriggers()
+    .filter(t => t.getHandlerFunction() === 'onWeeklyFormSubmit')
+    .forEach(t => ScriptApp.deleteTrigger(t));
+  ScriptApp.newTrigger('onWeeklyFormSubmit').forForm(form).onFormSubmit().create();
+  Logger.log('Trigger attached to: ' + form.getTitle());
+}
+
 function onWeeklyFormSubmit(e) {
   const answers = {};
   e.response.getItemResponses().forEach(item => {
