@@ -355,7 +355,7 @@ function onWeeklyFormSubmit(e) {
     uploadIds.forEach(id => {
       let file = null;
       try { file = DriveApp.getFileById(id); } catch (err) {}
-      if (!file) { body.appendParagraph('(could not access uploaded file ' + id + ')'); return; }
+      if (!file) { body.appendParagraph('Could not move this upload (no access) — open it here: https://drive.google.com/file/d/' + id + '/view'); return; }
       try { file.moveTo(folder); } catch (err) { /* keep in place, linked below */ }
       body.appendParagraph(file.getName() + ' — ' + file.getUrl());
     });
