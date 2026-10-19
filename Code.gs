@@ -350,16 +350,16 @@ function onWeeklyFormSubmit(e) {
   // Move uploaded files into the week's folder alongside the Doc. If a file can't
   // be moved (owned by the Form owner and not shared with this script's account),
   // leave it where it is and link it from the Doc so it's never lost.
-  if (uploadIds.length) {
+  if (uploadIds.length) try {
     body.appendParagraph('Uploaded files:');
     uploadIds.forEach(id => {
       let file = null, why = '';
       try { file = DriveApp.getFileById(id); } catch (err) { why = String(err); }
-      if (!file) { body.appendParagraph('Could not move this upload (' + why + ' | running as ' + Session.getEffectiveUser().getEmail() + ') — open it here: https://drive.google.com/file/d/' + id + '/view'); return; }
+      if (!file) { body.appendParagraph('Could not move this upload (' + why + ') — open it here: https://drive.google.com/file/d/' + id + '/view'); return; }
       try { file.moveTo(folder); } catch (err) { body.appendParagraph('(left in place: ' + String(err) + ')'); }
       body.appendParagraph(file.getName() + ' — ' + file.getUrl());
     });
-  }
+  } catch (err) { body.appendParagraph('(upload handling failed: ' + String(err) + ')'); }
   doc.saveAndClose();
 
   DriveApp.getFileById(doc.getId()).moveTo(folder);
