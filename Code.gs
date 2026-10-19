@@ -309,7 +309,7 @@ function createWeeklyAccomplishmentsForm() {
 // then run this ONCE from the Apps Script editor while signed in as an account
 // that can edit that Form. Safe to re-run: it removes old onWeeklyFormSubmit
 // triggers first so submissions are never filed twice.
-const WEEKLY_FORM_EDIT_URL = ''; // <-- paste the new Form's edit URL here
+const WEEKLY_FORM_EDIT_URL = 'https://docs.google.com/forms/d/1S9Gd3nnz6_YSuY73L2z-XYig_lYNJdBS4pcHZkAnlxA/edit';
 function attachWeeklyFormTrigger() {
   if (!WEEKLY_FORM_EDIT_URL) throw new Error('Paste the Form edit URL into WEEKLY_FORM_EDIT_URL first.');
   const form = FormApp.openByUrl(WEEKLY_FORM_EDIT_URL);
