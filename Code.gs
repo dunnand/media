@@ -322,7 +322,12 @@ function attachWeeklyFormTrigger() {
 
 function onWeeklyFormSubmit(e) {
   const answers = {};
+  const uploadIds = []; // file-upload questions return an array of Drive file IDs
   e.response.getItemResponses().forEach(item => {
+    if (item.getItem().getType() === FormApp.ItemType.FILE_UPLOAD) {
+      [].concat(item.getResponse() || []).forEach(id => uploadIds.push(id));
+      return;
+    }
     answers[item.getItem().getTitle()] = item.getResponse();
   });
 
@@ -341,6 +346,20 @@ function onWeeklyFormSubmit(e) {
   body.appendParagraph('What I accomplished this week:');
   body.appendParagraph(work);
   if (link) body.appendParagraph('Link: ' + link);
+
+  // Move uploaded files into the week's folder alongside the Doc. If a file can't
+  // be moved (owned by the Form owner and not shared with this script's account),
+  // leave it where it is and link it from the Doc so it's never lost.
+  if (uploadIds.length) {
+    body.appendParagraph('Uploaded files:');
+    uploadIds.forEach(id => {
+      let file = null;
+      try { file = DriveApp.getFileById(id); } catch (err) {}
+      if (!file) { body.appendParagraph('(could not access uploaded file ' + id + ')'); return; }
+      try { file.moveTo(folder); } catch (err) { /* keep in place, linked below */ }
+      body.appendParagraph(file.getName() + ' — ' + file.getUrl());
+    });
+  }
   doc.saveAndClose();
 
   DriveApp.getFileById(doc.getId()).moveTo(folder);
