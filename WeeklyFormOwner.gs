@@ -2,11 +2,11 @@
 //
 // WHY THIS EXISTS: form uploads are owned by the Form's owner, so only that
 // account can reliably move them. This file runs under the owner's account
-// (bound to the Form: Form → ⋮ → Script editor), leaving the main Code.gs
+// (a standalone project or one bound to the Form: Form → ⋮ → Script editor), leaving the main Code.gs
 // project (calendar sync, show plans, graphics list) untouched.
 //
 // SETUP (once, signed in as the Form owner):
-//   1. Form → ⋮ → Script editor → paste this whole file over the default code → Save.
+//   1. Paste this whole file over the project's default code → Save.
 //   2. Run setupWeeklyFormTrigger() → approve permissions.
 //   3. In the OLD Apps Script project (the one behind SYNC_SCRIPT_URL) open
 //      Triggers and delete the onWeeklyFormSubmit trigger, so responses aren't
@@ -70,8 +70,10 @@ function weeklyFolderForDate(dateStr) {
   return WEEKLY_FOLDERS[WEEKLY_FOLDERS.length - 1].folderId;
 }
 
+// Works from a standalone project or one bound to the Form.
+const WEEKLY_FORM_EDIT_URL = 'https://docs.google.com/forms/d/1S9Gd3nnz6_YSuY73L2z-XYig_lYNJdBS4pcHZkAnlxA/edit';
 function setupWeeklyFormTrigger() {
-  const form = FormApp.getActiveForm();
+  const form = FormApp.openByUrl(WEEKLY_FORM_EDIT_URL);
   ScriptApp.getProjectTriggers()
     .filter(t => t.getHandlerFunction() === 'onWeeklyFormSubmit')
     .forEach(t => ScriptApp.deleteTrigger(t));
