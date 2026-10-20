@@ -4229,55 +4229,6 @@ function renderLive() {
           ${countdownBlock}
           ${S.teacherMode ? `
           <a href="?board=crew-history" target="_blank" class="btn-secondary" style="display:inline-block;margin:-8px 0 12px;font-size:0.8rem;padding:5px 12px;text-decoration:none">🖥️ Open Crew History Board</a>` : ''}
-          ${(() => {
-            const allLessons = getCourseLessonList('live')
-              .filter(l => S.teacherMode || !S.hiddenLessons.has(l.id))
-              .filter(l => S.teacherMode || !S.hiddenUnits.has(unitKey('live', l.unitId)));
-            const unitOptions = getCourseUnits('live').map(u => `<option value="${u.id}">${esc(u.title)}</option>`).join('');
-            const renderLessonCard = (l, idx) => `
-              <div class="lesson-item${S.hiddenLessons.has(l.id) ? ' lesson-item-off' : ''}" data-lesson-course="live" data-lesson-unit="${l.unitId}" data-lesson-id="${l.id}">
-                ${S.teacherMode ? `
-                <div class="lesson-move-btns">
-                  <button class="lesson-move-btn" data-move-lesson="${l.id}" data-move-course="live" data-move-dir="top" ${idx === 0 ? 'disabled' : ''} title="Move to top">⏫</button>
-                  <button class="lesson-move-btn" data-move-lesson="${l.id}" data-move-course="live" data-move-dir="up" ${idx === 0 ? 'disabled' : ''} title="Move up">▲</button>
-                  <button class="lesson-move-btn" data-move-lesson="${l.id}" data-move-course="live" data-move-dir="down" ${idx === allLessons.length - 1 ? 'disabled' : ''} title="Move down">▼</button>
-                  <button class="lesson-move-btn" data-move-lesson="${l.id}" data-move-course="live" data-move-dir="bottom" ${idx === allLessons.length - 1 ? 'disabled' : ''} title="Move to bottom">⏬</button>
-                </div>` : ''}
-                <div class="lesson-item-icon${S.teacherMode ? ' lesson-item-icon-edit' : ''}" ${S.teacherMode ? `data-edit-icon="${l.id}" title="Click to change icon"` : ''}>${getLessonIcon(l, '🎬')}</div>
-                <div class="lesson-item-body">
-                  <div class="lesson-item-num">${esc(l.unitTitle)}</div>
-                  <div class="lesson-item-title${S.teacherMode ? ' lesson-item-title-edit' : ''}" ${S.teacherMode ? `data-edit-title="${l.id}" title="Click to edit title"` : ''}>${esc(l.title)}${S.teacherMode ? ' ✏️' : ''}</div>
-                  <div class="lesson-item-summary">${esc(l.summary || '')}</div>
-                </div>
-                <div class="lesson-item-right">
-                  ${S.hiddenLessons.has(l.id) ? `<span class="lesson-hidden-chip">Hidden</span>` : ''}
-                  <span class="lesson-duration-chip">${esc(l.duration || '')}</span>
-                  ${S.teacherMode
-                    ? `<button class="lesson-delete-btn" data-delete-lesson="${l.id}" data-delete-type="${l.isCustom ? 'canva' : 'builtin'}" title="${l.isCustom ? 'Delete' : 'Hide'} lesson">✕</button>`
-                    : `<span class="lesson-item-arrow">→</span>`}
-                </div>
-              </div>`;
-            return `
-            <section class="card">
-              <div class="card-header"><h2>📚 Lessons</h2></div>
-              <div style="display:flex;flex-direction:column;gap:0;margin-top:4px">
-                ${allLessons.map(renderLessonCard).join('')}
-              </div>
-              ${S.teacherMode ? (S.showCanvaForm ? `
-                <div style="margin-top:12px;padding:14px;background:var(--surface2);border-radius:10px;display:flex;flex-direction:column;gap:10px">
-                  <input id="canva-title" class="form-input" placeholder="Lesson title" style="font-size:0.9rem">
-                  <input id="canva-duration" class="form-input" placeholder="Duration (e.g. 2 classes)" style="font-size:0.9rem">
-                  <input id="canva-url" class="form-input" placeholder="Canva or Google Slides share link" style="font-size:0.9rem">
-                  <select id="canva-unit" class="form-input" style="font-size:0.9rem">${unitOptions}</select>
-                  <div style="display:flex;gap:8px">
-                    <button class="btn-primary" id="canva-save-btn" style="font-size:0.85rem">Add Lesson</button>
-                    <button class="btn-secondary" id="canva-cancel-btn" style="font-size:0.85rem">Cancel</button>
-                  </div>
-                </div>` : `
-                <button class="btn-secondary" id="canva-add-btn" style="margin-top:10px;font-size:0.82rem;width:100%">+ Add Canva/Slides Lesson</button>`)
-              : ''}
-            </section>`;
-          })()}
           <section class="card">
             <div class="card-header">
               <h2>Next 5 Broadcasts</h2>
