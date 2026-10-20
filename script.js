@@ -10009,7 +10009,7 @@ function renderCrewHistoryTable() {
         <tbody>
           ${names.map(name => `
           <tr>
-            <td class="ch-name-col">${esc(name)}</td>
+            <td class="ch-name-col">${esc(name)} <button class="ch-edit-btn" data-ch-rename="${esc(name)}" title="Rename / merge this name">✏️</button></td>
             ${LIVE_ROLES.map(r => {
               const n = counts[name][r] || 0;
               return `<td class="ch-count-cell${n ? '' : ' ch-count-zero'}">${n || '—'}</td>`;
@@ -10020,6 +10020,40 @@ function renderCrewHistoryTable() {
       </table>
     </div>`;
 }
+
+// Rename a student everywhere they're assigned (teacher PIN required — this
+// board is a public screen). If the new name already exists, the two names merge
+// and their counts add together, since counts are computed from the saved roles.
+function crewHistoryRename(oldName) {
+  const m = modal(`
+    <h2>Rename "${esc(oldName)}"</h2>
+    <p class="dim" style="font-size:0.85rem">Every assignment under this name is changed to the new name. If the new name already has assignments, the counts are combined and the old name disappears.</p>
+    <div class="form-group"><label>New name</label><input id="ch-new-name" type="text" value="${esc(oldName)}"></div>
+    <div class="form-group"><label>Teacher PIN</label><input id="ch-pin" type="password" inputmode="numeric" autocomplete="off"></div>`);
+  m.querySelector('#modal-save').addEventListener('click', async () => {
+    const pin = val('ch-pin'), newName = val('ch-new-name');
+    if (pin !== TEACHER_PIN) { showToast('Wrong PIN.'); return; }
+    if (!newName || newName === oldName) { m.remove(); return; }
+    const db = getDB();
+    if (!db) return;
+    const changed = (S.crewHistoryBroadcasts || []).filter(b => Object.values(b.roles || {}).some(n => (n || '').trim() === oldName));
+    try {
+      await Promise.all(changed.map(b => {
+        const roles = { ...b.roles };
+        Object.keys(roles).forEach(r => { if ((roles[r] || '').trim() === oldName) roles[r] = newName; });
+        trackUsage('writes');
+        return db.collection('hm_broadcasts').doc(b.id).update({ roles });
+      }));
+      m.remove();
+      showToast(`Renamed in ${changed.length} broadcast${changed.length === 1 ? '' : 's'}.`);
+    } catch (e) { showToast('Could not rename. Try again.'); }
+  });
+}
+
+document.addEventListener('click', ev => {
+  const btn = ev.target.closest('[data-ch-rename]');
+  if (btn) crewHistoryRename(btn.dataset.chRename);
+});
 
 function loadCrewHistoryBoard() {
   const db = getDB();
