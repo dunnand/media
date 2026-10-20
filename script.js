@@ -6114,7 +6114,7 @@ function allYbEvents() {
     return true;
   });
   const HIDDEN_YB_KEYS = new Set(['basketball_girls|2026-10-28', 'basketball_boys|2026-11-21']); // basketball scrimmages — dropped
-  const all = [...base, ...fromCal].filter(e => !HIDDEN_YB_KEYS.has(e.type + '|' + e.date));
+  const all = noBbScrimmages([...base, ...fromCal]).filter(e => !HIDDEN_YB_KEYS.has(e.type + '|' + e.date));
   return S.ybShowAway ? all : all.filter(e => e.home !== false || YB_ALWAYS_SHOW.has(e.type));
 }
 
@@ -6550,7 +6550,7 @@ async function loadCalendarYbEvents() {
       if (doc.exists) {
         const { ts, events } = doc.data();
         if (Date.now() - ts < TTL && events && events.length) {
-          S.calendarYbEvents = events; return;
+          S.calendarYbEvents = noBbScrimmages(events); return;
         }
       }
     } catch(e) {}
@@ -6584,7 +6584,7 @@ async function loadCalendarYbEvents() {
           icon:     YB_ICONS[type] || '📅'
         };
       }).filter(e => e.date);
-      S.calendarYbEvents = events;
+      S.calendarYbEvents = noBbScrimmages(events);
       if (db) {
         trackUsage('writes');
         db.collection('hm_config').doc('cal_cache').set({ ts: Date.now(), events }).catch(() => {});
@@ -6606,7 +6606,7 @@ async function loadCalendarBroadcastEvents() {
       if (doc.exists) {
         const { ts, events } = doc.data();
         if (Date.now() - ts < TTL && events && events.length) {
-          S.calendarBroadcastEvents = events; return;
+          S.calendarBroadcastEvents = noBbScrimmages(events); return;
         }
       }
     } catch(e) {}
@@ -6647,7 +6647,7 @@ async function loadCalendarBroadcastEvents() {
           icon:     YB_ICONS[type] || '📅'
         };
       }).filter(e => e.date);
-      S.calendarBroadcastEvents = events;
+      S.calendarBroadcastEvents = noBbScrimmages(events);
       if (db) {
         trackUsage('writes');
         db.collection('hm_config').doc('bcast_cal_cache').set({ ts: Date.now(), events }).catch(() => {});
@@ -6663,7 +6663,7 @@ async function loadCustomYbEvents() {
     const snap = await db.collection('hm_yearbook_events').orderBy('date').get();
     trackUsage('reads', snap.size);
     return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  }, list => { S.customYbEvents = list; });
+  }, list => { S.customYbEvents = noBbScrimmages(list); });
 }
 
 async function saveYbEvent() {
@@ -9607,7 +9607,7 @@ async function loadFromFirebase() {
   }, data => {
     if (data.stationSchedule) S.stationSchedule = data.stationSchedule;
     if (data.afterSchoolSchedule) S.afterSchoolSchedule = data.afterSchoolSchedule;
-    S.broadcasts     = data.broadcasts     || [];
+    S.broadcasts     = noBbScrimmages(data.broadcasts || []);
     S.iasbEntries    = data.iasbEntries    || [];
     S.availabilities = data.availabilities || [];
   });
@@ -9615,6 +9615,11 @@ async function loadFromFirebase() {
 
 // Every event on the Homestead Live Event Calendar is teacher-curated and broadcast-worthy by definition,
 // so unlike the Yearbook sync this takes everything — no sport-type or home/away filtering.
+// Basketball scrimmages are never shown or synced (any source, any date).
+function noBbScrimmages(list) {
+  return (list || []).filter(e => !(/basketball/i.test(e.type || '') && /scrimmage/i.test((e.title || '') + ' ' + (e.notes || ''))));
+}
+
 async function syncBroadcastsFromCalendar() {
   const db = getDB();
   if (!db) return 0;
