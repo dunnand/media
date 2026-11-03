@@ -12353,7 +12353,8 @@ function showRegisterIASBModal(cat) {
 function gfxVoterKey(name) { return String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
 function gfxIsVideo(file) { return /^video\//.test(file.mime || '') || /\.(mp4|mov|m4v|webm|avi|mkv)$/i.test(file.name || ''); }
 function gfxNoteBox(fileId) {
-  return `<textarea class="gfx-note" data-gfx-note="${esc(fileId)}" rows="2" placeholder="Teacher note (only you see this)">${esc(S.gfxNotes[fileId] || '')}</textarea>`;
+  if (!S.teacherMode) return S.gfxNotes[fileId] ? `<div class="gfx-note-view"><strong>Teacher feedback:</strong> ${esc(S.gfxNotes[fileId])}</div>` : '';
+  return `<textarea class="gfx-note" data-gfx-note="${esc(fileId)}" rows="2" placeholder="Teacher feedback (students can see this)">${esc(S.gfxNotes[fileId] || '')}</textarea>`;
 }
 function gfxThumb(id) { return `https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w600`; }
 
@@ -12375,7 +12376,7 @@ async function loadGraphics() {
       const tsnap = await db.collection('hm_graphic_turnins').get();
       trackUsage('reads', tsnap.size);
       S.gfxTurnins = tsnap.docs.map(d => ({ id: d.id, ...d.data() }));
-      if (S.teacherMode) {
+      {
         const nsnap = await db.collection('hm_graphic_notes').get();
         trackUsage('reads', nsnap.size);
         S.gfxNotes = {};
@@ -12425,7 +12426,7 @@ function renderGraphics() {
               </button>
               <div class="gfx-name">${label(file)}${S.teacherMode ? ` <span class="dim">· ${esc(file.name)}</span>` : ''}</div>
               <button class="${isMine ? 'btn-primary' : 'btn-secondary'} gfx-vote-btn" data-gfx-vote="${esc(file.id)}" data-gfx-folder="${esc(f.id)}" ${turnedIn ? '' : 'disabled title="Turn in your own graphic first"'}>${isMine ? '✓ Your vote' : mine ? 'Change vote to this' : 'Vote'}</button>
-              ${S.teacherMode ? gfxNoteBox(file.id) : ''}
+              ${gfxNoteBox(file.id)}
               ${S.teacherMode ? `<div class="gfx-voters"><strong>${fileVotes.length} vote${fileVotes.length === 1 ? '' : 's'}</strong>${fileVotes.length ? ': ' + fileVotes.map(v => esc(v.voter)).join(', ') : ''}</div>` : ''}
             </div>`;
     }).join('');
@@ -12443,7 +12444,7 @@ function renderGraphics() {
         <div class="gfx-overlay-bar">
           <span class="gfx-name" style="flex:1">${label(zoomFile)} of ${ordered.length}${S.teacherMode ? ` <span class="dim">· ${esc(zoomFile.name)}</span>` : ''}</span>
           <button class="${zoomIsMine ? 'btn-primary' : 'btn-secondary'}" data-gfx-vote="${esc(zoomFile.id)}" data-gfx-folder="${esc(f.id)}" ${turnedIn ? '' : 'disabled title="Turn in your own graphic first"'}>${zoomIsMine ? '✓ Your vote' : mine ? 'Change vote to this' : 'Vote'}</button>
-          ${S.teacherMode ? gfxNoteBox(zoomFile.id) : ''}
+          ${gfxNoteBox(zoomFile.id)}
           ${S.teacherMode ? `<a class="btn-primary" href="${esc(zoomFile.url)}" target="_blank" rel="noopener" style="text-decoration:none">Open in Drive ↗</a>` : ''}
         </div>
       </div>
