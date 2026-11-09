@@ -11578,7 +11578,9 @@ function renderPasscodeScreen(errorMsg) {
 // ── Media store popup (once per browser session) ─────────────
 const MEDIA_STORE_URL = 'https://hmmedia2026.itemorder.com/shop/home/';
 const MEDIA_STORE_CODE = 'Media Coupon';
+const MEDIA_STORE_DEADLINE = new Date(2026, 10, 20, 23, 59, 59); // Nov 20, 2026
 function showStorePopup() {
+  if (new Date() > MEDIA_STORE_DEADLINE) return;
   try { if (sessionStorage.getItem('hm_store_popup')) return; sessionStorage.setItem('hm_store_popup', '1'); } catch (e) {}
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
@@ -11586,6 +11588,7 @@ function showStorePopup() {
     <div class="modal-box" style="text-align:center">
       <h2>🛍️ Homestead Media Store</h2>
       <p style="margin:0 0 12px">Our 2026 media gear is available now. Use code <strong>${MEDIA_STORE_CODE}</strong> at checkout for <strong>$20 off</strong>.</p>
+      <p style="margin:0 0 12px"><strong>Order by November 20.</strong></p>
       <div class="modal-actions" style="justify-content:center">
         <button class="btn-secondary" id="store-popup-close">Maybe later</button>
         <a class="btn-primary" href="${MEDIA_STORE_URL}" target="_blank" rel="noopener" id="store-popup-go" style="text-decoration:none">Shop now →</a>
