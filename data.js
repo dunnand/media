@@ -2920,14 +2920,29 @@ function gfxTourneyGroups() {
   const T = GFX_TOURNEY, g = [], pkg = GFX_FULL_PACKAGE.filter(x => !GFX_TOURNEY_SKIP.includes(x));
   g.push({ title: 'Day 1 (12/29) — Homestead vs. Portage · full package', who: 'Andres A.', items: pkg.map(x => 'Homestead vs. Portage — ' + x) });
   g.push({ title: 'Day 1 (12/29) — Carroll vs. Hamilton Southeastern · full package', who: 'Elizabeth S.', items: pkg.map(x => 'Carroll vs. Hamilton Southeastern — ' + x) });
-  // Bracket graphic for every game, with every option: the 4 Day 1 games, and each possible Day 2 matchup as a winners game and as a losers game.
-  const brk = [
-    { who: 'Andres A.', day1: ['Homestead vs. Portage', 'Zionsville vs. Penn'], day2: T.matchups.slice(4) },
-    { who: 'Elizabeth S.', day1: ['Carroll vs. Hamilton Southeastern', 'South Bend St. Joseph vs. Mount Vernon'], day2: T.matchups.slice(0, 4) }
+  // Bracket graphics, one set per side of the bracket. Each side has two Day 1 games; every possible result gets its own bracket:
+  // the blank Day 1 bracket, 4 "after Day 1" brackets (who won each game), and 16 "after Day 2" brackets (4 Day 1 results x 4 winners/losers game results).
+  const sides = [
+    { who: 'Andres A.', g1: ['Homestead', 'Portage'], g2: ['Zionsville', 'Penn'] },
+    { who: 'Elizabeth S.', g1: ['Carroll', 'Hamilton Southeastern'], g2: ['South Bend St. Joseph', 'Mount Vernon'] }
   ];
-  brk.forEach(b => {
-    g.push({ title: 'Day 1 (12/29) — Bracket graphics', who: b.who, items: b.day1.map(m => m + ' — Bracket') });
-    g.push({ title: 'Day 2 (12/30) — Bracket graphics (each matchup as a winners game and a losers game)', who: b.who, items: b.day2.flatMap(m => ['Winners', 'Losers'].map(w => w + ': ' + m + ' — Bracket')) });
+  sides.forEach(s => {
+    const side = s.g1[0] + '/' + s.g1[1] + ' · ' + s.g2[0] + '/' + s.g2[1];
+    g.push({ title: 'Bracket — Day 1 (12/29) · ' + side, who: s.who, items: [
+      s.g1[0] + ' vs. ' + s.g1[1] + ' — Bracket (before game)',
+      s.g2[0] + ' vs. ' + s.g2[1] + ' — Bracket (before game)'
+    ] });
+    const after1 = [], after2 = [];
+    s.g1.forEach(w1 => s.g2.forEach(w2 => {
+      const l1 = s.g1.find(x => x !== w1), l2 = s.g2.find(x => x !== w2);
+      const tag = w1 + ' & ' + w2 + ' win Day 1';
+      after1.push('Bracket after Day 1 — ' + tag + ' (Winners: ' + w1 + ' vs. ' + w2 + ' · Losers: ' + l1 + ' vs. ' + l2 + ')');
+      [w1, w2].forEach(ww => [l1, l2].forEach(lw => {
+        after2.push('Bracket after Day 2 — ' + tag + '; ' + ww + ' wins Winners game, ' + lw + ' wins Losers game');
+      }));
+    }));
+    g.push({ title: 'Bracket — after Day 1, every possible result · ' + side, who: s.who, items: after1 });
+    g.push({ title: 'Bracket — after Day 2, every possible result · ' + side, who: s.who, items: after2 });
   });
   T.matchups.forEach(m => g.push({ title: 'Day 2 (12/30) possible matchup — ' + m, who: T.team.join(', '), items: T.graphics.map(x => m + ' — ' + x) }));
   T.alsoTeams.forEach(t => g.push({ title: 'Day 2 team graphics — ' + t, who: T.team.join(', '), items: T.alsoGraphics.map(x => t + ' — ' + x) }));
