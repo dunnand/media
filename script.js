@@ -12385,13 +12385,20 @@ function gfxNoteBox(fileId) {
   if (!S.teacherMode) return S.gfxNotes[fileId] ? `<div class="gfx-note-view"><strong>Teacher feedback:</strong> ${esc(S.gfxNotes[fileId])}</div>` : '';
   return `<textarea class="gfx-note" data-gfx-note="${esc(fileId)}" rows="2" placeholder="Teacher feedback (students can see this)">${esc(S.gfxNotes[fileId] || '')}</textarea>`;
 }
+function gfxTourneyBlock(sides) {
+  return `<div style="margin:8px 0;padding:10px 14px;border-radius:8px;background:#4c1d95;color:#fff;border:2px solid #c4b5fd">
+    <div style="font-size:0.8rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase">🎨 Day 2 possible matchups — ${esc(GFX_TOURNEY.graphics.join(', '))} (each matchup could be a winners or losers game)</div>
+    ${sides.map(sd => `<div style="margin-top:8px"><div style="font-size:1.05rem;font-weight:800">${esc(sd.student)} — ${esc(sd.label)}</div>
+      ${sd.matchups.map(m => `<div style="font-size:1rem;margin-left:12px">• ${esc(m)}</div>`).join('')}</div>`).join('')}
+  </div>`;
+}
 function gfxBigBanner(id) {
   const st = GFX_GAME_ASSIGNMENTS[id], det = GFX_GAME_DETAILS[id] || [];
   if (!st) return '';
   if (det.length) return `<div style="margin:8px 0;padding:10px 14px;border-radius:8px;background:#7c3aed;color:#fff;border:2px solid #c4b5fd">
     <div style="font-size:0.8rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase">🎨 Graphics Packages — ${det.length} games</div>
     ${det.map(l => `<div style="font-size:1.1rem;font-weight:700;margin-top:4px">• ${esc(l)}</div>`).join('')}
-  </div>`;
+  </div>${id === GFX_TOURNEY.broadcastId ? gfxTourneyBlock(GFX_TOURNEY.sides) : ''}`;
   return `<div style="display:inline-block;margin:6px 0;padding:6px 12px;border-radius:8px;background:#7c3aed;color:#fff;font-size:1rem;line-height:1.35">
     <strong>🎨 Graphics:</strong> <strong>${esc(st)}</strong>
   </div>`;
@@ -12454,14 +12461,16 @@ function renderGraphics() {
       </div>`;
   const gameLine = g => `${esc(g.title)}${g.date ? ' (' + esc(fmtDate(g.date)) + ')' : ''}${(GFX_GAME_DETAILS[g.id] || []).map(l => `<div class="dim" style="font-size:0.85rem;margin-left:12px">${esc(l)}</div>`).join('')}`;
   const myGames = gfxMyGames(myName);
+  const mk = gfxVoterKey(shortenName(myName)), mf = gfxVoterKey(String(myName).trim().split(/\s+/)[0] || '');
+  const myTourney = GFX_TOURNEY.sides.filter(sd => gfxVoterKey(sd.student) === mk || gfxVoterKey(sd.student) === mf);
   const assignBar = S.teacherMode ? `
       <div class="card"><strong>Full graphics package — assigned game</strong>
         <div class="dim" style="font-size:0.85rem;margin-top:6px">${Object.keys(GFX_GAME_ASSIGNMENTS).map(id => gfxGameInfo(id)).sort((a, b) => a.date.localeCompare(b.date)).map(g => `<div>${gameLine(g)} — <strong>${esc(g.student)}</strong></div>`).join('')}</div>
-      </div>` : myGames.length ? `
+      </div>${gfxTourneyBlock(GFX_TOURNEY.sides)}` : (myGames.length || myTourney.length) ? `
       <div class="card" style="border-left:4px solid var(--accent, #4ea1ff)"><strong>Your assigned graphics package${myGames.length > 1 ? 's' : ''}</strong>
         <div style="margin-top:4px">${myGames.map(g => `<div>${gameLine(g)}</div>`).join('')}</div>
-        <div class="dim" style="font-size:0.85rem;margin-top:4px">Create the full graphics package (every graphic in the list below) for ${myGames.length > 1 ? 'each of these games' : 'this game'}.</div>
-      </div>` : '';
+        ${myGames.length ? `<div class="dim" style="font-size:0.85rem;margin-top:4px">Create the full graphics package (every graphic in the list below) for ${myGames.length > 1 ? 'each of these games' : 'this game'}.</div>` : ''}
+      </div>${myTourney.length ? gfxTourneyBlock(myTourney) : ''}` : '';
   const status = f => {
     const votes = S.gfxVotes.filter(v => v.folderId === f.id);
     const turnins = S.gfxTurnins.filter(t => t.folderId === f.id);

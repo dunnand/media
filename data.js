@@ -2895,3 +2895,16 @@ const GFX_GAME_DETAILS = {
   'bb26-1229': ['Homestead vs. Portage — Andres A.', 'Carroll vs. Hamilton Southeastern — Elizabeth S.', 'South Bend St. Joseph vs. Mount Vernon — Cael C. (supplemental)', 'Zionsville vs. Penn — Cael C. (supplemental)'],
   'bb26-1230': ['Winners Bracket game — Cael C.', 'Loser Bracket game — Cael C.']
 };
+
+// Holiday Tournament Day 2: every possible matchup (winners and losers games share the same pairs),
+// each needing the same set of graphics with both teams together.
+const GFX_TOURNEY = {
+  broadcastId: 'bb26-1230',
+  graphics: ['Establishing', 'Scorebug', 'Thumbnail', 'Waiting Screen'],
+  sides: [
+    { student: 'Chris J.', label: 'Side 1 — Carroll/HSE game vs. St. Joe/Mt. Vernon game',
+      matchups: ['Carroll vs. South Bend St. Joseph', 'Carroll vs. Mount Vernon', 'Hamilton Southeastern vs. South Bend St. Joseph', 'Hamilton Southeastern vs. Mount Vernon'] },
+    { student: 'Jordin B.', label: 'Side 2 — Homestead/Portage game vs. Zionsville/Penn game',
+      matchups: ['Homestead vs. Zionsville', 'Homestead vs. Penn', 'Portage vs. Zionsville', 'Portage vs. Penn'] }
+  ]
+};
