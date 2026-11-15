@@ -2909,3 +2909,15 @@ const GFX_TOURNEY = {
   day1Scoreboard: ['South Bend St. Joseph vs. Mount Vernon', 'Zionsville vs. Penn'], // Day 1 games: scorebug only
   alsoTeams: ['Zionsville', 'Penn', 'South Bend St. Joseph', 'Mount Vernon']
 };
+
+// Every graphic needed for the Holiday Tournament, as checklist groups (see renderGfxChecklist in script.js).
+const GFX_FULL_PACKAGE = ['Coach Graphic', 'Establishing', 'Game Officials', 'Game Stats', 'Holiday Tournament Graphic', 'Keys to the Game', 'Past 5 Games', 'Player Graphic', 'SAC Standings', 'Sidebar Promo', 'Starting Lineups', 'Thumbnail', 'To Break', 'Top IHSAA Match ups', 'Waiting Screen'];
+function gfxTourneyGroups() {
+  const T = GFX_TOURNEY, g = [];
+  g.push({ title: 'Day 1 (12/29) — Homestead vs. Portage · full package', who: 'Andres A.', items: GFX_FULL_PACKAGE.map(x => 'Homestead vs. Portage — ' + x) });
+  g.push({ title: 'Day 1 (12/29) — Carroll vs. Hamilton Southeastern · full package', who: 'Elizabeth S.', items: GFX_FULL_PACKAGE.map(x => 'Carroll vs. Hamilton Southeastern — ' + x) });
+  g.push({ title: 'Day 1 (12/29) — Scorebug only', who: T.team.join(', '), items: T.day1Scoreboard.map(m => m + ' — Scorebug') });
+  T.matchups.forEach(m => g.push({ title: 'Day 2 (12/30) possible matchup — ' + m, who: T.team.join(', '), items: T.graphics.map(x => m + ' — ' + x) }));
+  T.alsoTeams.forEach(t => g.push({ title: 'Day 2 team graphics — ' + t, who: T.team.join(', '), items: T.alsoGraphics.map(x => t + ' — ' + x) }));
+  return g;
+}

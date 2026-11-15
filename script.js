@@ -259,6 +259,7 @@ const S = {
   calendarYbEvents: [],
   gfxFolders: null,           // Basketball graphics folders from Apps Script (null = not loaded)
   gfxVotes: [],               // hm_graphic_votes docs
+  gfxChecks: {},              // hm_gfx_checklist: item id -> {by, at} (Holiday Tournament checklist)
   gfxNotes: {},               // hm_graphic_notes: fileId -> teacher note text (teacher-only)
   gfxTurnins: [],             // hm_graphic_turnins docs (student says they turned in a graphic for a folder)
   gfxError: '',
@@ -12381,6 +12382,26 @@ function showRegisterIASBModal(cat) {
 // vote per graphic folder and can change it. Counts + voter names are teacher-only.
 function gfxVoterKey(name) { return String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
 function gfxIsVideo(file) { return /^video\//.test(file.mime || '') || /\.(mp4|mov|m4v|webm|avi|mkv)$/i.test(file.name || ''); }
+function gfxCheckId(title, label) { return gfxVoterKey(title + ' ' + label).slice(0, 140); }
+function renderGfxChecklist() {
+  const groups = gfxTourneyGroups();
+  let total = 0, done = 0;
+  const body = groups.map(g => {
+    const rows = g.items.map(label => {
+      const id = gfxCheckId(g.title, label), c = S.gfxChecks[id];
+      total++; if (c) done++;
+      return `<label style="display:flex;gap:8px;align-items:center;padding:3px 0;${c ? 'opacity:0.7' : ''}"><input type="checkbox" data-gfx-check="${esc(id)}" ${c ? 'checked' : ''}> <span${c ? ' style="text-decoration:line-through"' : ''}>${esc(label)}</span>${c && c.by ? ` <span class="dim" style="font-size:0.75rem">✓ ${esc(c.by)}</span>` : ''}</label>`;
+    }).join('');
+    const n = g.items.filter(l => S.gfxChecks[gfxCheckId(g.title, l)]).length;
+    return `<div style="margin-top:14px"><div style="font-weight:800">${esc(g.title)} <span class="dim" style="font-weight:600;font-size:0.8rem">${n}/${g.items.length} · ${esc(g.who)}</span></div>${rows}</div>`;
+  }).join('');
+  return `
+      <section class="card" style="margin-top:16px">
+        <div class="card-header"><h2>🏆 Holiday Tournament — Graphics Checklist</h2><span class="dim" style="font-size:0.9rem"><strong>${done}</strong> of ${total} done</span></div>
+        <p class="dim" style="font-size:0.85rem;margin:0">Check each graphic off once it's finished and uploaded. Everyone sees the same list.</p>
+        ${body}
+      </section>`;
+}
 function gfxNoteBox(fileId) {
   if (!S.teacherMode) return S.gfxNotes[fileId] ? `<div class="gfx-note-view"><strong>Teacher feedback:</strong> ${esc(S.gfxNotes[fileId])}</div>` : '';
   return `<textarea class="gfx-note" data-gfx-note="${esc(fileId)}" rows="2" placeholder="Teacher feedback (students can see this)">${esc(S.gfxNotes[fileId] || '')}</textarea>`;
@@ -12446,6 +12467,12 @@ async function loadGraphics() {
       const tsnap = await db.collection('hm_graphic_turnins').get();
       trackUsage('reads', tsnap.size);
       S.gfxTurnins = tsnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      try {
+        const csnap = await db.collection('hm_gfx_checklist').get();
+        trackUsage('reads', csnap.size);
+        S.gfxChecks = {};
+        csnap.docs.forEach(d => { S.gfxChecks[d.id] = d.data(); });
+      } catch (e) {}
       {
         const nsnap = await db.collection('hm_graphic_notes').get();
         trackUsage('reads', nsnap.size);
@@ -12573,6 +12600,7 @@ function renderGraphics() {
       ${nameBar}
       ${assignBar}
       <section class="card gfx-list">${rows}</section>
+      ${renderGfxChecklist()}
     </div>`;
 }
 
@@ -12594,6 +12622,24 @@ document.addEventListener('keydown', ev => {
 });
 
 document.addEventListener('change', async ev => {
+  const chk = ev.target.closest('[data-gfx-check]');
+  if (chk) {
+    const id = chk.dataset.gfxCheck, db = getDB();
+    if (!db) { chk.checked = !chk.checked; return; }
+    try {
+      trackUsage('writes');
+      if (chk.checked) {
+        const doc = { by: shortenName(localStorage.getItem('hm_student_name') || '') || (S.teacherMode ? 'Teacher' : ''), at: Date.now() };
+        await db.collection('hm_gfx_checklist').doc(id).set(doc);
+        S.gfxChecks[id] = doc;
+      } else {
+        await db.collection('hm_gfx_checklist').doc(id).delete();
+        delete S.gfxChecks[id];
+      }
+    } catch (e) { alert('Could not save. Try again.'); }
+    render();
+    return;
+  }
   const noteEl = ev.target.closest('[data-gfx-note]');
   if (noteEl && S.teacherMode) {
     const fileId = noteEl.dataset.gfxNote, note = noteEl.value.trim(), db = getDB();
