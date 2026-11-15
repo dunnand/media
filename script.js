@@ -12395,7 +12395,10 @@ function gfxGroupsForBroadcast(id) {
   if (id === 'bb26-1229') return gfxTourneyGroups().filter(g => g.title.startsWith('Day 1'));
   if (id === GFX_TOURNEY.broadcastId) return gfxTourneyGroups().filter(g => g.title.startsWith('Day 2'));
   const st = GFX_GAME_ASSIGNMENTS[id];
-  return st ? [{ title: 'Full graphics package (' + id + ')', who: st, items: GFX_FULL_PACKAGE.slice() }] : [];
+  const title = ((S.broadcasts || []).find(x => x.id === id) || {}).title || '';
+  const items = GFX_FULL_PACKAGE.slice();
+  if (GFX_SAC_OPPONENTS.test(title)) items.push('SAC Standings');
+  return st ? [{ title: 'Full graphics package (' + id + ')', who: st, items }] : [];
 }
 async function loadGfxChecks() {
   if (S.gfxChecksLoaded) return;

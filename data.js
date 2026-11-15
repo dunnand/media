@@ -2910,14 +2910,16 @@ const GFX_TOURNEY = {
 };
 
 // Every graphic needed for the Holiday Tournament, as checklist groups (see renderGfxChecklist in script.js).
-const GFX_FULL_PACKAGE = ['Coach Graphic', 'Establishing', 'Game Officials', 'Game Stats', 'Holiday Tournament Graphic', 'Keys to the Game', 'Past 5 Games', 'Player Graphic — Sidebar', 'Player Graphic — Lower 3rd', 'Player Graphic — Scoreboard', 'SAC Standings', 'Sidebar Promo', 'Starting Lineups', 'Thumbnail', 'To Break', 'Top IHSAA Match ups'];
+const GFX_FULL_PACKAGE = ['Coach Graphic', 'Establishing', 'Game Stats', 'Keys to the Game', 'Past 5 Games', 'Player Graphic — Sidebar', 'Player Graphic — Lower 3rd', 'Player Graphic — Scoreboard', 'Sidebar Promo', 'Starting Lineups', 'Thumbnail', 'To Break', 'Top IHSAA Match ups'];
+// SAC Standings graphic is only made for games against these opponents (matched against the game title).
+const GFX_SAC_OPPONENTS = /luers|dwenger|concordia|carroll|wayne|south side|north side|northrop|snider/i;
 const GFX_WAITING_SCREEN_OWNER = 'Olive T.'; // Waiting Screens are made by Olive for every game, so they are not in the checklists
 // Not needed for the tournament games (Day 1 full packages).
 const GFX_TOURNEY_SKIP = ['Game Officials', 'Holiday Tournament Graphic', 'SAC Standings', 'Sidebar Promo', 'Top IHSAA Match ups'];
 function gfxTourneyGroups() {
   const T = GFX_TOURNEY, g = [], pkg = GFX_FULL_PACKAGE.filter(x => !GFX_TOURNEY_SKIP.includes(x));
   g.push({ title: 'Day 1 (12/29) — Homestead vs. Portage · full package', who: 'Andres A.', items: pkg.map(x => 'Homestead vs. Portage — ' + x) });
-  g.push({ title: 'Day 1 (12/29) — Carroll vs. Hamilton Southeastern · full package', who: 'Elizabeth S.', items: pkg.map(x => 'Carroll vs. Hamilton Southeastern — ' + x) });
+  g.push({ title: 'Day 1 (12/29) — Carroll vs. Hamilton Southeastern · full package', who: 'Elizabeth S.', items: pkg.concat('SAC Standings').map(x => 'Carroll vs. Hamilton Southeastern — ' + x) });
   T.matchups.forEach(m => g.push({ title: 'Day 2 (12/30) possible matchup — ' + m, who: T.team.join(', '), items: T.graphics.map(x => m + ' — ' + x) }));
   T.alsoTeams.forEach(t => g.push({ title: 'Day 2 team graphics — ' + t, who: T.team.join(', '), items: T.alsoGraphics.map(x => t + ' — ' + x) }));
   return g;
