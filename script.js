@@ -6755,6 +6755,7 @@ function renderNativeSignupPage() {
           <span class="avail-arrival-chip">${ARRIVAL_LABEL[b.type] ?? ARRIVAL_DEFAULT_LABEL} ${computeArrival(b.gameTime, b.type)}</span>
           <span class="avail-gametime-chip">Game ${esc(b.gameTime)}</span>
         </div>` : ''}
+        ${gfxAssignChip(b.id)}
         ${signups.length ? `
         <div class="avail-form-names">${signups.map(a => `<span class="avail-interest-chip">${esc(a.studentName)}</span>`).join('')}</div>` : ''}
         ${mine
@@ -6848,6 +6849,7 @@ function renderFormSignupPage() {
           <span class="avail-arrival-chip">${ARRIVAL_LABEL[b.type] ?? ARRIVAL_DEFAULT_LABEL} ${computeArrival(b.gameTime, b.type)}</span>
           <span class="avail-gametime-chip">Game ${esc(b.gameTime)}</span>
         </div>` : ''}
+        ${gfxAssignChip(b.id)}
         ${signups.length ? `
         <div class="avail-form-names">${signups.map(a => `<span class="avail-interest-chip">${esc(a.studentName)}</span>`).join('')}</div>` : ''}
         ${formReady
@@ -12381,6 +12383,11 @@ function gfxIsVideo(file) { return /^video\//.test(file.mime || '') || /\.(mp4|m
 function gfxNoteBox(fileId) {
   if (!S.teacherMode) return S.gfxNotes[fileId] ? `<div class="gfx-note-view"><strong>Teacher feedback:</strong> ${esc(S.gfxNotes[fileId])}</div>` : '';
   return `<textarea class="gfx-note" data-gfx-note="${esc(fileId)}" rows="2" placeholder="Teacher feedback (students can see this)">${esc(S.gfxNotes[fileId] || '')}</textarea>`;
+}
+function gfxAssignChip(id) {
+  const st = GFX_GAME_ASSIGNMENTS[id];
+  if (!st) return '';
+  return `<div class="avail-bc-notes">🎨 <strong>Graphics package:</strong> ${esc(st)}${(GFX_GAME_DETAILS[id] || []).map(l => `<div style="margin-left:18px">${esc(l)}</div>`).join('')}</div>`;
 }
 function gfxMyGames(name) {
   const short = shortenName(name), first = String(name || '').trim().split(/\s+/)[0] || '';
