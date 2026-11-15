@@ -4386,6 +4386,13 @@ function renderStudentSignupCard(b) {
 }
 
 // ── BROADCAST DETAIL ──────────────────────────────────────────
+function gfxBroadcastChecklist(b) {
+  const groups = gfxGroupsForBroadcast(b.id);
+  if (!groups.length) return '';
+  loadGfxChecks();
+  return renderGfxChecklist(groups, '🎨 Graphics Checklist');
+}
+
 function renderBroadcast() {
   const b = (S.broadcasts || []).find(x => x.id === S.broadcastId);
   if (!b) return `${navBar('live')}<div class="class-page"><button class="back-btn" data-nav="live">← Back</button><p>Broadcast not found.</p></div>`;
@@ -4501,6 +4508,7 @@ function renderBroadcast() {
               ? `<textarea id="broadcast-notes" rows="4" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px;font-family:inherit;font-size:0.875rem;resize:vertical;outline:none" placeholder="Special instructions, location notes, etc.">${esc(b.notes || '')}</textarea>`
               : b.notes ? `<p style="font-size:0.875rem;line-height:1.6;color:var(--dim)">${esc(b.notes)}</p>` : '<p class="dim" style="font-size:0.875rem">No notes yet.</p>'}
           </section>
+          ${gfxBroadcastChecklist(b)}
         </div>
       </div>
       ${renderRundownSection(b)}
@@ -12383,8 +12391,26 @@ function showRegisterIASBModal(cat) {
 function gfxVoterKey(name) { return String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
 function gfxIsVideo(file) { return /^video\//.test(file.mime || '') || /\.(mp4|mov|m4v|webm|avi|mkv)$/i.test(file.name || ''); }
 function gfxCheckId(title, label) { return gfxVoterKey(title + ' ' + label).slice(0, 140); }
-function renderGfxChecklist() {
-  const groups = gfxTourneyGroups();
+function gfxGroupsForBroadcast(id) {
+  if (id === 'bb26-1229') return gfxTourneyGroups().filter(g => g.title.startsWith('Day 1'));
+  if (id === GFX_TOURNEY.broadcastId) return gfxTourneyGroups().filter(g => g.title.startsWith('Day 2'));
+  const st = GFX_GAME_ASSIGNMENTS[id];
+  return st ? [{ title: 'Full graphics package (' + id + ')', who: st, items: GFX_FULL_PACKAGE.slice() }] : [];
+}
+async function loadGfxChecks() {
+  if (S.gfxChecksLoaded) return;
+  S.gfxChecksLoaded = true;
+  const db = getDB();
+  if (!db) return;
+  try {
+    const snap = await db.collection('hm_gfx_checklist').get();
+    trackUsage('reads', snap.size);
+    S.gfxChecks = {};
+    snap.docs.forEach(d => { S.gfxChecks[d.id] = d.data(); });
+    if (S.view === 'broadcast') render();
+  } catch (e) {}
+}
+function renderGfxChecklist(groups = gfxTourneyGroups(), heading = '🏆 Holiday Tournament — Graphics Checklist') {
   let total = 0, done = 0;
   const body = groups.map(g => {
     const rows = g.items.map(label => {
@@ -12397,7 +12423,7 @@ function renderGfxChecklist() {
   }).join('');
   return `
       <section class="card" style="margin-top:16px">
-        <div class="card-header"><h2>🏆 Holiday Tournament — Graphics Checklist</h2><span class="dim" style="font-size:0.9rem"><strong>${done}</strong> of ${total} done</span></div>
+        <div class="card-header"><h2>${esc(heading)}</h2><span class="dim" style="font-size:0.9rem"><strong>${done}</strong> of ${total} done</span></div>
         <p class="dim" style="font-size:0.85rem;margin:0">Check each graphic off once it's finished and uploaded. Everyone sees the same list.</p>
         ${body}
       </section>`;
@@ -12468,6 +12494,7 @@ async function loadGraphics() {
       trackUsage('reads', tsnap.size);
       S.gfxTurnins = tsnap.docs.map(d => ({ id: d.id, ...d.data() }));
       try {
+        S.gfxChecksLoaded = true;
         const csnap = await db.collection('hm_gfx_checklist').get();
         trackUsage('reads', csnap.size);
         S.gfxChecks = {};
