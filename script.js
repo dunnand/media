@@ -4463,7 +4463,7 @@ function renderBroadcast() {
           </section>
           ${(() => {
             const gcItems = BROADCAST_CHECKLISTS[b.type];
-            if (!gcItems) return '';
+            if (!gcItems || gfxGroupsForBroadcast(b.id).length) return ''; // new Graphics Checklist card replaces this one
             const checked = S.broadcastChecklist[b.id] || new Set();
             const done = gcItems.filter(i => checked.has(i.id)).length;
             const pct = Math.round((done / gcItems.length) * 100);
