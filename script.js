@@ -12382,10 +12382,14 @@ function gfxNoteBox(fileId) {
   if (!S.teacherMode) return S.gfxNotes[fileId] ? `<div class="gfx-note-view"><strong>Teacher feedback:</strong> ${esc(S.gfxNotes[fileId])}</div>` : '';
   return `<textarea class="gfx-note" data-gfx-note="${esc(fileId)}" rows="2" placeholder="Teacher feedback (students can see this)">${esc(S.gfxNotes[fileId] || '')}</textarea>`;
 }
-function gfxAssignedTo(name) {
+function gfxMyGames(name) {
   const short = shortenName(name), first = String(name || '').trim().split(/\s+/)[0] || '';
-  const hit = Object.keys(GFX_ASSIGNMENTS).find(k => gfxVoterKey(k) === gfxVoterKey(short) || gfxVoterKey(k) === gfxVoterKey(first));
-  return hit ? GFX_ASSIGNMENTS[hit] : '';
+  const k1 = gfxVoterKey(short), k2 = gfxVoterKey(first);
+  return Object.entries(GFX_GAME_ASSIGNMENTS).filter(([, st]) => gfxVoterKey(st) === k1 || gfxVoterKey(st) === k2).map(([id]) => gfxGameInfo(id));
+}
+function gfxGameInfo(id) {
+  const b = (S.broadcasts || []).find(x => x.id === id) || {};
+  return { id, title: b.title || id, date: b.date || '', student: GFX_GAME_ASSIGNMENTS[id] };
 }
 function gfxThumb(id) { return `https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w600`; }
 
@@ -12428,13 +12432,15 @@ function renderGraphics() {
         <input id="gfx-name" type="text" placeholder="First and last name" value="${esc(myName)}" style="flex:1;min-width:180px">
         <button class="btn-secondary" id="gfx-refresh">↻ Refresh</button>
       </div>`;
-  const myPkg = gfxAssignedTo(myName);
+  const gameLine = g => `${esc(g.title)}${g.date ? ' (' + esc(fmtDate(g.date)) + ')' : ''}`;
+  const myGames = gfxMyGames(myName);
   const assignBar = S.teacherMode ? `
-      <div class="card"><strong>Assignments</strong>
-        <div class="dim" style="font-size:0.85rem;margin-top:6px">${Object.entries(Object.entries(GFX_ASSIGNMENTS).reduce((m, [st, p]) => ((m[p] = m[p] || []).push(st), m), {})).map(([p, sts]) => `<div><strong>${esc(p)}</strong>: ${sts.map(esc).join(', ')}</div>`).join('')}</div>
-      </div>` : myPkg ? `
-      <div class="card" style="border-left:4px solid var(--accent, #4ea1ff)"><strong>Your assigned graphics package: ${esc(myPkg)}</strong>
-        <div class="dim" style="font-size:0.85rem;margin-top:4px">Create this graphic and upload it to the "${esc(myPkg)}" folder.</div>
+      <div class="card"><strong>Full graphics package — assigned game</strong>
+        <div class="dim" style="font-size:0.85rem;margin-top:6px">${Object.keys(GFX_GAME_ASSIGNMENTS).map(id => gfxGameInfo(id)).sort((a, b) => a.date.localeCompare(b.date)).map(g => `<div>${gameLine(g)} — <strong>${esc(g.student)}</strong></div>`).join('')}</div>
+      </div>` : myGames.length ? `
+      <div class="card" style="border-left:4px solid var(--accent, #4ea1ff)"><strong>Your assigned graphics package${myGames.length > 1 ? 's' : ''}</strong>
+        <div style="margin-top:4px">${myGames.map(g => `<div>${gameLine(g)}</div>`).join('')}</div>
+        <div class="dim" style="font-size:0.85rem;margin-top:4px">Create the full graphics package (every graphic in the list below) for ${myGames.length > 1 ? 'each of these games' : 'this game'}.</div>
       </div>` : '';
   const status = f => {
     const votes = S.gfxVotes.filter(v => v.folderId === f.id);
@@ -12514,7 +12520,7 @@ function renderGraphics() {
         <div class="gfx-row">
           <label class="gfx-turnin" title="Check when you've uploaded your graphic to this folder"><input type="checkbox" data-gfx-turnin="${esc(f.id)}" ${turnedIn ? 'checked' : ''}> Turned in</label>
           <button class="gfx-row-main" data-gfx-open="${esc(f.id)}">
-            <span class="gfx-row-name">${esc(f.name)}${myPkg && myPkg === f.name ? ' ⭐ <em>assigned to you</em>' : ''}</span>
+            <span class="gfx-row-name">${esc(f.name)}</span>
             <span class="gfx-row-meta">${f.files.length} graphic${f.files.length === 1 ? '' : 's'}${S.teacherMode ? ` · ${turnins.length} turned in · ${votes.length} vote${votes.length === 1 ? '' : 's'}` : ''}</span>
           </button>
           <span class="gfx-badge ${mine ? 'gfx-badge-yes' : ''}">${mine ? '✓ Voted' : turnedIn ? 'Not voted' : 'Locked'}</span>

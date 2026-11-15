@@ -2868,31 +2868,24 @@ for (const course of Object.values(LESSONS)) {
   }
 }
 
-// Graphics package assignments (student short name -> graphics folder name). Students are matched by "First L." on the graphics page.
-const GFX_ASSIGNMENTS = {
-  "Adam J.": "Sidebar Promo",
-  "Alice A.": "SAC Standings",
-  "Alice F.": "Past 5 Games",
-  "Andres A.": "Sidebar Promo",
-  "Andrew W.": "Coach Graphic",
-  "Bella L.": "Game Stats",
-  "Brody H.": "Game Officials",
-  "Cael C.": "Game Stats",
-  "Carter J.": "Player Graphic",
-  "Chris J.": "To Break",
-  "Elizabeth S.": "SAC Standings",
-  "Emma N.": "Establishing",
-  "Jack M.": "Waiting Screen",
-  "Jagger": "Establishing",
-  "Jordin B.": "Top IHSAA Match ups",
-  "Lexy S.": "Holiday Tournament Graphic",
-  "Maclane R.": "Coach Graphic",
-  "Olive T.": "Player Graphic",
-  "Paul W.": "Game Officials",
-  "Quentin K.": "Holiday Tournament Graphic",
-  "Reggie": "Thumbnail",
-  "Rowan M.": "Starting Lineups",
-  "Rylie S.": "Keys to the Game",
-  "Sukh N.": "Keys to the Game",
-  "Takoda H.": "Past 5 Games"
+// Graphics package assignments: broadcast id -> student who builds the FULL graphics package for that game.
+// Matched by "First L." on the graphics page. Excludes the first 4 non-scrimmage basketball games.
+const GFX_GAME_ASSIGNMENTS = {
+  "bb26-1204": "Brody H.", // 2026-12-04 Basketball vs. Warsaw High School,
+  "bb26-1211": "Bella L.", // 2026-12-11 Basketball vs. Bishop Dwenger,
+  "gb26-1211": "Adam J.", // 2026-12-11 Girls Basketball vs. Bishop Dwenger,
+  "gb26-1219": "Paul W.", // 2026-12-19 Girls Basketball vs. Hamilton Southeastern,
+  "bb26-1229": "Andres A.", // 2026-12-29 Homestead Holiday Tournament,
+  "bb26-1230": "Cael C.", // 2026-12-30 Homestead Holiday Tournament,
+  "gb27-0102": "Olive T.", // 2027-01-02 Girls Basketball vs. North Central HS,
+  "bb27-0108": "Quentin K.", // 2027-01-08 Basketball vs. South Side,
+  "gb27-0108": "Carter J.", // 2027-01-08 Girls Basketball vs. Whitko,
+  "bb27-0112": "Sukh N.", // 2027-01-12 Basketball vs. Blackhawk Christian,
+  "gb27-0113": "Rylie S.", // 2027-01-13 Girls Basketball vs. Oak Hill High School,
+  "gb27-0119": "Rowan M.", // 2027-01-19 Girls Basketball vs. Warsaw High School,
+  "bb27-0122": "Lexy S.", // 2027-01-22 Basketball vs. North Side,
+  "bb27-0126": "Alice F.", // 2027-01-26 Basketball vs. New Haven,
+  "bb27-0206": "Maclane R.", // 2027-02-06 Basketball vs. Oak Hill High School,
+  "bb27-0209": "Jack M.", // 2027-02-09 Basketball vs. Wayne High School,
+  "bb27-0212": "Andrew W.", // 2027-02-12 Basketball vs. Concordia High School
 };
