@@ -12441,8 +12441,6 @@ function gfxTourneyBlock() {
     <div style="font-size:1rem;margin-top:8px"><strong>1. Both-teams graphics</strong> (${esc(T.graphics.join(' · '))}) for EACH possible matchup — any of these could be a winners or losers game:</div>
     ${T.matchups.map(m => `<div style="font-size:1rem;margin-left:14px">• ${esc(m)}</div>`).join('')}
     <div style="font-size:1rem;margin-top:8px"><strong>2. Single-team graphics</strong> (${esc(T.alsoGraphics.join(' · '))}) for each of: ${esc(T.alsoTeams.join(', '))}</div>
-    <div style="font-size:1rem;margin-top:8px"><strong>3. Day 1 games — Scorebug only</strong> (12/29):</div>
-    ${T.day1Scoreboard.map(m => `<div style="font-size:1rem;margin-left:14px">• ${esc(m)}</div>`).join('')}
   </div>`;
 }
 function gfxBigBanner(id) {
