@@ -2891,7 +2891,7 @@ const GFX_GAME_ASSIGNMENTS = {
 
 // Extra detail shown with a game assignment (broadcast id -> lines).
 const GFX_GAME_DETAILS = {
-  'bb26-1229': ['Homestead vs. Portage — Andres A.', 'Carroll vs. Hamilton Southeastern — Elizabeth S.', 'South Bend St. Joseph vs. Mount Vernon — Cael C. (supplemental)', 'Zionsville vs. Penn — Cael C. (supplemental)']
+  'bb26-1229': ['Homestead vs. Portage — Andres A.', 'Carroll vs. Hamilton Southeastern — Elizabeth S.', 'South Bend St. Joseph vs. Mount Vernon — scorebug only (graphics team)', 'Zionsville vs. Penn — scorebug only (graphics team)']
 };
 
 // Holiday Tournament Day 2: a trio makes every graphic. Every possible matchup (winners and losers games share
@@ -2906,5 +2906,6 @@ const GFX_TOURNEY = {
     'Homestead vs. Zionsville', 'Homestead vs. Penn', 'Portage vs. Zionsville', 'Portage vs. Penn'
   ],
   alsoGraphics: ['Coach Graphic', 'Game Stats', 'Keys to the Game', 'Past 5 Games', 'Player Graphic', 'Starting Lineups'],
+  day1Scoreboard: ['South Bend St. Joseph vs. Mount Vernon', 'Zionsville vs. Penn'], // Day 1 games: scorebug only
   alsoTeams: ['Zionsville', 'Penn', 'South Bend St. Joseph', 'Mount Vernon']
 };
