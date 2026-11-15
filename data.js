@@ -2905,12 +2905,12 @@ const GFX_TOURNEY = {
     'Hamilton Southeastern vs. South Bend St. Joseph', 'Hamilton Southeastern vs. Mount Vernon',
     'Homestead vs. Zionsville', 'Homestead vs. Penn', 'Portage vs. Zionsville', 'Portage vs. Penn'
   ],
-  alsoGraphics: ['Coach Graphic', 'Keys to the Game', 'Past 5 Games', 'Player Graphic', 'Starting Lineups'],
+  alsoGraphics: ['Coach Graphic', 'Keys to the Game', 'Past 5 Games', 'Player Graphic — Sidebar', 'Player Graphic — Lower 3rd', 'Player Graphic — Scoreboard', 'Starting Lineups'],
   alsoTeams: ['Zionsville', 'Penn', 'South Bend St. Joseph', 'Mount Vernon']
 };
 
 // Every graphic needed for the Holiday Tournament, as checklist groups (see renderGfxChecklist in script.js).
-const GFX_FULL_PACKAGE = ['Coach Graphic', 'Establishing', 'Game Officials', 'Game Stats', 'Holiday Tournament Graphic', 'Keys to the Game', 'Past 5 Games', 'Player Graphic', 'SAC Standings', 'Sidebar Promo', 'Starting Lineups', 'Thumbnail', 'To Break', 'Top IHSAA Match ups'];
+const GFX_FULL_PACKAGE = ['Coach Graphic', 'Establishing', 'Game Officials', 'Game Stats', 'Holiday Tournament Graphic', 'Keys to the Game', 'Past 5 Games', 'Player Graphic — Sidebar', 'Player Graphic — Lower 3rd', 'Player Graphic — Scoreboard', 'SAC Standings', 'Sidebar Promo', 'Starting Lineups', 'Thumbnail', 'To Break', 'Top IHSAA Match ups'];
 const GFX_WAITING_SCREEN_OWNER = 'Olive T.'; // Waiting Screens are made by Olive for every game, so they are not in the checklists
 // Not needed for the tournament games (Day 1 full packages).
 const GFX_TOURNEY_SKIP = ['Game Officials', 'Holiday Tournament Graphic', 'SAC Standings', 'Sidebar Promo', 'Top IHSAA Match ups'];
