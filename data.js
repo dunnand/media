@@ -2899,13 +2899,13 @@ const GFX_GAME_DETAILS = {
 const GFX_TOURNEY = {
   broadcastId: 'bb26-1230',
   team: ['Chris J.', 'Jordin B.', 'Cael C.'],
-  graphics: ['Establishing', 'Scorebug', 'Thumbnail'],
+  graphics: ['Establishing', 'Scorebug', 'Thumbnail', 'Game Stats'],
   matchups: [
     'Carroll vs. South Bend St. Joseph', 'Carroll vs. Mount Vernon',
     'Hamilton Southeastern vs. South Bend St. Joseph', 'Hamilton Southeastern vs. Mount Vernon',
     'Homestead vs. Zionsville', 'Homestead vs. Penn', 'Portage vs. Zionsville', 'Portage vs. Penn'
   ],
-  alsoGraphics: ['Coach Graphic', 'Game Stats', 'Keys to the Game', 'Past 5 Games', 'Player Graphic', 'Starting Lineups'],
+  alsoGraphics: ['Coach Graphic', 'Keys to the Game', 'Past 5 Games', 'Player Graphic', 'Starting Lineups'],
   alsoTeams: ['Zionsville', 'Penn', 'South Bend St. Joseph', 'Mount Vernon']
 };
 
