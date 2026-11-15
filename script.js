@@ -12453,7 +12453,7 @@ function gfxBigBanner(id) {
   if (det.length) return `<div style="margin:8px 0;padding:10px 14px;border-radius:8px;background:#7c3aed;color:#fff;border:2px solid #c4b5fd">
     <div style="font-size:0.8rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase">🎨 Graphics Packages — ${det.length} games</div>
     ${det.map(l => `<div style="font-size:1.1rem;font-weight:700;margin-top:4px">• ${esc(l)}</div>`).join('')}
-    ${id === 'bb26-1229' ? '<div style="font-size:1rem;margin-top:6px">+ Bracket graphics for every possible result (Andres: Homestead/Portage · Zionsville/Penn side; Elizabeth: Carroll/Hamilton Southeastern · South Bend St. Joseph/Mount Vernon side)</div>' : ''}
+    ${id === 'bb26-1229' ? '<div style="font-size:1rem;margin-top:6px">+ End-of-Day-1 bracket graphics, 4 possible results (Andres: Homestead/Portage · Zionsville/Penn side; Elizabeth: Carroll/Hamilton Southeastern · South Bend St. Joseph/Mount Vernon side)</div>' : ''}
   </div>`;
   return `<div style="display:inline-block;margin:6px 0;padding:6px 12px;border-radius:8px;background:#7c3aed;color:#fff;font-size:1rem;line-height:1.35">
     <strong>🎨 Graphics:</strong> <strong>${esc(st)}</strong>
