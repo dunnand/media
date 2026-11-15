@@ -2920,6 +2920,15 @@ function gfxTourneyGroups() {
   const T = GFX_TOURNEY, g = [], pkg = GFX_FULL_PACKAGE.filter(x => !GFX_TOURNEY_SKIP.includes(x));
   g.push({ title: 'Day 1 (12/29) — Homestead vs. Portage · full package', who: 'Andres A.', items: pkg.map(x => 'Homestead vs. Portage — ' + x) });
   g.push({ title: 'Day 1 (12/29) — Carroll vs. Hamilton Southeastern · full package', who: 'Elizabeth S.', items: pkg.map(x => 'Carroll vs. Hamilton Southeastern — ' + x) });
+  // Bracket graphic for every game, with every option: the 4 Day 1 games, and each possible Day 2 matchup as a winners game and as a losers game.
+  const brk = [
+    { who: 'Andres A.', day1: ['Homestead vs. Portage', 'Zionsville vs. Penn'], day2: T.matchups.slice(4) },
+    { who: 'Elizabeth S.', day1: ['Carroll vs. Hamilton Southeastern', 'South Bend St. Joseph vs. Mount Vernon'], day2: T.matchups.slice(0, 4) }
+  ];
+  brk.forEach(b => {
+    g.push({ title: 'Day 1 (12/29) — Bracket graphics', who: b.who, items: b.day1.map(m => m + ' — Bracket') });
+    g.push({ title: 'Day 2 (12/30) — Bracket graphics (each matchup as a winners game and a losers game)', who: b.who, items: b.day2.flatMap(m => ['Winners', 'Losers'].map(w => w + ': ' + m + ' — Bracket')) });
+  });
   T.matchups.forEach(m => g.push({ title: 'Day 2 (12/30) possible matchup — ' + m, who: T.team.join(', '), items: T.graphics.map(x => m + ' — ' + x) }));
   T.alsoTeams.forEach(t => g.push({ title: 'Day 2 team graphics — ' + t, who: T.team.join(', '), items: T.alsoGraphics.map(x => t + ' — ' + x) }));
   return g;
