@@ -12388,10 +12388,9 @@ function gfxNoteBox(fileId) {
 function gfxBigBanner(id) {
   const st = GFX_GAME_ASSIGNMENTS[id];
   if (!st) return '';
-  return `<div style="margin:10px 0;padding:12px 16px;border-radius:10px;background:#7c3aed;color:#fff;border:2px solid #c4b5fd">
-    <div style="font-size:0.8rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;opacity:0.9">🎨 Graphics Package</div>
-    <div style="font-size:1.5rem;font-weight:800;line-height:1.2">${esc(st)}</div>
-    ${(GFX_GAME_DETAILS[id] || []).map(l => `<div style="font-size:1.05rem;font-weight:600;margin-top:2px">${esc(l)}</div>`).join('')}
+  return `<div style="display:inline-block;margin:6px 0;padding:4px 10px;border-radius:6px;background:#7c3aed;color:#fff;font-size:0.82rem;line-height:1.35">
+    <strong>🎨 Graphics:</strong> ${esc(st)}
+    ${(GFX_GAME_DETAILS[id] || []).map(l => `<div style="font-size:0.75rem;opacity:0.95">${esc(l)}</div>`).join('')}
   </div>`;
 }
 function gfxAssignChip(id) {
