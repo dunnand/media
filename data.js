@@ -2889,3 +2889,9 @@ const GFX_GAME_ASSIGNMENTS = {
   "bb27-0209": "Jack M.", // 2027-02-09 Basketball vs. Wayne High School,
   "bb27-0212": "Andrew W.", // 2027-02-12 Basketball vs. Concordia High School
 };
+
+// Extra detail shown with a game assignment (broadcast id -> lines).
+const GFX_GAME_DETAILS = {
+  'bb26-1229': ['Homestead vs. Portage', 'Elizabeth Carroll vs. Hamilton Southeastern'],
+  'bb26-1230': ['Supplemental Holiday Tournament graphics:', 'South Bend St. Joseph vs. Mount Vernon', 'Zionsville vs. Penn']
+};

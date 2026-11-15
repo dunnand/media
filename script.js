@@ -12432,7 +12432,7 @@ function renderGraphics() {
         <input id="gfx-name" type="text" placeholder="First and last name" value="${esc(myName)}" style="flex:1;min-width:180px">
         <button class="btn-secondary" id="gfx-refresh">↻ Refresh</button>
       </div>`;
-  const gameLine = g => `${esc(g.title)}${g.date ? ' (' + esc(fmtDate(g.date)) + ')' : ''}`;
+  const gameLine = g => `${esc(g.title)}${g.date ? ' (' + esc(fmtDate(g.date)) + ')' : ''}${(GFX_GAME_DETAILS[g.id] || []).map(l => `<div class="dim" style="font-size:0.85rem;margin-left:12px">${esc(l)}</div>`).join('')}`;
   const myGames = gfxMyGames(myName);
   const assignBar = S.teacherMode ? `
       <div class="card"><strong>Full graphics package — assigned game</strong>
