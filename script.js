@@ -12386,11 +12386,14 @@ function gfxNoteBox(fileId) {
   return `<textarea class="gfx-note" data-gfx-note="${esc(fileId)}" rows="2" placeholder="Teacher feedback (students can see this)">${esc(S.gfxNotes[fileId] || '')}</textarea>`;
 }
 function gfxBigBanner(id) {
-  const st = GFX_GAME_ASSIGNMENTS[id];
+  const st = GFX_GAME_ASSIGNMENTS[id], det = GFX_GAME_DETAILS[id] || [];
   if (!st) return '';
-  return `<div style="display:inline-block;margin:6px 0;padding:4px 10px;border-radius:6px;background:#7c3aed;color:#fff;font-size:0.82rem;line-height:1.35">
-    <strong>🎨 Graphics:</strong> ${esc(st)}
-    ${(GFX_GAME_DETAILS[id] || []).map(l => `<div style="font-size:0.75rem;opacity:0.95">${esc(l)}</div>`).join('')}
+  if (det.length) return `<div style="margin:8px 0;padding:10px 14px;border-radius:8px;background:#7c3aed;color:#fff;border:2px solid #c4b5fd">
+    <div style="font-size:0.8rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase">🎨 Graphics Packages — ${det.length} games</div>
+    ${det.map(l => `<div style="font-size:1.1rem;font-weight:700;margin-top:4px">• ${esc(l)}</div>`).join('')}
+  </div>`;
+  return `<div style="display:inline-block;margin:6px 0;padding:6px 12px;border-radius:8px;background:#7c3aed;color:#fff;font-size:1rem;line-height:1.35">
+    <strong>🎨 Graphics:</strong> <strong>${esc(st)}</strong>
   </div>`;
 }
 function gfxAssignChip(id) {
