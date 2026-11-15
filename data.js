@@ -2913,6 +2913,7 @@ const GFX_TOURNEY = {
 const GFX_FULL_PACKAGE = ['Coach Graphic', 'Establishing', 'Game Stats', 'Keys to the Game', 'Past 5 Games', 'Player Graphic — Sidebar', 'Player Graphic — Lower 3rd', 'Player Graphic — Scoreboard', 'Sidebar Promo', 'Starting Lineups', 'Thumbnail', 'To Break', 'Top IHSAA Match ups'];
 // SAC Standings graphic is only made for games against these opponents (matched against the game title).
 const GFX_SAC_OPPONENTS = /luers|dwenger|concordia|carroll|wayne|south side|north side|northrop|snider/i;
+const GFX_TRANSITION_OWNER = 'Andrew W.'; // Transition scoreboard graphics + 3pts for every game
 const GFX_WAITING_SCREEN_OWNER = 'Olive T.'; // Waiting Screens are made by Olive for every game, so they are not in the checklists
 // Not needed for the tournament games (Day 1 full packages).
 const GFX_TOURNEY_SKIP = ['Player Graphic — Sidebar', 'Player Graphic — Lower 3rd', 'Game Officials', 'Holiday Tournament Graphic', 'SAC Standings', 'Sidebar Promo', 'Top IHSAA Match ups'];
