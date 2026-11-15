@@ -2876,7 +2876,7 @@ const GFX_GAME_ASSIGNMENTS = {
   "gb26-1211": "Adam J.", // 2026-12-11 Girls Basketball vs. Bishop Dwenger,
   "gb26-1219": "Paul W.", // 2026-12-19 Girls Basketball vs. Hamilton Southeastern,
   "bb26-1229": "Andres A.", // 2026-12-29 Homestead Holiday Tournament,
-  "gb27-0102": "Olive T.", // 2027-01-02 Girls Basketball vs. North Central HS,
+  "gb27-0102": "Jack M.", // 2027-01-02 Girls Basketball vs. North Central HS,
   "bb27-0108": "Quentin K.", // 2027-01-08 Basketball vs. South Side,
   "gb27-0108": "Carter J.", // 2027-01-08 Girls Basketball vs. Whitko,
   "bb27-0112": "Sukh N.", // 2027-01-12 Basketball vs. Blackhawk Christian,
@@ -2885,7 +2885,7 @@ const GFX_GAME_ASSIGNMENTS = {
   "bb27-0122": "Lexy S.", // 2027-01-22 Basketball vs. North Side,
   "bb27-0126": "Alice F.", // 2027-01-26 Basketball vs. New Haven,
   "bb27-0206": "Maclane R.", // 2027-02-06 Basketball vs. Oak Hill High School,
-  "bb27-0209": "Jack M.", // 2027-02-09 Basketball vs. Wayne High School,
+  "bb27-0209": "Olive T.", // 2027-02-09 Basketball vs. Wayne High School,
   "bb27-0212": "Andrew W.", // 2027-02-12 Basketball vs. Concordia High School
 };
 
@@ -2924,3 +2924,6 @@ function gfxTourneyGroups() {
   T.alsoTeams.forEach(t => g.push({ title: 'Day 2 team graphics — ' + t, who: T.team.join(', '), items: T.alsoGraphics.map(x => t + ' — ' + x) }));
   return g;
 }
+
+// Due date for every graphics package (shown on the Graphics page, game pages and student assignment cards).
+const GFX_DUE_DATE = 'Friday, December 11';

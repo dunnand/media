@@ -12427,7 +12427,7 @@ function renderGfxChecklist(groups = gfxTourneyGroups(), heading = '🏆 Holiday
   return `
       <section class="card" style="margin-top:16px">
         <div class="card-header"><h2>${esc(heading)}</h2><span class="dim" style="font-size:0.9rem"><strong>${done}</strong> of ${total} done</span></div>
-        <p class="dim" style="font-size:0.85rem;margin:0">Check each graphic off once it's finished and uploaded. Everyone sees the same list. <strong>Waiting Screens: ${esc(GFX_WAITING_SCREEN_OWNER)} makes those for every game.</strong></p>
+        <p class="dim" style="font-size:0.85rem;margin:0">Check each graphic off once it's finished and uploaded. Everyone sees the same list. <strong style="color:#f59e0b">All graphics packages are due ${esc(GFX_DUE_DATE)}.</strong> <strong>Waiting Screens: ${esc(GFX_WAITING_SCREEN_OWNER)} makes those for every game.</strong></p>
         ${body}
       </section>`;
 }
@@ -12439,7 +12439,7 @@ function gfxTourneyTeamNames() { return GFX_TOURNEY.team.join(', ').replace(/, (
 function gfxTourneyBlock() {
   const T = GFX_TOURNEY;
   return `<div style="margin:8px 0;padding:10px 14px;border-radius:8px;background:#4c1d95;color:#fff;border:2px solid #c4b5fd">
-    <div style="font-size:0.85rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase">🎨 Holiday Tournament Day 2 graphics team</div>
+    <div style="font-size:0.85rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase">🎨 Holiday Tournament Day 2 graphics team — due ${esc(GFX_DUE_DATE)}</div>
     <div style="font-size:1.2rem;font-weight:800;margin-top:2px">${esc(gfxTourneyTeamNames())} — work on all of these as a trio</div>
     <div style="font-size:1rem;margin-top:8px"><strong>1. Both-teams graphics</strong> (${esc(T.graphics.join(' · '))}) for EACH possible matchup — any of these could be a winners or losers game:</div>
     ${T.matchups.map(m => `<div style="font-size:1rem;margin-left:14px">• ${esc(m)}</div>`).join('')}
@@ -12527,10 +12527,10 @@ function renderGraphics() {
   const mk = gfxVoterKey(shortenName(myName)), mf = gfxVoterKey(String(myName).trim().split(/\s+/)[0] || '');
   const myTourney = GFX_TOURNEY.team.some(n => gfxVoterKey(n) === mk || gfxVoterKey(n) === mf);
   const assignBar = S.teacherMode ? `
-      <div class="card"><strong>Full graphics package — assigned game</strong>
+      <div class="card"><strong>Full graphics package — assigned game · all due ${esc(GFX_DUE_DATE)}</strong>
         <div class="dim" style="font-size:0.85rem;margin-top:6px">${Object.keys(GFX_GAME_ASSIGNMENTS).map(id => gfxGameInfo(id)).sort((a, b) => a.date.localeCompare(b.date)).map(g => `<div>${gameLine(g)} — <strong>${esc(g.student)}</strong></div>`).join('')}</div>
       </div>${gfxTourneyBlock()}` : (myGames.length || myTourney) ? `
-      ${myGames.length ? `<div class="card" style="border-left:4px solid var(--accent, #4ea1ff)"><strong>Your assigned graphics package${myGames.length > 1 ? 's' : ''}</strong>
+      ${myGames.length ? `<div class="card" style="border-left:4px solid var(--accent, #4ea1ff)"><strong>Your assigned graphics package${myGames.length > 1 ? 's' : ''} — due ${esc(GFX_DUE_DATE)}</strong>
         <div style="margin-top:4px">${myGames.map(g => `<div>${gameLine(g)}</div>`).join('')}</div>
         ${myGames.length ? `<div class="dim" style="font-size:0.85rem;margin-top:4px">Create the full graphics package (every graphic in the list below) for ${myGames.length > 1 ? 'each of these games' : 'this game'}.</div>` : ''}
       </div>` : ''}${myTourney ? gfxTourneyBlock() : ''}` : '';
