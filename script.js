@@ -4528,6 +4528,7 @@ function renderSchedule() {
             <span class="sched-sep">·</span>
             <span class="sched-gametime">Game ${esc(b.gameTime)}</span>
           </div>` : ''}
+          ${gfxBigBanner(b.id)}
           <div class="sched-crew-count">${assigned} / ${LIVE_ROLES.length} crew assigned</div>
         </div>
         ${S.teacherMode ? `
@@ -12383,6 +12384,15 @@ function gfxIsVideo(file) { return /^video\//.test(file.mime || '') || /\.(mp4|m
 function gfxNoteBox(fileId) {
   if (!S.teacherMode) return S.gfxNotes[fileId] ? `<div class="gfx-note-view"><strong>Teacher feedback:</strong> ${esc(S.gfxNotes[fileId])}</div>` : '';
   return `<textarea class="gfx-note" data-gfx-note="${esc(fileId)}" rows="2" placeholder="Teacher feedback (students can see this)">${esc(S.gfxNotes[fileId] || '')}</textarea>`;
+}
+function gfxBigBanner(id) {
+  const st = GFX_GAME_ASSIGNMENTS[id];
+  if (!st) return '';
+  return `<div style="margin:10px 0;padding:12px 16px;border-radius:10px;background:#7c3aed;color:#fff;border:2px solid #c4b5fd">
+    <div style="font-size:0.8rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;opacity:0.9">🎨 Graphics Package</div>
+    <div style="font-size:1.5rem;font-weight:800;line-height:1.2">${esc(st)}</div>
+    ${(GFX_GAME_DETAILS[id] || []).map(l => `<div style="font-size:1.05rem;font-weight:600;margin-top:2px">${esc(l)}</div>`).join('')}
+  </div>`;
 }
 function gfxAssignChip(id) {
   const st = GFX_GAME_ASSIGNMENTS[id];
