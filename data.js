@@ -2876,7 +2876,6 @@ const GFX_GAME_ASSIGNMENTS = {
   "gb26-1211": "Adam J.", // 2026-12-11 Girls Basketball vs. Bishop Dwenger,
   "gb26-1219": "Paul W.", // 2026-12-19 Girls Basketball vs. Hamilton Southeastern,
   "bb26-1229": "Andres A.", // 2026-12-29 Homestead Holiday Tournament,
-  "bb26-1230": "Cael C.", // 2026-12-30 Homestead Holiday Tournament,
   "gb27-0102": "Olive T.", // 2027-01-02 Girls Basketball vs. North Central HS,
   "bb27-0108": "Quentin K.", // 2027-01-08 Basketball vs. South Side,
   "gb27-0108": "Carter J.", // 2027-01-08 Girls Basketball vs. Whitko,
@@ -2892,20 +2891,20 @@ const GFX_GAME_ASSIGNMENTS = {
 
 // Extra detail shown with a game assignment (broadcast id -> lines).
 const GFX_GAME_DETAILS = {
-  'bb26-1229': ['Homestead vs. Portage — Andres A.', 'Carroll vs. Hamilton Southeastern — Elizabeth S.', 'South Bend St. Joseph vs. Mount Vernon — Cael C. (supplemental)', 'Zionsville vs. Penn — Cael C. (supplemental)'],
-  'bb26-1230': ['Winners Bracket game — Cael C.', 'Loser Bracket game — Cael C.']
+  'bb26-1229': ['Homestead vs. Portage — Andres A.', 'Carroll vs. Hamilton Southeastern — Elizabeth S.', 'South Bend St. Joseph vs. Mount Vernon — Cael C. (supplemental)', 'Zionsville vs. Penn — Cael C. (supplemental)']
 };
 
-// Holiday Tournament Day 2: every possible matchup (winners and losers games share the same pairs),
-// each needing the same set of graphics with both teams together.
+// Holiday Tournament Day 2: a trio makes every graphic. Every possible matchup (winners and losers games share
+// the same pairs) needs the both-teams graphics; the single-team graphics are needed for alsoTeams.
 const GFX_TOURNEY = {
   broadcastId: 'bb26-1230',
+  team: ['Chris J.', 'Jordin B.', 'Cael C.'],
   graphics: ['Establishing', 'Scorebug', 'Thumbnail', 'Waiting Screen'],
-  alsoTeams: ['Zionsville', 'Penn', 'South Bend St. Joseph', 'Mount Vernon'],
-  sides: [
-    { student: 'Chris J.', also: ['Coach Graphic', 'Game Stats', 'Keys to the Game'], label: 'Side 1 — Carroll/HSE game vs. St. Joe/Mt. Vernon game',
-      matchups: ['Carroll vs. South Bend St. Joseph', 'Carroll vs. Mount Vernon', 'Hamilton Southeastern vs. South Bend St. Joseph', 'Hamilton Southeastern vs. Mount Vernon'] },
-    { student: 'Jordin B.', also: ['Past 5 Games', 'Player Graphic', 'Starting Lineups'], label: 'Side 2 — Homestead/Portage game vs. Zionsville/Penn game',
-      matchups: ['Homestead vs. Zionsville', 'Homestead vs. Penn', 'Portage vs. Zionsville', 'Portage vs. Penn'] }
-  ]
+  matchups: [
+    'Carroll vs. South Bend St. Joseph', 'Carroll vs. Mount Vernon',
+    'Hamilton Southeastern vs. South Bend St. Joseph', 'Hamilton Southeastern vs. Mount Vernon',
+    'Homestead vs. Zionsville', 'Homestead vs. Penn', 'Portage vs. Zionsville', 'Portage vs. Penn'
+  ],
+  alsoGraphics: ['Coach Graphic', 'Game Stats', 'Keys to the Game', 'Past 5 Games', 'Player Graphic', 'Starting Lineups'],
+  alsoTeams: ['Zionsville', 'Penn', 'South Bend St. Joseph', 'Mount Vernon']
 };
