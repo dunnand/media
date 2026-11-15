@@ -12404,7 +12404,8 @@ function gfxAssignChip(id) {
 function gfxMyGames(name) {
   const short = shortenName(name), first = String(name || '').trim().split(/\s+/)[0] || '';
   const k1 = gfxVoterKey(short), k2 = gfxVoterKey(first);
-  return Object.entries(GFX_GAME_ASSIGNMENTS).filter(([, st]) => gfxVoterKey(st) === k1 || gfxVoterKey(st) === k2).map(([id]) => gfxGameInfo(id));
+  const inDetail = id => (GFX_GAME_DETAILS[id] || []).some(l => { const who = l.split(' — ')[1] || ''; const k = gfxVoterKey(who.replace(/\(.*\)/, '').trim()); return k === k1 || k === k2; });
+  return Object.entries(GFX_GAME_ASSIGNMENTS).filter(([id, st]) => gfxVoterKey(st) === k1 || gfxVoterKey(st) === k2 || inDetail(id)).map(([id]) => gfxGameInfo(id));
 }
 function gfxGameInfo(id) {
   const b = (S.broadcasts || []).find(x => x.id === id) || {};

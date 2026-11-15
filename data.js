@@ -2892,6 +2892,6 @@ const GFX_GAME_ASSIGNMENTS = {
 
 // Extra detail shown with a game assignment (broadcast id -> lines).
 const GFX_GAME_DETAILS = {
-  'bb26-1229': ['Homestead vs. Portage — Andres A.', 'Elizabeth Carroll vs. Hamilton Southeastern — Andres A.', 'South Bend St. Joseph vs. Mount Vernon — Cael C. (supplemental)', 'Zionsville vs. Penn — Cael C. (supplemental)'],
+  'bb26-1229': ['Homestead vs. Portage — Andres A.', 'Carroll vs. Hamilton Southeastern — Elizabeth S.', 'South Bend St. Joseph vs. Mount Vernon — Cael C. (supplemental)', 'Zionsville vs. Penn — Cael C. (supplemental)'],
   'bb26-1230': ['Winners Bracket game — Cael C.', 'Loser Bracket game — Cael C.']
 };
