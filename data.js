@@ -2901,6 +2901,7 @@ const GFX_GAME_DETAILS = {
 const GFX_TOURNEY = {
   broadcastId: 'bb26-1230',
   graphics: ['Establishing', 'Scorebug', 'Thumbnail', 'Waiting Screen'],
+  alsoTeams: ['Zionsville', 'Penn', 'South Bend St. Joseph', 'Mount Vernon'],
   sides: [
     { student: 'Chris J.', also: ['Coach Graphic', 'Game Stats', 'Keys to the Game'], label: 'Side 1 — Carroll/HSE game vs. St. Joe/Mt. Vernon game',
       matchups: ['Carroll vs. South Bend St. Joseph', 'Carroll vs. Mount Vernon', 'Hamilton Southeastern vs. South Bend St. Joseph', 'Hamilton Southeastern vs. Mount Vernon'] },

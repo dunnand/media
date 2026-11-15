@@ -12392,7 +12392,7 @@ function gfxTourneyBlock(sides) {
       <div style="font-size:0.95rem;font-weight:700;margin-top:2px">${esc(sd.label)}</div>
       <div style="font-size:0.95rem;margin:4px 0 2px 12px"><strong>Make these 4 graphics for EACH matchup (both teams together):</strong> ${esc(GFX_TOURNEY.graphics.join(' · '))}</div>
       ${sd.matchups.map(m => `<div style="font-size:1rem;margin-left:12px">• ${esc(m)}</div>`).join('')}
-      <div style="font-size:0.95rem;margin:6px 0 0 12px"><strong>Also make:</strong> ${esc((sd.also || []).join(' · '))}</div></div>`).join('')}
+      <div style="font-size:0.95rem;margin:6px 0 0 12px"><strong>Also make, for each of ${esc(GFX_TOURNEY.alsoTeams.join(', '))}:</strong> ${esc((sd.also || []).join(' · '))}</div></div>`).join('')}
   </div>`;
 }
 function gfxBigBanner(id) {
