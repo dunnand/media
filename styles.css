@@ -3400,3 +3400,6 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
 .gfx-overlay-video { width: min(1100px, 92vw); aspect-ratio: 16 / 9; max-height: 75vh; border: 0; border-radius: 8px; background: #000; }
 .ch-edit-btn { background: none; border: 0; cursor: pointer; font-size: 0.8rem; opacity: 0.35; padding: 0 4px; }
 .ch-edit-btn:hover { opacity: 1; }
+
+.sched-click { cursor: pointer; transition: background 0.15s; }
+.sched-click:hover { background: var(--surface2); }

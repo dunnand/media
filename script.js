@@ -4525,7 +4525,7 @@ function renderSchedule() {
     const past = new Date(b.date + 'T00:00:00') < now;
     const assigned = Object.values(b.roles || {}).filter(v => v).length;
     return `
-      <div class="sched-row${past ? ' sched-past' : ''}">
+      <div class="sched-row sched-click${past ? ' sched-past' : ''}" data-broadcast="${b.id}">
         <div class="sched-badge" style="background:${et.color}">${et.label}</div>
         <div class="sched-info">
           <div class="sched-title">${esc(b.title)}</div>
