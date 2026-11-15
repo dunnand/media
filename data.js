@@ -2899,7 +2899,7 @@ const GFX_GAME_DETAILS = {
 const GFX_TOURNEY = {
   broadcastId: 'bb26-1230',
   team: ['Chris J.', 'Jordin B.', 'Cael C.'],
-  graphics: ['Establishing', 'Scorebug', 'Thumbnail', 'Waiting Screen'],
+  graphics: ['Establishing', 'Scorebug', 'Thumbnail'],
   matchups: [
     'Carroll vs. South Bend St. Joseph', 'Carroll vs. Mount Vernon',
     'Hamilton Southeastern vs. South Bend St. Joseph', 'Hamilton Southeastern vs. Mount Vernon',
@@ -2910,7 +2910,8 @@ const GFX_TOURNEY = {
 };
 
 // Every graphic needed for the Holiday Tournament, as checklist groups (see renderGfxChecklist in script.js).
-const GFX_FULL_PACKAGE = ['Coach Graphic', 'Establishing', 'Game Officials', 'Game Stats', 'Holiday Tournament Graphic', 'Keys to the Game', 'Past 5 Games', 'Player Graphic', 'SAC Standings', 'Sidebar Promo', 'Starting Lineups', 'Thumbnail', 'To Break', 'Top IHSAA Match ups', 'Waiting Screen'];
+const GFX_FULL_PACKAGE = ['Coach Graphic', 'Establishing', 'Game Officials', 'Game Stats', 'Holiday Tournament Graphic', 'Keys to the Game', 'Past 5 Games', 'Player Graphic', 'SAC Standings', 'Sidebar Promo', 'Starting Lineups', 'Thumbnail', 'To Break', 'Top IHSAA Match ups'];
+const GFX_WAITING_SCREEN_OWNER = 'Olive T.'; // Waiting Screens are made by Olive for every game, so they are not in the checklists
 // Not needed for the tournament games (Day 1 full packages).
 const GFX_TOURNEY_SKIP = ['Game Officials', 'Holiday Tournament Graphic', 'SAC Standings', 'Sidebar Promo', 'Top IHSAA Match ups'];
 function gfxTourneyGroups() {

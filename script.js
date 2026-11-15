@@ -12424,7 +12424,7 @@ function renderGfxChecklist(groups = gfxTourneyGroups(), heading = '🏆 Holiday
   return `
       <section class="card" style="margin-top:16px">
         <div class="card-header"><h2>${esc(heading)}</h2><span class="dim" style="font-size:0.9rem"><strong>${done}</strong> of ${total} done</span></div>
-        <p class="dim" style="font-size:0.85rem;margin:0">Check each graphic off once it's finished and uploaded. Everyone sees the same list.</p>
+        <p class="dim" style="font-size:0.85rem;margin:0">Check each graphic off once it's finished and uploaded. Everyone sees the same list. <strong>Waiting Screens: ${esc(GFX_WAITING_SCREEN_OWNER)} makes those for every game.</strong></p>
         ${body}
       </section>`;
 }
