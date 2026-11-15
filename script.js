@@ -12382,6 +12382,11 @@ function gfxNoteBox(fileId) {
   if (!S.teacherMode) return S.gfxNotes[fileId] ? `<div class="gfx-note-view"><strong>Teacher feedback:</strong> ${esc(S.gfxNotes[fileId])}</div>` : '';
   return `<textarea class="gfx-note" data-gfx-note="${esc(fileId)}" rows="2" placeholder="Teacher feedback (students can see this)">${esc(S.gfxNotes[fileId] || '')}</textarea>`;
 }
+function gfxAssignedTo(name) {
+  const short = shortenName(name), first = String(name || '').trim().split(/\s+/)[0] || '';
+  const hit = Object.keys(GFX_ASSIGNMENTS).find(k => gfxVoterKey(k) === gfxVoterKey(short) || gfxVoterKey(k) === gfxVoterKey(first));
+  return hit ? GFX_ASSIGNMENTS[hit] : '';
+}
 function gfxThumb(id) { return `https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w600`; }
 
 async function loadGraphics() {
@@ -12423,6 +12428,14 @@ function renderGraphics() {
         <input id="gfx-name" type="text" placeholder="First and last name" value="${esc(myName)}" style="flex:1;min-width:180px">
         <button class="btn-secondary" id="gfx-refresh">↻ Refresh</button>
       </div>`;
+  const myPkg = gfxAssignedTo(myName);
+  const assignBar = S.teacherMode ? `
+      <div class="card"><strong>Assignments</strong>
+        <div class="dim" style="font-size:0.85rem;margin-top:6px">${Object.entries(Object.entries(GFX_ASSIGNMENTS).reduce((m, [st, p]) => ((m[p] = m[p] || []).push(st), m), {})).map(([p, sts]) => `<div><strong>${esc(p)}</strong>: ${sts.map(esc).join(', ')}</div>`).join('')}</div>
+      </div>` : myPkg ? `
+      <div class="card" style="border-left:4px solid var(--accent, #4ea1ff)"><strong>Your assigned graphics package: ${esc(myPkg)}</strong>
+        <div class="dim" style="font-size:0.85rem;margin-top:4px">Create this graphic and upload it to the "${esc(myPkg)}" folder.</div>
+      </div>` : '';
   const status = f => {
     const votes = S.gfxVotes.filter(v => v.folderId === f.id);
     const turnins = S.gfxTurnins.filter(t => t.folderId === f.id);
@@ -12501,7 +12514,7 @@ function renderGraphics() {
         <div class="gfx-row">
           <label class="gfx-turnin" title="Check when you've uploaded your graphic to this folder"><input type="checkbox" data-gfx-turnin="${esc(f.id)}" ${turnedIn ? 'checked' : ''}> Turned in</label>
           <button class="gfx-row-main" data-gfx-open="${esc(f.id)}">
-            <span class="gfx-row-name">${esc(f.name)}</span>
+            <span class="gfx-row-name">${esc(f.name)}${myPkg && myPkg === f.name ? ' ⭐ <em>assigned to you</em>' : ''}</span>
             <span class="gfx-row-meta">${f.files.length} graphic${f.files.length === 1 ? '' : 's'}${S.teacherMode ? ` · ${turnins.length} turned in · ${votes.length} vote${votes.length === 1 ? '' : 's'}` : ''}</span>
           </button>
           <span class="gfx-badge ${mine ? 'gfx-badge-yes' : ''}">${mine ? '✓ Voted' : turnedIn ? 'Not voted' : 'Locked'}</span>
@@ -12515,6 +12528,7 @@ function renderGraphics() {
       <h1 style="margin:8px 0 4px">🎨 Basketball Graphics Package 2026-27</h1>
       <p class="dim" style="margin:0 0 14px">Check "Turned in" once you've uploaded your graphic to a folder — that unlocks voting for it. Open a folder to preview the graphics and vote for your favorite.</p>
       ${nameBar}
+      ${assignBar}
       <section class="card gfx-list">${rows}</section>
     </div>`;
 }

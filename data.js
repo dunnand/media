@@ -2867,3 +2867,32 @@ for (const course of Object.values(LESSONS)) {
     }
   }
 }
+
+// Graphics package assignments (student short name -> graphics folder name). Students are matched by "First L." on the graphics page.
+const GFX_ASSIGNMENTS = {
+  "Adam J.": "Sidebar Promo",
+  "Alice A.": "SAC Standings",
+  "Alice F.": "Past 5 Games",
+  "Andres A.": "Sidebar Promo",
+  "Andrew W.": "Coach Graphic",
+  "Bella L.": "Game Stats",
+  "Brody H.": "Game Officials",
+  "Cael C.": "Game Stats",
+  "Carter J.": "Player Graphic",
+  "Chris J.": "To Break",
+  "Elizabeth S.": "SAC Standings",
+  "Emma N.": "Establishing",
+  "Jack M.": "Waiting Screen",
+  "Jagger": "Establishing",
+  "Jordin B.": "Top IHSAA Match ups",
+  "Lexy S.": "Holiday Tournament Graphic",
+  "Maclane R.": "Coach Graphic",
+  "Olive T.": "Player Graphic",
+  "Paul W.": "Game Officials",
+  "Quentin K.": "Holiday Tournament Graphic",
+  "Reggie": "Thumbnail",
+  "Rowan M.": "Starting Lineups",
+  "Rylie S.": "Keys to the Game",
+  "Sukh N.": "Keys to the Game",
+  "Takoda H.": "Past 5 Games"
+};
