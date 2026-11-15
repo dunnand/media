@@ -12387,9 +12387,12 @@ function gfxNoteBox(fileId) {
 }
 function gfxTourneyBlock(sides) {
   return `<div style="margin:8px 0;padding:10px 14px;border-radius:8px;background:#4c1d95;color:#fff;border:2px solid #c4b5fd">
-    <div style="font-size:0.8rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase">🎨 Day 2 possible matchups — ${esc(GFX_TOURNEY.graphics.join(', '))} (each matchup could be a winners or losers game)</div>
-    ${sides.map(sd => `<div style="margin-top:8px"><div style="font-size:1.05rem;font-weight:800">${esc(sd.student)} — ${esc(sd.label)}</div>
-      ${sd.matchups.map(m => `<div style="font-size:1rem;margin-left:12px">• ${esc(m)}</div>`).join('')}</div>`).join('')}
+    <div style="font-size:0.85rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase">🎨 Holiday Tournament Day 2 — possible matchups (each could be a winners or losers game)</div>
+    ${sides.map(sd => `<div style="margin-top:10px"><div style="font-size:1.1rem;font-weight:800">${esc(sd.student)}</div>
+      <div style="font-size:0.95rem;font-weight:700;margin-top:2px">${esc(sd.label)}</div>
+      <div style="font-size:0.95rem;margin:4px 0 2px 12px"><strong>Make these 4 graphics for EACH matchup (both teams together):</strong> ${esc(GFX_TOURNEY.graphics.join(' · '))}</div>
+      ${sd.matchups.map(m => `<div style="font-size:1rem;margin-left:12px">• ${esc(m)}</div>`).join('')}
+      <div style="font-size:0.95rem;margin:6px 0 0 12px"><strong>Also make:</strong> ${esc((sd.also || []).join(' · '))}</div></div>`).join('')}
   </div>`;
 }
 function gfxBigBanner(id) {

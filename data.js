@@ -2902,9 +2902,9 @@ const GFX_TOURNEY = {
   broadcastId: 'bb26-1230',
   graphics: ['Establishing', 'Scorebug', 'Thumbnail', 'Waiting Screen'],
   sides: [
-    { student: 'Chris J.', label: 'Side 1 — Carroll/HSE game vs. St. Joe/Mt. Vernon game',
+    { student: 'Chris J.', also: ['Coach Graphic', 'Game Stats', 'Keys to the Game'], label: 'Side 1 — Carroll/HSE game vs. St. Joe/Mt. Vernon game',
       matchups: ['Carroll vs. South Bend St. Joseph', 'Carroll vs. Mount Vernon', 'Hamilton Southeastern vs. South Bend St. Joseph', 'Hamilton Southeastern vs. Mount Vernon'] },
-    { student: 'Jordin B.', label: 'Side 2 — Homestead/Portage game vs. Zionsville/Penn game',
+    { student: 'Jordin B.', also: ['Past 5 Games', 'Player Graphic', 'Starting Lineups'], label: 'Side 2 — Homestead/Portage game vs. Zionsville/Penn game',
       matchups: ['Homestead vs. Zionsville', 'Homestead vs. Penn', 'Portage vs. Zionsville', 'Portage vs. Penn'] }
   ]
 };
