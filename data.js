@@ -2905,7 +2905,7 @@ const GFX_TOURNEY = {
     'Hamilton Southeastern vs. South Bend St. Joseph', 'Hamilton Southeastern vs. Mount Vernon',
     'Homestead vs. Zionsville', 'Homestead vs. Penn', 'Portage vs. Zionsville', 'Portage vs. Penn'
   ],
-  alsoGraphics: ['Coach Graphic', 'Keys to the Game', 'Past 5 Games', 'Player Graphic — Sidebar', 'Player Graphic — Lower 3rd', 'Player Graphic — Scoreboard', 'Starting Lineups'],
+  alsoGraphics: ['Coach Graphic', 'Keys to the Game', 'Past 5 Games', 'Player Graphic — Scoreboard', 'Starting Lineups'],
   alsoTeams: ['Zionsville', 'Penn', 'South Bend St. Joseph', 'Mount Vernon']
 };
 
@@ -2915,7 +2915,7 @@ const GFX_FULL_PACKAGE = ['Coach Graphic', 'Establishing', 'Game Stats', 'Keys t
 const GFX_SAC_OPPONENTS = /luers|dwenger|concordia|carroll|wayne|south side|north side|northrop|snider/i;
 const GFX_WAITING_SCREEN_OWNER = 'Olive T.'; // Waiting Screens are made by Olive for every game, so they are not in the checklists
 // Not needed for the tournament games (Day 1 full packages).
-const GFX_TOURNEY_SKIP = ['Game Officials', 'Holiday Tournament Graphic', 'SAC Standings', 'Sidebar Promo', 'Top IHSAA Match ups'];
+const GFX_TOURNEY_SKIP = ['Player Graphic — Sidebar', 'Player Graphic — Lower 3rd', 'Game Officials', 'Holiday Tournament Graphic', 'SAC Standings', 'Sidebar Promo', 'Top IHSAA Match ups'];
 function gfxTourneyGroups() {
   const T = GFX_TOURNEY, g = [], pkg = GFX_FULL_PACKAGE.filter(x => !GFX_TOURNEY_SKIP.includes(x));
   g.push({ title: 'Day 1 (12/29) — Homestead vs. Portage · full package', who: 'Andres A.', items: pkg.map(x => 'Homestead vs. Portage — ' + x) });
