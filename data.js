@@ -301,6 +301,19 @@ const YEARBOOK_EVENTS = [
 const IASB_SEASON   = '2026–2027';
 const IASB_DEADLINE = '2027-02-05'; // update if IASB announces a different date
 
+// Temporary link shown in a banner at the top of a page. views = which pages show it;
+// the banner disappears by itself after showUntil (that day is the last day it shows, local time).
+// Delete an entry once it has expired.
+const SPECIAL_LINKS = [
+  {
+    views: ['indepth'],
+    icon: '📝',
+    text: 'IASB Competition check-in: fill out this form',
+    url: 'https://docs.google.com/forms/d/e/1FAIpQLSdWpX1hFVWvfG7fZg5mdXbcnTN7pxXzCRV4aH53wi7rQsL41g/viewform?usp=dialog',
+    showUntil: '2026-11-20'
+  }
+];
+
 // Change this to whatever PIN you want — students should not know it
 const TEACHER_PIN = '2027';
 

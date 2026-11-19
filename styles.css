@@ -1811,6 +1811,23 @@ details[open] .shot-cat-summary::before { transform: rotate(90deg); }
   margin-bottom: 24px;
   flex-wrap: wrap;
 }
+.special-link-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(59, 130, 246, 0.14);
+  border: 1px solid var(--indepth);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+  padding: 12px 20px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.special-link-banner:hover { background: rgba(59, 130, 246, 0.26); }
 .iasb-banner-deadline { font-size: 0.875rem; }
 .iasb-banner-stats { font-size: 0.8rem; color: var(--dim); display: flex; align-items: center; gap: 6px; }
 .iasb-stat-sep { color: var(--border); }

@@ -4874,6 +4874,16 @@ function renderRundownLog() {
     </div>`;
 }
 
+// Temporary banner links from SPECIAL_LINKS (data.js) for one page; expired ones are skipped.
+function renderSpecialLinks(view) {
+  const d = new Date();
+  const today = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  return SPECIAL_LINKS
+    .filter(l => l.views.includes(view) && today <= l.showUntil)
+    .map(l => `<a class="special-link-banner" href="${esc(l.url)}" target="_blank" rel="noopener">${l.icon} ${esc(l.text)} →</a>`)
+    .join('');
+}
+
 function renderInDepth() {
   const weeks    = getRundownWeeks();
   const offset   = S.rundownWeekOffset || 0;
@@ -4898,6 +4908,7 @@ function renderInDepth() {
   return `
     ${navBar('indepth')}
     <div class="class-page">
+      ${renderSpecialLinks('indepth')}
       <div class="class-header">
         <img src="images/logo-hhs-indepth.png" alt="HHS In-Depth" class="class-header-logo">
         <div>
