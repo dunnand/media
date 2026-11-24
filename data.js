@@ -2923,8 +2923,10 @@ const GFX_TOURNEY = {
 };
 
 // Every graphic needed for the Holiday Tournament, as checklist groups (see renderGfxChecklist in script.js).
-const GFX_FULL_PACKAGE = ['Coach Graphic', 'Establishing', 'Game Stats', 'Keys to the Game', 'Past 5 Games', 'Player Graphic — Sidebar', 'Player Graphic — Lower 3rd', 'Player Graphic — Scoreboard', 'Sidebar Promo', 'Starting Lineups', 'Thumbnail', 'To Break', 'Top IHSAA Match ups'];
-// SAC Standings graphic is only made for games against these opponents (matched against the game title).
+// Mirrors the templates in the shared Drive folder "2026-27 Basketball Templates" (Home/Away split where the folder has both).
+// Broadcasters, Waiting Screen and the Transition/3pts graphics are not part of this list.
+const GFX_FULL_PACKAGE = ['Coach Graphic — Home', 'Coach Graphic — Away', 'Establishing', 'Game Officials', 'Game Stats', 'Away Live Stats', 'Keys to the Game — Home', 'Keys to the Game — Away', 'Past 5 Games — Home', 'Past 5 Games — Away', 'Player Graphic — Home (No Photo)', 'Player Graphic — Away', 'Player Graphic — With Photo', 'Sidebar Promo', 'Starting Lineups — Home', 'Starting Lineups — Away', 'Thumbnail', 'To Break', 'Top IHSAA Match ups'];
+// SAC Standings graphic is only made for BOYS games (the template is "Boys SAC games only") against these opponents (matched against the game title).
 const GFX_SAC_OPPONENTS = /luers|dwenger|concordia|carroll|wayne|south side|north side|northrop|snider/i;
 const GFX_TRANSITION_OWNER = 'Andrew W.'; // Transition scoreboard graphics + 3pts for every game
 const GFX_WAITING_SCREEN_OWNER = 'Olive T.'; // Waiting Screens are made by Olive for every game, so they are not in the checklists

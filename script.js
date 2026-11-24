@@ -5,7 +5,7 @@
 // ── Version / CDN cache buster ───────────────────────────────
 // When this value changes, users are auto-redirected to a URL
 // the CDN has never cached, forcing a fully fresh load.
-const APP_VERSION = '20260803b';
+const APP_VERSION = '20261124a';
 (function() {
   try {
     const k = 'hm_version';
@@ -12408,7 +12408,7 @@ function gfxGroupsForBroadcast(id) {
   const st = GFX_GAME_ASSIGNMENTS[id];
   const title = ((S.broadcasts || []).find(x => x.id === id) || {}).title || '';
   const items = GFX_FULL_PACKAGE.slice();
-  if (GFX_SAC_OPPONENTS.test(title)) items.push('SAC Standings');
+  if (/^bb/.test(id) && GFX_SAC_OPPONENTS.test(title)) items.push('SAC Standings'); // boys games only
   return st ? [{ title: 'Full graphics package (' + id + ')', who: st, items }] : [];
 }
 async function loadGfxChecks() {
